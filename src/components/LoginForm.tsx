@@ -1,51 +1,30 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { LogIn, UserPlus, Sparkles } from 'lucide-react';
-import { User } from '../types';
+import { LogIn, UserPlus, Sparkles, AlertCircle } from 'lucide-react';
+import { useAuth } from '../hooks/useAuth';
 
-interface LoginFormProps {
-  onLogin: (user: User, token: string) => void;
-}
-
-const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
+const LoginForm: React.FC = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [formState, setFormState] = useState({
     email: '',
     password: '',
-    name: ''
+    fullName: ''
   });
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const { signIn, signUp, loading } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     setError('');
 
     try {
-      const endpoint = isLogin ? '/api/login' : '/api/register';
-      const body = isLogin 
-        ? { email: formState.email, password: formState.password }
-        : formState;
-
-      const response = await fetch(`${endpoint}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        onLogin(data.user, data.token);
+      if (isLogin) {
+        await signIn(formState.email, formState.password);
       } else {
-        setError(data.error || 'Authentication failed');
+        await signUp(formState.email, formState.password, formState.fullName);
       }
-    } catch (err) {
-      setError('Network error. Please try again.');
-      console.error('Auth error:', err);
-    } finally {
-      setLoading(false);
+    } catch (err: any) {
+      setError(err.message || 'Authentication failed');
     }
   };
 
@@ -122,8 +101,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
                 <input
                   type="text"
                   required
-                  value={formState.name}
-                  onChange={(e) => handleInputChange('name', e.target.value)}
+                  value={formState.fullName}
+                  onChange={(e) => handleInputChange('fullName', e.target.value)}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2A6F68] focus:border-transparent transition-all bg-white/50"
                   placeholder="Enter your full name"
                 />
@@ -162,9 +141,10 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="text-red-600 text-sm bg-red-50 p-3 rounded-lg"
+                className="flex items-center space-x-2 text-red-600 text-sm bg-red-50 p-3 rounded-lg"
               >
-                {error}
+                <AlertCircle className="h-4 w-4" />
+                <span>{error}</span>
               </motion.div>
             )}
 
@@ -186,18 +166,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLogin }) => {
               )}
             </motion.button>
           </form>
-
-          {/* Demo Credentials */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
-            className="mt-6 p-4 bg-[#F0F9FF] rounded-lg border border-[#BAE6FD]"
-          >
-            <p className="text-sm text-[#0369A1] mb-2 font-medium">Demo Account:</p>
-            <p className="text-xs text-[#0369A1]">Email: demo@luxefi.com</p>
-            <p className="text-xs text-[#0369A1]">Password: demo123</p>
-          </motion.div>
         </motion.div>
       </motion.div>
     </div>

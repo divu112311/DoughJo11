@@ -1,22 +1,19 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Bot, User as UserIcon, Award, Zap } from 'lucide-react';
-import { User, ChatMessage } from '../types';
+import { Send, Bot, User as UserIcon, Zap } from 'lucide-react';
+import { User } from '@supabase/supabase-js';
+import { useChat } from '../hooks/useChat';
 
 interface ChatInterfaceProps {
-  user: User | null;
+  user: User;
+  onXPUpdate: (points: number) => void;
 }
 
-const ChatInterface: React.FC<ChatInterfaceProps> = ({ user }) => {
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, onXPUpdate }) => {
   const [inputMessage, setInputMessage] = useState('');
-  const [loading, setLoading] = useState(false);
   const [xpGained, setXpGained] = useState<number | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    fetchChatHistory();
-  }, []);
+  const { messages, loading, sendMessage } = useChat(user);
 
   useEffect(() => {
     scrollToBottom();
@@ -26,85 +23,23 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user }) => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const fetchChatHistory = async () => {
-    try {
-      const token = localStorage.getItem('luxefi-token');
-      const response = await fetch('/api/chat-history', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      const data = await response.json();
-      setMessages(data);
-    } catch (error) {
-      console.error('Failed to fetch chat history:', error);
-    }
-  };
-
-  const sendMessage = async () => {
+  const handleSendMessage = async () => {
     if (!inputMessage.trim() || loading) return;
 
-    const userMessage = inputMessage.trim();
+    const message = inputMessage.trim();
     setInputMessage('');
-    setLoading(true);
 
-    // Add user message to UI immediately
-    const userChatMessage: ChatMessage = {
-      id: Date.now().toString(),
-      user_id: user?.id || '',
-      message: userMessage,
-      is_user: true,
-      timestamp: new Date().toISOString()
-    };
-    setMessages(prev => [...prev, userChatMessage]);
-
-    try {
-      const token = localStorage.getItem('luxefi-token');
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({ message: userMessage })
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        const aiMessage: ChatMessage = {
-          id: (Date.now() + 1).toString(),
-          user_id: user?.id || '',
-          message: data.message,
-          is_user: false,
-          timestamp: new Date().toISOString()
-        };
-        setMessages(prev => [...prev, aiMessage]);
-
-        // Show XP gained animation
-        if (data.xpEarned) {
-          setXpGained(data.xpEarned);
-          setTimeout(() => setXpGained(null), 3000);
-        }
-      }
-    } catch (error) {
-      console.error('Failed to send message:', error);
-      // Add error message
-      const errorMessage: ChatMessage = {
-        id: (Date.now() + 1).toString(),
-        user_id: user?.id || '',
-        message: 'Sorry, I encountered an error. Please try again.',
-        is_user: false,
-        timestamp: new Date().toISOString()
-      };
-      setMessages(prev => [...prev, errorMessage]);
-    } finally {
-      setLoading(false);
-    }
+    await sendMessage(message, (points) => {
+      setXpGained(points);
+      onXPUpdate(points);
+      setTimeout(() => setXpGained(null), 3000);
+    });
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      sendMessage();
+      handleSendMessage();
     }
   };
 
@@ -189,21 +124,21 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user }) => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.05 }}
-            className={`flex ${message.is_user ? 'justify-end' : 'justify-start'}`}
+            className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
           >
             <div
               className={`max-w-xs lg:max-w-md px-4 py-2 rounded-2xl ${
-                message.is_user
+                message.sender === 'user'
                   ? 'bg-[#2A6F68] text-white rounded-br-sm'
                   : 'bg-gray-100 text-[#333333] rounded-bl-sm'
               }`}
             >
               <div className="flex items-start space-x-2">
-                {!message.is_user && (
+                {message.sender !== 'user' && (
                   <Bot className="h-4 w-4 mt-1 text-[#B76E79] flex-shrink-0" />
                 )}
                 <p className="text-sm leading-relaxed">{message.message}</p>
-                {message.is_user && (
+                {message.sender === 'user' && (
                   <UserIcon className="h-4 w-4 mt-1 text-white/70 flex-shrink-0" />
                 )}
               </div>
@@ -263,7 +198,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user }) => {
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            onClick={sendMessage}
+            onClick={handleSendMessage}
             disabled={!inputMessage.trim() || loading}
             className="bg-[#2A6F68] text-white p-3 rounded-lg hover:bg-[#235A54] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >

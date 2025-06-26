@@ -1,70 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import LoginForm from './components/LoginForm';
 import Dashboard from './components/Dashboard';
 import ChatInterface from './components/ChatInterface';
-import OnboardingFlow from './components/OnboardingFlow';
-import { User, AuthState } from './types';
+import { useAuth } from './hooks/useAuth';
+import { useUserProfile } from './hooks/useUserProfile';
 
 function App() {
-  const [authState, setAuthState] = useState<AuthState>('loading');
-  const [user, setUser] = useState<User | null>(null);
+  const { user, loading: authLoading, signOut } = useAuth();
+  const { profile, xp, loading: profileLoading, updateXP } = useUserProfile(user);
   const [activeView, setActiveView] = useState<'dashboard' | 'chat'>('chat');
-  const [showOnboarding, setShowOnboarding] = useState(false);
 
-  useEffect(() => {
-    const token = localStorage.getItem('luxefi-token');
-    if (token) {
-      // Validate token with server
-      fetch('/api/dashboard', {
-        headers: { Authorization: `Bearer ${token}` }
-      })
-      .then(res => {
-        if (res.ok) {
-          return res.json();
-        }
-        throw new Error('Invalid token');
-      })
-      .then(data => {
-        setUser(data.user);
-        setAuthState('authenticated');
-        
-        // Check if onboarding is needed
-        if (!data.user.age_range || !data.user.income_range) {
-          setShowOnboarding(true);
-        }
-      })
-      .catch(() => {
-        localStorage.removeItem('luxefi-token');
-        setAuthState('unauthenticated');
-      });
-    } else {
-      setAuthState('unauthenticated');
-    }
-  }, []);
-
-  const handleLogin = (userData: User, token: string) => {
-    localStorage.setItem('luxefi-token', token);
-    setUser(userData);
-    setAuthState('authenticated');
-    
-    // Check if onboarding is needed
-    if (!userData.age_range || !userData.income_range) {
-      setShowOnboarding(true);
-    }
+  const handleXPUpdate = async (points: number) => {
+    await updateXP(points);
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('luxefi-token');
-    setUser(null);
-    setAuthState('unauthenticated');
-  };
-
-  const handleOnboardingComplete = () => {
-    setShowOnboarding(false);
-  };
-
-  if (authState === 'loading') {
+  if (authLoading || profileLoading) {
     return (
       <div className="min-h-screen bg-[#FAF9F6] flex items-center justify-center">
         <motion.div
@@ -76,18 +27,14 @@ function App() {
     );
   }
 
-  if (authState === 'unauthenticated') {
-    return <LoginForm onLogin={handleLogin} />;
+  if (!user) {
+    return <LoginForm />;
   }
+
+  const level = Math.floor((xp?.points || 0) / 100) + 1;
 
   return (
     <div className="min-h-screen bg-[#FAF9F6]">
-      <AnimatePresence>
-        {showOnboarding && (
-          <OnboardingFlow onComplete={handleOnboardingComplete} />
-        )}
-      </AnimatePresence>
-
       {/* Header */}
       <motion.header 
         initial={{ y: -100 }}
@@ -104,9 +51,9 @@ function App() {
                 LuxeFi
               </motion.h1>
               <div className="flex items-center space-x-2 bg-[#2A6F68] text-white px-3 py-1 rounded-full text-sm">
-                <span>Level {user?.level || 1}</span>
+                <span>Level {level}</span>
                 <span className="text-[#B76E79]">•</span>
-                <span>{user?.xp || 0} XP</span>
+                <span>{xp?.points || 0} XP</span>
               </div>
             </div>
 
@@ -135,7 +82,7 @@ function App() {
               </nav>
               
               <button
-                onClick={handleLogout}
+                onClick={signOut}
                 className="text-[#333333] hover:text-[#B76E79] transition-colors"
               >
                 Sign Out
@@ -156,7 +103,7 @@ function App() {
               exit={{ opacity: 0, x: 20 }}
               transition={{ duration: 0.3 }}
             >
-              <ChatInterface user={user} />
+              <ChatInterface user={user} onXPUpdate={handleXPUpdate} />
             </motion.div>
           ) : (
             <motion.div
@@ -166,7 +113,7 @@ function App() {
               exit={{ opacity: 0, x: -20 }}
               transition={{ duration: 0.3 }}
             >
-              <Dashboard user={user} />
+              <Dashboard user={user} xp={xp} />
             </motion.div>
           )}
         </AnimatePresence>
