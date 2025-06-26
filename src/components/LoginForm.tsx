@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { LogIn, UserPlus, Sparkles, AlertCircle } from 'lucide-react';
+import { LogIn, UserPlus, AlertCircle } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 
 const LoginForm: React.FC = () => {
@@ -48,10 +48,28 @@ const LoginForm: React.FC = () => {
           className="text-center mb-8"
         >
           <div className="flex items-center justify-center mb-4">
-            <Sparkles className="h-8 w-8 text-[#B76E79] mr-2" />
-            <h1 className="text-4xl font-serif font-bold text-[#333333]">LuxeFi</h1>
+            <motion.div
+              animate={{ 
+                rotate: [0, 5, -5, 0],
+                scale: [1, 1.05, 1]
+              }}
+              transition={{ 
+                duration: 2,
+                repeat: Infinity,
+                repeatType: "reverse"
+              }}
+              className="w-16 h-16 mr-3"
+            >
+              <img 
+                src="/Teal & Rose Gold.png" 
+                alt="DoughJo Mascot" 
+                className="w-full h-full object-contain"
+              />
+            </motion.div>
+            <h1 className="text-4xl font-serif font-bold text-[#333333]">DoughJo</h1>
           </div>
-          <p className="text-[#666666] text-lg">Your AI-powered financial concierge</p>
+          <p className="text-[#666666] text-lg">Your AI Financial Sensei</p>
+          <p className="text-[#888888] text-sm mt-2">Master your money with ancient wisdom and modern AI</p>
         </motion.div>
 
         {/* Form Card */}
@@ -162,10 +180,16 @@ const LoginForm: React.FC = () => {
                   className="w-5 h-5 border-2 border-white border-t-transparent rounded-full mx-auto"
                 />
               ) : (
-                isLogin ? 'Sign In' : 'Create Account'
+                isLogin ? 'Begin Your Journey' : 'Join the Dojo'
               )}
             </motion.button>
           </form>
+
+          <div className="mt-6 text-center">
+            <p className="text-xs text-gray-500">
+              "The way of the warrior is to stop trouble before it starts" - DoughJo Wisdom
+            </p>
+          </div>
         </motion.div>
       </motion.div>
     </div>

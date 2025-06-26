@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Bot, User as UserIcon, Zap } from 'lucide-react';
+import { Send, User as UserIcon, Zap } from 'lucide-react';
 import { User } from '@supabase/supabase-js';
 import { useChat } from '../hooks/useChat';
 
@@ -44,11 +44,11 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, onXPUpdate }) => {
   };
 
   const suggestedQuestions = [
-    "How's my spending this month?",
-    "Should I invest more or save more?",
-    "Help me create a budget",
-    "What's my net worth looking like?",
-    "Give me some investment advice"
+    "Sensei, how's my spending this month?",
+    "What's the path to financial freedom?",
+    "Help me create a warrior's budget",
+    "Show me my financial strength",
+    "Teach me the way of smart investing"
   ];
 
   return (
@@ -75,16 +75,32 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, onXPUpdate }) => {
         className="bg-white rounded-t-2xl p-6 border-b border-gray-200"
       >
         <div className="flex items-center space-x-3 mb-2">
-          <div className="w-10 h-10 bg-gradient-to-br from-[#2A6F68] to-[#B76E79] rounded-full flex items-center justify-center">
-            <Bot className="h-6 w-6 text-white" />
-          </div>
+          <motion.div 
+            animate={{ 
+              rotate: [0, 5, -5, 0],
+              scale: [1, 1.05, 1]
+            }}
+            transition={{ 
+              duration: 3,
+              repeat: Infinity,
+              repeatType: "reverse"
+            }}
+            className="w-12 h-12 bg-gradient-to-br from-[#2A6F68] to-[#B76E79] rounded-full flex items-center justify-center p-1"
+          >
+            <img 
+              src="/Teal & Rose Gold.png" 
+              alt="DoughJo Sensei" 
+              className="w-full h-full object-contain"
+            />
+          </motion.div>
           <div>
-            <h2 className="text-lg font-semibold text-[#333333]">LuxeBot</h2>
-            <p className="text-sm text-gray-600">Your AI Financial Concierge</p>
+            <h2 className="text-lg font-semibold text-[#333333]">Sensei DoughJo</h2>
+            <p className="text-sm text-gray-600">Your AI Financial Sensei</p>
           </div>
         </div>
         <p className="text-[#666666] text-sm">
-          Ask me anything about your finances, investments, or goals. I'm here to help you make smarter money decisions!
+          Welcome to the dojo, young grasshopper! Ask me anything about your financial journey. 
+          Together, we'll master the ancient art of money management! 🥋💰
         </p>
       </motion.div>
 
@@ -96,8 +112,25 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, onXPUpdate }) => {
             animate={{ opacity: 1 }}
             className="text-center py-8"
           >
-            <Bot className="h-16 w-16 text-[#B76E79] mx-auto mb-4 opacity-50" />
-            <p className="text-gray-500 mb-6">Start a conversation with LuxeBot!</p>
+            <motion.div
+              animate={{ 
+                rotate: [0, 10, -10, 0],
+                scale: [1, 1.1, 1]
+              }}
+              transition={{ 
+                duration: 2,
+                repeat: Infinity,
+                repeatType: "reverse"
+              }}
+              className="w-20 h-20 mx-auto mb-4"
+            >
+              <img 
+                src="/Teal & Rose Gold.png" 
+                alt="DoughJo Sensei" 
+                className="w-full h-full object-contain opacity-70"
+              />
+            </motion.div>
+            <p className="text-gray-500 mb-6">Begin your training with Sensei DoughJo!</p>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-2xl mx-auto">
               {suggestedQuestions.map((question, index) => (
@@ -135,7 +168,13 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, onXPUpdate }) => {
             >
               <div className="flex items-start space-x-2">
                 {message.sender !== 'user' && (
-                  <Bot className="h-4 w-4 mt-1 text-[#B76E79] flex-shrink-0" />
+                  <div className="w-5 h-5 mt-1 flex-shrink-0">
+                    <img 
+                      src="/Teal & Rose Gold.png" 
+                      alt="DoughJo" 
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
                 )}
                 <p className="text-sm leading-relaxed">{message.message}</p>
                 {message.sender === 'user' && (
@@ -154,7 +193,13 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, onXPUpdate }) => {
           >
             <div className="bg-gray-100 rounded-2xl rounded-bl-sm px-4 py-3 max-w-xs">
               <div className="flex items-center space-x-2">
-                <Bot className="h-4 w-4 text-[#B76E79]" />
+                <div className="w-5 h-5">
+                  <img 
+                    src="/Teal & Rose Gold.png" 
+                    alt="DoughJo" 
+                    className="w-full h-full object-contain"
+                  />
+                </div>
                 <div className="flex space-x-1">
                   {[0, 1, 2].map((i) => (
                     <motion.div
@@ -189,7 +234,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, onXPUpdate }) => {
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder="Ask me about your finances..."
+              placeholder="Ask Sensei DoughJo for financial wisdom..."
               rows={1}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2A6F68] focus:border-transparent resize-none transition-all"
               style={{ minHeight: '44px', maxHeight: '120px' }}
@@ -205,7 +250,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, onXPUpdate }) => {
             <Send className="h-5 w-5" />
           </motion.button>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 };

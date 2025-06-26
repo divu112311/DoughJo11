@@ -44,12 +44,21 @@ function App() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-4">
-              <motion.h1 
+              <motion.div 
                 whileHover={{ scale: 1.05 }}
-                className="text-2xl font-serif font-bold text-[#333333]"
+                className="flex items-center space-x-3"
               >
-                LuxeFi
-              </motion.h1>
+                <div className="w-10 h-10 bg-gradient-to-br from-[#2A6F68] to-[#B76E79] rounded-full flex items-center justify-center">
+                  <img 
+                    src="/Teal & Rose Gold.png" 
+                    alt="DoughJo Mascot" 
+                    className="w-8 h-8 object-contain"
+                  />
+                </div>
+                <h1 className="text-2xl font-serif font-bold text-[#333333]">
+                  DoughJo
+                </h1>
+              </motion.div>
               <div className="flex items-center space-x-2 bg-[#2A6F68] text-white px-3 py-1 rounded-full text-sm">
                 <span>Level {level}</span>
                 <span className="text-[#B76E79]">•</span>

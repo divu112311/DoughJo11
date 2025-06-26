@@ -1,27 +1,28 @@
-# LuxeFi - AI-Native Personal Finance Concierge
+# DoughJo - Your AI Financial Sensei
 
-A sophisticated AI-powered personal finance application designed for young professionals in the US, featuring conversational UI, real-time financial insights, and gamification.
+A sophisticated AI-powered personal finance application featuring your friendly martial arts mascot, DoughJo! Master the ancient art of money management with modern AI wisdom.
 
 ## Features
 
-### 🤖 AI-Native Experience
-- **Conversational Interface**: Primary interaction through natural language chat with LuxeBot
+### 🥋 AI Financial Sensei
+- **Conversational Interface**: Train with Sensei DoughJo through natural language chat
 - **Context-Aware AI**: OpenAI GPT-4 integration with full financial context and chat history
-- **Dynamic Responses**: Personalized advice based on user profile, spending patterns, and goals
+- **Personalized Wisdom**: Ancient financial wisdom meets modern AI for personalized advice
 
-### 💰 Financial Management
-- **Goal Tracking**: Visual progress tracking for financial objectives
+### 💰 Financial Mastery
+- **Goal Tracking**: Visual progress tracking for your financial quests
 - **Smart Insights**: AI-generated spending analysis and recommendations
-- **User Profiles**: Comprehensive user management with XP and badges
+- **Warrior Profiles**: Comprehensive user management with XP and belt rankings
 
-### 🎮 Gamification
-- **XP System**: Earn experience points for financial interactions
-- **Level Progression**: Advance through levels based on engagement
-- **Achievement Badges**: Unlock rewards for reaching milestones
+### 🎮 Dojo Progression System
+- **XP System**: Earn experience points for financial interactions and training
+- **Belt Rankings**: Progress from White Belt to Grand Master based on engagement
+- **Achievement Badges**: Unlock rewards for reaching financial milestones
 - **Progress Visualization**: Beautiful progress bars and achievement animations
 
-### 🎨 Luxury Design
-- **Premium Aesthetics**: Apple-level design with cream/linen background
+### 🎨 Dojo Design
+- **Martial Arts Aesthetic**: Clean, disciplined design inspired by traditional dojos
+- **Mascot Integration**: DoughJo appears throughout the app as your guide
 - **Sophisticated Typography**: Playfair Display headlines with Inter body text
 - **Micro-interactions**: Smooth animations and hover states throughout
 - **Responsive Layout**: Mobile-first design that scales beautifully
@@ -33,7 +34,7 @@ A sophisticated AI-powered personal finance application designed for young profe
 - **Backend**: Supabase (Database + Auth + Edge Functions)
 - **AI**: OpenAI GPT-4 API via Supabase Edge Functions
 - **Charts**: Recharts for data visualization
-- **Icons**: Lucide React
+- **Icons**: Lucide React + Custom DoughJo Mascot
 
 ## Getting Started
 
@@ -47,7 +48,7 @@ A sophisticated AI-powered personal finance application designed for young profe
 1. Clone the repository:
 ```bash
 git clone <repository-url>
-cd luxefi-app
+cd doughjo-app
 ```
 
 2. Install dependencies:
@@ -96,31 +97,32 @@ supabase secrets set OPENAI_API_KEY=your_openai_api_key_here
 npm run dev
 ```
 
-### Quick Setup Guide
+## The DoughJo Way
 
-**Step 1: Supabase Setup**
-1. Go to [supabase.com](https://supabase.com) and create a new project
-2. Wait for the project to be ready (2-3 minutes)
-3. Go to Settings > API and copy:
-   - Project URL
-   - Anon public key
+### Belt Ranking System
+Progress through traditional martial arts belt rankings:
+- **White Belt** (Levels 1-4): Beginning your financial journey
+- **Yellow Belt** (Levels 5-9): Learning the basics
+- **Green Belt** (Levels 10-14): Building good habits
+- **Blue Belt** (Levels 15-19): Developing discipline
+- **Brown Belt** (Levels 20-29): Advanced techniques
+- **Black Belt** (Levels 30-39): Mastery of fundamentals
+- **Master** (Levels 40-49): Teaching others
+- **Grand Master** (Level 50+): True financial wisdom
 
-**Step 2: Environment Variables**
-Update your `.env` file:
-```env
-VITE_SUPABASE_URL=https://your-project.supabase.co
-VITE_SUPABASE_ANON_KEY=your-anon-key-here
-```
+### DoughJo's Wisdom
+Your AI sensei provides guidance based on:
+- Ancient financial principles
+- Modern investment strategies
+- Your personal goals and progress
+- Martial arts philosophy applied to money management
 
-**Step 3: OpenAI Integration**
-1. Get your OpenAI API key from [platform.openai.com](https://platform.openai.com)
-2. Deploy the Edge Function (see commands above)
-3. Set the OpenAI key as a Supabase secret
-
-**Step 4: Test the App**
-- Sign up for a new account
-- Start chatting with LuxeBot
-- The AI will have full context of your profile and goals
+### Training Philosophy
+- **Discipline**: Consistent habits build wealth
+- **Balance**: Harmony between saving and enjoying life
+- **Patience**: Long-term thinking for lasting results
+- **Wisdom**: Learning from both success and failure
+- **Strength**: Building financial resilience
 
 ## Architecture
 
@@ -128,61 +130,71 @@ VITE_SUPABASE_ANON_KEY=your-anon-key-here
 ```
 src/
 ├── components/
-│   ├── LoginForm.tsx          # Authentication interface
-│   ├── ChatInterface.tsx      # AI chat with LuxeBot
-│   ├── Dashboard.tsx          # Financial overview & charts
-│   └── OnboardingFlow.tsx     # User profiling wizard
+│   ├── LoginForm.tsx          # Dojo entrance
+│   ├── ChatInterface.tsx      # Training with Sensei DoughJo
+│   ├── Dashboard.tsx          # Financial progress overview
+│   └── OnboardingFlow.tsx     # Initial assessment
 ├── hooks/
 │   ├── useAuth.ts            # Authentication logic
-│   ├── useChat.ts            # Chat functionality with AI
-│   ├── useGoals.ts           # Goals management
+│   ├── useChat.ts            # Chat with AI sensei
+│   ├── useGoals.ts           # Financial quest management
 │   └── useUserProfile.ts     # User profile & XP
 ├── lib/
 │   └── supabase.ts           # Supabase client configuration
-└── App.tsx                   # Main application component
+└── App.tsx                   # Main dojo application
 ```
 
 ### Database Schema
-- **users**: User profiles and authentication
-- **goals**: Financial goal tracking
-- **chat_logs**: Complete conversation history
-- **xp**: Gamification system (points and badges)
+- **users**: Warrior profiles and authentication
+- **goals**: Financial quests and objectives
+- **chat_logs**: Complete training conversation history
+- **xp**: Progression system (points, badges, belt ranks)
 
 ### Edge Functions
 - **chat-ai**: Handles OpenAI API integration with full user context
 
 ## Key Features Explained
 
-### Conversational AI
-The core of LuxeFi is the conversational interface where users interact with LuxeBot through natural language. The AI has access to:
-- Complete user financial profile
+### Conversational AI Sensei
+The heart of DoughJo is the conversational interface where users train with Sensei DoughJo through natural language. The AI has access to:
+- Complete user financial profile and belt rank
 - Real-time goal progress and targets
-- Full conversation history for context
+- Full conversation history for context continuity
 - User XP level and achievement data
-- Personalized financial advice based on user data
+- Personalized financial advice based on martial arts philosophy
 
-### Context-Aware Responses
+### Context-Aware Training
 Every AI response is generated with full context including:
-- User demographics and preferences
-- Current financial goals and progress
-- XP level and badges earned
-- Previous conversations for continuity
-- Personalized advice based on financial situation
+- User demographics and financial situation
+- Current belt rank and XP level
+- Progress toward financial quests
+- Previous training sessions for continuity
+- Personalized advice combining ancient wisdom with modern strategy
 
-### Gamification System
-Users earn XP for various actions:
+### Progression System
+Users earn XP for various training activities:
 - Completing registration: +100 XP (Welcome badge)
 - Each chat interaction: +5 XP
-- Setting up goals: +50 XP
+- Setting up financial quests: +50 XP
 - Reaching milestones: Variable XP
 
-Levels increase every 100 XP, with visual feedback throughout the interface.
+Belt ranks increase based on total XP, with visual feedback throughout the dojo.
 
-### Offline Mode
-The app gracefully handles situations where:
-- Supabase is not configured (uses mock data)
-- OpenAI API is unavailable (uses contextual fallback responses)
-- Network connectivity issues (local state management)
+## Sensei DoughJo's Teachings
+
+### Core Principles
+1. **"The way of the warrior is to stop trouble before it starts"** - Emergency fund wisdom
+2. **"A thousand-mile journey begins with a single step"** - Starting small with investments
+3. **"The bamboo that bends is stronger than the oak that resists"** - Adapting to market changes
+4. **"Empty your cup so that it may be filled"** - Learning new financial concepts
+5. **"The best time to plant a tree was 20 years ago. The second best time is now"** - Starting to invest
+
+### Training Methods
+- **Kata Practice**: Repetitive good financial habits
+- **Sparring**: Discussing financial scenarios and solutions
+- **Meditation**: Mindful spending and reflection
+- **Forms**: Structured approaches to budgeting and investing
+- **Philosophy**: Understanding the deeper meaning of financial wellness
 
 ## Troubleshooting
 
@@ -192,7 +204,7 @@ The app gracefully handles situations where:
 - Make sure your `.env` file has valid Supabase credentials
 - Check that URLs start with `https://` and contain `.supabase.co`
 
-**2. AI Not Responding**
+**2. Sensei Not Responding**
 - Verify OpenAI API key is set in Supabase secrets
 - Check Edge Function deployment status
 - Look at browser console for error messages
@@ -202,36 +214,6 @@ The app gracefully handles situations where:
 - Check that RLS policies are properly configured
 - Verify user authentication is working
 
-**4. Edge Function Deployment**
-```bash
-# Check function status
-supabase functions list
-
-# View function logs
-supabase functions logs chat-ai
-
-# Redeploy if needed
-supabase functions deploy chat-ai --no-verify-jwt
-```
-
-## Deployment
-
-### Netlify Deployment
-The app is configured for easy Netlify deployment:
-
-```bash
-npm run build
-```
-
-The build output in `dist/` can be deployed to any static hosting service.
-
-### Environment Variables for Production
-Make sure to set these environment variables in your deployment platform:
-- `VITE_SUPABASE_URL`
-- `VITE_SUPABASE_ANON_KEY`
-
-The OpenAI API key should be set in your Supabase Edge Function secrets, not as a client-side environment variable.
-
 ## Contributing
 
 1. Fork the repository
@@ -239,6 +221,12 @@ The OpenAI API key should be set in your Supabase Edge Function secrets, not as 
 3. Commit changes: `git commit -m 'Add feature'`
 4. Push to branch: `git push origin feature-name`
 5. Submit a pull request
+
+## The DoughJo Philosophy
+
+*"In the dojo of finance, every dollar is a student, every decision a lesson, and every goal a belt to earn. Train with discipline, invest with wisdom, and let compound interest be your greatest technique."*
+
+**- Sensei DoughJo** 🥋💰
 
 ## License
 
