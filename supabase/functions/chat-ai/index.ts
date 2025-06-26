@@ -98,26 +98,28 @@ Guidelines:
 
 Current user message: "${message}"`
 
-    // Check if OpenAI API key is available
-    const openAIKey = Deno.env.get('OPENAI_API_KEY')
-    console.log('OpenAI API key available:', !!openAIKey)
+    // Check if OpenRouter API key is available
+    const openRouterKey = Deno.env.get('OPENROUTER_API_KEY')
+    console.log('OpenRouter API key available:', !!openRouterKey)
     
-    if (!openAIKey) {
-      console.log('OpenAI API key not found, using fallback response')
-      throw new Error('OpenAI API key not configured')
+    if (!openRouterKey) {
+      console.log('OpenRouter API key not found, using fallback response')
+      throw new Error('OpenRouter API key not configured')
     }
 
-    console.log('Calling OpenAI API...')
+    console.log('Calling OpenRouter API...')
 
-    // Call OpenAI API
-    const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+    // Call OpenRouter API
+    const openRouterResponse = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${openAIKey}`,
+        'Authorization': `Bearer ${openRouterKey}`,
         'Content-Type': 'application/json',
+        'HTTP-Referer': 'https://luxefi.app', // Optional: your app's URL
+        'X-Title': 'LuxeFi AI Financial Concierge', // Optional: your app's name
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini', // Using the more cost-effective model
+        model: 'anthropic/claude-3.5-haiku', // Fast and cost-effective model
         messages: [
           {
             role: 'system',
@@ -133,18 +135,18 @@ Current user message: "${message}"`
       }),
     })
 
-    console.log('OpenAI response status:', openAIResponse.status)
+    console.log('OpenRouter response status:', openRouterResponse.status)
 
-    if (!openAIResponse.ok) {
-      const errorText = await openAIResponse.text()
-      console.error(`OpenAI API error: ${openAIResponse.status} - ${errorText}`)
-      throw new Error(`OpenAI API error: ${openAIResponse.status} - ${errorText}`)
+    if (!openRouterResponse.ok) {
+      const errorText = await openRouterResponse.text()
+      console.error(`OpenRouter API error: ${openRouterResponse.status} - ${errorText}`)
+      throw new Error(`OpenRouter API error: ${openRouterResponse.status} - ${errorText}`)
     }
 
-    const openAIData = await openAIResponse.json()
-    console.log('OpenAI response received')
+    const openRouterData = await openRouterResponse.json()
+    console.log('OpenRouter response received')
     
-    const aiResponse = openAIData.choices[0]?.message?.content || "I'm sorry, I couldn't process that request right now. Please try again."
+    const aiResponse = openRouterData.choices[0]?.message?.content || "I'm sorry, I couldn't process that request right now. Please try again."
 
     console.log('Sending response back to client')
 
