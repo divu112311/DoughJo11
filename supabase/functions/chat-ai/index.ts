@@ -107,19 +107,19 @@ Current user message: "${message}"`
       throw new Error('OpenRouter API key not configured')
     }
 
-    console.log('Calling OpenRouter API...')
+    console.log('Calling OpenRouter API with free model...')
 
-    // Call OpenRouter API
+    // Call OpenRouter API with free model
     const openRouterResponse = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${openRouterKey}`,
         'Content-Type': 'application/json',
-        'HTTP-Referer': 'https://luxefi.app', // Optional: your app's URL
-        'X-Title': 'LuxeFi AI Financial Concierge', // Optional: your app's name
+        'HTTP-Referer': 'https://luxefi.app',
+        'X-Title': 'LuxeFi AI Financial Concierge',
       },
       body: JSON.stringify({
-        model: 'anthropic/claude-3.5-haiku', // Fast and cost-effective model
+        model: 'meta-llama/llama-3.1-8b-instruct:free', // Free model with 20 requests/minute
         messages: [
           {
             role: 'system',
@@ -140,13 +140,53 @@ Current user message: "${message}"`
     if (!openRouterResponse.ok) {
       const errorText = await openRouterResponse.text()
       console.error(`OpenRouter API error: ${openRouterResponse.status} - ${errorText}`)
+      
+      // If rate limited on free model, try another free model
+      if (openRouterResponse.status === 429) {
+        console.log('Rate limited on primary free model, trying backup...')
+        
+        const backupResponse = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${openRouterKey}`,
+            'Content-Type': 'application/json',
+            'HTTP-Referer': 'https://luxefi.app',
+            'X-Title': 'LuxeFi AI Financial Concierge',
+          },
+          body: JSON.stringify({
+            model: 'google/gemma-2-9b-it:free', // Alternative free model
+            messages: [
+              {
+                role: 'user',
+                content: `${systemPrompt}\n\nUser message: ${message}`
+              }
+            ],
+            max_tokens: 300,
+            temperature: 0.7,
+          }),
+        })
+        
+        if (backupResponse.ok) {
+          const backupData = await backupResponse.json()
+          const aiResponse = backupData.choices[0]?.message?.content || "I'm here to help with your financial goals!"
+          
+          return new Response(
+            JSON.stringify({ response: aiResponse }),
+            {
+              headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+              status: 200,
+            },
+          )
+        }
+      }
+      
       throw new Error(`OpenRouter API error: ${openRouterResponse.status} - ${errorText}`)
     }
 
     const openRouterData = await openRouterResponse.json()
     console.log('OpenRouter response received')
     
-    const aiResponse = openRouterData.choices[0]?.message?.content || "I'm sorry, I couldn't process that request right now. Please try again."
+    const aiResponse = openRouterData.choices[0]?.message?.content || "I'm here to help with your financial goals!"
 
     console.log('Sending response back to client')
 
