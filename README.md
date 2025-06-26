@@ -6,14 +6,13 @@ A sophisticated AI-powered personal finance application designed for young profe
 
 ### 🤖 AI-Native Experience
 - **Conversational Interface**: Primary interaction through natural language chat with LuxeBot
-- **Context-Aware AI**: GPT-4 integration with full financial context and chat history
+- **Context-Aware AI**: OpenAI GPT-4 integration with full financial context and chat history
 - **Dynamic Responses**: Personalized advice based on user profile, spending patterns, and goals
 
 ### 💰 Financial Management
-- **Account Linking**: Simulated banking integration with multiple account types
-- **Transaction Categorization**: Automatic spending categorization and analysis
 - **Goal Tracking**: Visual progress tracking for financial objectives
 - **Smart Insights**: AI-generated spending analysis and recommendations
+- **User Profiles**: Comprehensive user management with XP and badges
 
 ### 🎮 Gamification
 - **XP System**: Earn experience points for financial interactions
@@ -31,9 +30,8 @@ A sophisticated AI-powered personal finance application designed for young profe
 
 - **Frontend**: React 18 + TypeScript + Vite
 - **Styling**: Tailwind CSS + Framer Motion
-- **Backend**: Node.js + Express
-- **Database**: SQLite (better-sqlite3)
-- **AI**: OpenAI GPT-4 API
+- **Backend**: Supabase (Database + Auth + Edge Functions)
+- **AI**: OpenAI GPT-4 API via Supabase Edge Functions
 - **Charts**: Recharts for data visualization
 - **Icons**: Lucide React
 
@@ -41,7 +39,8 @@ A sophisticated AI-powered personal finance application designed for young profe
 
 ### Prerequisites
 - Node.js 18+ 
-- OpenAI API key (optional - falls back to mock responses)
+- Supabase account
+- OpenAI API key
 
 ### Installation
 
@@ -56,23 +55,43 @@ cd luxefi-app
 npm install
 ```
 
-3. Set up environment variables (optional):
+3. Set up environment variables:
 ```bash
-# Create .env file in the root directory
-OPENAI_API_KEY=your_openai_api_key_here
-JWT_SECRET=your_jwt_secret_here
+# Copy the example file
+cp .env.example .env
+
+# Edit .env with your actual values:
+VITE_SUPABASE_URL=your_supabase_project_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+OPENAI_API_KEY=your_openai_api_key
 ```
 
-4. Start the development servers:
+4. Set up Supabase:
+   - Create a new Supabase project
+   - Run the migrations in the `supabase/migrations` folder
+   - Deploy the Edge Function in `supabase/functions/chat-ai`
+   - Add your OpenAI API key to Supabase Edge Function secrets
+
+5. Start the development server:
 ```bash
 npm run dev
 ```
 
-This will start both the React client (port 5173) and Express server (port 3001) concurrently.
+### Supabase Setup
 
-### Demo Account
-- **Email**: demo@luxefi.com
-- **Password**: demo123
+1. **Create Project**: Go to [supabase.com](https://supabase.com) and create a new project
+2. **Get Credentials**: Copy your project URL and anon key from Settings > API
+3. **Run Migrations**: The database schema is already defined in the migrations folder
+4. **Deploy Edge Function**: Deploy the chat-ai function for OpenAI integration
+5. **Set Secrets**: Add your OpenAI API key as a secret in Supabase
+
+### Environment Variables
+
+Required environment variables:
+
+- `VITE_SUPABASE_URL`: Your Supabase project URL
+- `VITE_SUPABASE_ANON_KEY`: Your Supabase anonymous key
+- `OPENAI_API_KEY`: Your OpenAI API key (for Edge Function)
 
 ## Architecture
 
@@ -84,80 +103,67 @@ src/
 │   ├── ChatInterface.tsx      # AI chat with LuxeBot
 │   ├── Dashboard.tsx          # Financial overview & charts
 │   └── OnboardingFlow.tsx     # User profiling wizard
-├── types/
-│   └── index.ts              # TypeScript interfaces
+├── hooks/
+│   ├── useAuth.ts            # Authentication logic
+│   ├── useChat.ts            # Chat functionality
+│   ├── useGoals.ts           # Goals management
+│   └── useUserProfile.ts     # User profile & XP
+├── lib/
+│   └── supabase.ts           # Supabase client configuration
 └── App.tsx                   # Main application component
 ```
 
-### Backend Structure
-```
-server/
-├── index.js                  # Express server with all routes
-└── luxefi.db                # SQLite database (auto-created)
-```
-
 ### Database Schema
-- **users**: User profiles, XP, levels, badges
-- **accounts**: Bank/investment account information
-- **transactions**: Financial transaction history
-- **goals**: User-defined financial objectives
-- **chat_messages**: Complete conversation history
+- **users**: User profiles and authentication
+- **goals**: Financial goal tracking
+- **chat_logs**: Complete conversation history
+- **xp**: Gamification system (points and badges)
+
+### Edge Functions
+- **chat-ai**: Handles OpenAI API integration with user context
 
 ## Key Features Explained
 
 ### Conversational AI
 The core of LuxeFi is the conversational interface where users interact with LuxeBot through natural language. The AI has access to:
 - Complete user financial profile
-- Real-time account balances and transactions
-- Goal progress and targets
+- Real-time goal progress
 - Full conversation history for context
+- User XP and achievement data
 
 ### Context-Aware Responses
 Every AI response is generated with full context including:
 - User demographics and preferences
-- Current financial situation
-- Recent spending patterns
-- Progress toward goals
+- Current financial goals and progress
+- XP level and badges earned
 - Previous conversations
 
 ### Gamification System
 Users earn XP for various actions:
-- Completing onboarding: +100 XP
+- Completing registration: +100 XP
 - Each chat interaction: +5 XP
 - Setting up goals: +50 XP
-- Account connections: +25 XP (simulated)
+- Reaching milestones: Variable XP
 
 Levels increase every 100 XP, with visual feedback throughout the interface.
 
-### Data Flow
-1. User interacts through chat interface
-2. Frontend sends message to backend API
-3. Backend compiles full user context from database
-4. Context + message sent to OpenAI API (or mock response)
-5. AI response saved to database and returned to frontend
-6. XP awarded and UI updated with response
+## Deployment
 
-## Customization
+### Netlify Deployment
+The app is configured for easy Netlify deployment:
 
-### Adding New Account Types
-Modify the `generateMockData` function in `server/index.js` to include additional account types.
+```bash
+npm run build
+```
 
-### Extending AI Capabilities
-Update the system prompt in the `/api/chat` endpoint to modify LuxeBot's personality and capabilities.
+The build output in `dist/` can be deployed to any static hosting service.
 
-### UI Theming
-Colors and styling can be customized in `tailwind.config.js` and the component-level Tailwind classes.
+### Environment Variables for Production
+Make sure to set these environment variables in your deployment platform:
+- `VITE_SUPABASE_URL`
+- `VITE_SUPABASE_ANON_KEY`
 
-## Production Considerations
-
-For production deployment, consider:
-- Replace SQLite with PostgreSQL or similar production database
-- Implement proper Plaid integration for real banking data
-- Add comprehensive error handling and logging
-- Implement rate limiting and security measures
-- Set up proper environment variable management
-- Add comprehensive testing suite
-- Implement caching for AI responses
+The OpenAI API key should be set in your Supabase Edge Function secrets, not as a client-side environment variable.
 
 ## Contributing
 
