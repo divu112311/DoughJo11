@@ -14,6 +14,10 @@ serve(async (req) => {
   try {
     const { message, userId } = await req.json()
 
+    if (!message || !userId) {
+      throw new Error('Missing required parameters: message and userId')
+    }
+
     // Initialize Supabase client
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
@@ -21,29 +25,17 @@ serve(async (req) => {
     )
 
     // Get user context from database
-    const { data: userData } = await supabaseClient
-      .from('users')
-      .select('*')
-      .eq('id', userId)
-      .single()
+    const [userResult, goalsResult, xpResult, chatsResult] = await Promise.all([
+      supabaseClient.from('users').select('*').eq('id', userId).single(),
+      supabaseClient.from('goals').select('*').eq('user_id', userId),
+      supabaseClient.from('xp').select('*').eq('user_id', userId).single(),
+      supabaseClient.from('chat_logs').select('*').eq('user_id', userId).order('timestamp', { ascending: false }).limit(10)
+    ])
 
-    const { data: goalsData } = await supabaseClient
-      .from('goals')
-      .select('*')
-      .eq('user_id', userId)
-
-    const { data: xpData } = await supabaseClient
-      .from('xp')
-      .select('*')
-      .eq('user_id', userId)
-      .single()
-
-    const { data: recentChats } = await supabaseClient
-      .from('chat_logs')
-      .select('*')
-      .eq('user_id', userId)
-      .order('timestamp', { ascending: false })
-      .limit(10)
+    const userData = userResult.data
+    const goalsData = goalsResult.data || []
+    const xpData = xpResult.data
+    const recentChats = chatsResult.data || []
 
     // Build context for AI
     const userContext = {
@@ -52,8 +44,8 @@ serve(async (req) => {
       level: Math.floor((xpData?.points || 0) / 100) + 1,
       xp: xpData?.points || 0,
       badges: xpData?.badges || [],
-      goals: goalsData || [],
-      recentConversation: recentChats?.reverse() || []
+      goals: goalsData,
+      recentConversation: recentChats.reverse()
     }
 
     // Create system prompt with user context
@@ -94,11 +86,18 @@ Guidelines:
 
 Current user message: "${message}"`
 
+    // Check if OpenAI API key is available
+    const openAIKey = Deno.env.get('OPENAI_API_KEY')
+    if (!openAIKey) {
+      console.log('OpenAI API key not found, using fallback response')
+      throw new Error('OpenAI API key not configured')
+    }
+
     // Call OpenAI API
     const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${Deno.env.get('OPENAI_API_KEY')}`,
+        'Authorization': `Bearer ${openAIKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -119,6 +118,8 @@ Current user message: "${message}"`
     })
 
     if (!openAIResponse.ok) {
+      const errorText = await openAIResponse.text()
+      console.error(`OpenAI API error: ${openAIResponse.status} - ${errorText}`)
       throw new Error(`OpenAI API error: ${openAIResponse.status}`)
     }
 
@@ -134,14 +135,15 @@ Current user message: "${message}"`
     )
 
   } catch (error) {
-    console.error('Error:', error)
+    console.error('Error in chat-ai function:', error)
     
-    // Fallback response
+    // Enhanced fallback responses based on user context
     const fallbackResponses = [
-      "I'm here to help with your financial goals! What would you like to know?",
-      "Great question! Let me help you make the best financial decision.",
-      "I'm experiencing some technical difficulties, but I'm still here to help with your finances!",
-      "That's an interesting point about your financial situation. Let me provide some guidance.",
+      "I'm here to help with your financial goals! What would you like to know about budgeting, saving, or investing?",
+      "Great question! Building good financial habits is the foundation of long-term wealth. What specific area interests you most?",
+      "I'm experiencing some technical difficulties, but I'm still here to help with your financial planning!",
+      "Your financial journey is important. Let me help you make smart decisions about your money.",
+      "I'd love to help you optimize your finances. What's your biggest financial priority right now?"
     ]
     
     const fallbackResponse = fallbackResponses[Math.floor(Math.random() * fallbackResponses.length)]

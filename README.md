@@ -67,31 +67,60 @@ OPENAI_API_KEY=your_openai_api_key
 ```
 
 4. Set up Supabase:
-   - Create a new Supabase project
-   - Run the migrations in the `supabase/migrations` folder
-   - Deploy the Edge Function in `supabase/functions/chat-ai`
-   - Add your OpenAI API key to Supabase Edge Function secrets
+   - Create a new Supabase project at [supabase.com](https://supabase.com)
+   - Copy your project URL and anon key from Settings > API
+   - The database migrations will run automatically
+   - Deploy the Edge Function (see below)
+   - Add your OpenAI API key to Supabase secrets
 
-5. Start the development server:
+5. Deploy the Edge Function:
+```bash
+# Install Supabase CLI
+npm install -g supabase
+
+# Login to Supabase
+supabase login
+
+# Link your project
+supabase link --project-ref YOUR_PROJECT_REF
+
+# Deploy the function
+supabase functions deploy chat-ai
+
+# Set the OpenAI API key as a secret
+supabase secrets set OPENAI_API_KEY=your_openai_api_key_here
+```
+
+6. Start the development server:
 ```bash
 npm run dev
 ```
 
-### Supabase Setup
+### Quick Setup Guide
 
-1. **Create Project**: Go to [supabase.com](https://supabase.com) and create a new project
-2. **Get Credentials**: Copy your project URL and anon key from Settings > API
-3. **Run Migrations**: The database schema is already defined in the migrations folder
-4. **Deploy Edge Function**: Deploy the chat-ai function for OpenAI integration
-5. **Set Secrets**: Add your OpenAI API key as a secret in Supabase
+**Step 1: Supabase Setup**
+1. Go to [supabase.com](https://supabase.com) and create a new project
+2. Wait for the project to be ready (2-3 minutes)
+3. Go to Settings > API and copy:
+   - Project URL
+   - Anon public key
 
-### Environment Variables
+**Step 2: Environment Variables**
+Update your `.env` file:
+```env
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=your-anon-key-here
+```
 
-Required environment variables:
+**Step 3: OpenAI Integration**
+1. Get your OpenAI API key from [platform.openai.com](https://platform.openai.com)
+2. Deploy the Edge Function (see commands above)
+3. Set the OpenAI key as a Supabase secret
 
-- `VITE_SUPABASE_URL`: Your Supabase project URL
-- `VITE_SUPABASE_ANON_KEY`: Your Supabase anonymous key
-- `OPENAI_API_KEY`: Your OpenAI API key (for Edge Function)
+**Step 4: Test the App**
+- Sign up for a new account
+- Start chatting with LuxeBot
+- The AI will have full context of your profile and goals
 
 ## Architecture
 
@@ -105,7 +134,7 @@ src/
 │   └── OnboardingFlow.tsx     # User profiling wizard
 ├── hooks/
 │   ├── useAuth.ts            # Authentication logic
-│   ├── useChat.ts            # Chat functionality
+│   ├── useChat.ts            # Chat functionality with AI
 │   ├── useGoals.ts           # Goals management
 │   └── useUserProfile.ts     # User profile & XP
 ├── lib/
@@ -120,32 +149,70 @@ src/
 - **xp**: Gamification system (points and badges)
 
 ### Edge Functions
-- **chat-ai**: Handles OpenAI API integration with user context
+- **chat-ai**: Handles OpenAI API integration with full user context
 
 ## Key Features Explained
 
 ### Conversational AI
 The core of LuxeFi is the conversational interface where users interact with LuxeBot through natural language. The AI has access to:
 - Complete user financial profile
-- Real-time goal progress
+- Real-time goal progress and targets
 - Full conversation history for context
-- User XP and achievement data
+- User XP level and achievement data
+- Personalized financial advice based on user data
 
 ### Context-Aware Responses
 Every AI response is generated with full context including:
 - User demographics and preferences
 - Current financial goals and progress
 - XP level and badges earned
-- Previous conversations
+- Previous conversations for continuity
+- Personalized advice based on financial situation
 
 ### Gamification System
 Users earn XP for various actions:
-- Completing registration: +100 XP
+- Completing registration: +100 XP (Welcome badge)
 - Each chat interaction: +5 XP
 - Setting up goals: +50 XP
 - Reaching milestones: Variable XP
 
 Levels increase every 100 XP, with visual feedback throughout the interface.
+
+### Offline Mode
+The app gracefully handles situations where:
+- Supabase is not configured (uses mock data)
+- OpenAI API is unavailable (uses contextual fallback responses)
+- Network connectivity issues (local state management)
+
+## Troubleshooting
+
+### Common Issues
+
+**1. "Invalid URL" Error**
+- Make sure your `.env` file has valid Supabase credentials
+- Check that URLs start with `https://` and contain `.supabase.co`
+
+**2. AI Not Responding**
+- Verify OpenAI API key is set in Supabase secrets
+- Check Edge Function deployment status
+- Look at browser console for error messages
+
+**3. Database Connection Issues**
+- Confirm Supabase project is active
+- Check that RLS policies are properly configured
+- Verify user authentication is working
+
+**4. Edge Function Deployment**
+```bash
+# Check function status
+supabase functions list
+
+# View function logs
+supabase functions logs chat-ai
+
+# Redeploy if needed
+supabase functions deploy chat-ai --no-verify-jwt
+```
 
 ## Deployment
 
