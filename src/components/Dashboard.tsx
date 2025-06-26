@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { User } from '@supabase/supabase-js';
 import { useGoals } from '../hooks/useGoals';
+import BankAccounts from './BankAccounts';
 
 interface DashboardProps {
   user: User;
@@ -155,11 +156,20 @@ const Dashboard: React.FC<DashboardProps> = ({ user, xp }) => {
         </motion.div>
       </div>
 
-      {/* Goals Section */}
+      {/* Bank Accounts Section */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5 }}
+      >
+        <BankAccounts user={user} />
+      </motion.div>
+
+      {/* Goals Section */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.6 }}
         className="bg-white rounded-xl p-6 shadow-sm border border-gray-200"
       >
         <div className="flex justify-between items-center mb-4">
@@ -230,7 +240,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user, xp }) => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
+          transition={{ delay: 0.7 }}
           className="bg-white rounded-xl p-6 shadow-sm border border-gray-200"
         >
           <h3 className="text-lg font-semibold text-[#333333] mb-4">Earned Achievements</h3>
@@ -240,7 +250,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user, xp }) => {
                 key={index}
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.7 + index * 0.1 }}
+                transition={{ delay: 0.8 + index * 0.1 }}
                 className="flex items-center space-x-2 bg-gradient-to-r from-[#2A6F68] to-[#B76E79] text-white px-3 py-2 rounded-full text-sm"
               >
                 <Award className="h-4 w-4" />

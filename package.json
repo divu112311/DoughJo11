@@ -17,7 +17,8 @@
     "framer-motion": "^10.16.16",
     "recharts": "^2.8.0",
     "date-fns": "^2.30.0",
-    "openai": "^4.24.1"
+    "openai": "^4.24.1",
+    "react-plaid-link": "^3.5.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.1",
