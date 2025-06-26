@@ -12,7 +12,10 @@ serve(async (req) => {
   }
 
   try {
+    console.log('Edge function called with method:', req.method)
+    
     const { message, userId } = await req.json()
+    console.log('Received message:', message, 'for user:', userId)
 
     if (!message || !userId) {
       throw new Error('Missing required parameters: message and userId')
@@ -23,6 +26,8 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_ANON_KEY') ?? '',
     )
+
+    console.log('Fetching user context...')
 
     // Get user context from database
     const [userResult, goalsResult, xpResult, chatsResult] = await Promise.all([
@@ -36,6 +41,13 @@ serve(async (req) => {
     const goalsData = goalsResult.data || []
     const xpData = xpResult.data
     const recentChats = chatsResult.data || []
+
+    console.log('User data fetched:', {
+      user: userData?.full_name,
+      goals: goalsData.length,
+      xp: xpData?.points,
+      chats: recentChats.length
+    })
 
     // Build context for AI
     const userContext = {
@@ -88,10 +100,14 @@ Current user message: "${message}"`
 
     // Check if OpenAI API key is available
     const openAIKey = Deno.env.get('OPENAI_API_KEY')
+    console.log('OpenAI API key available:', !!openAIKey)
+    
     if (!openAIKey) {
       console.log('OpenAI API key not found, using fallback response')
       throw new Error('OpenAI API key not configured')
     }
+
+    console.log('Calling OpenAI API...')
 
     // Call OpenAI API
     const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -101,7 +117,7 @@ Current user message: "${message}"`
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4',
+        model: 'gpt-4o-mini', // Using the more cost-effective model
         messages: [
           {
             role: 'system',
@@ -117,14 +133,20 @@ Current user message: "${message}"`
       }),
     })
 
+    console.log('OpenAI response status:', openAIResponse.status)
+
     if (!openAIResponse.ok) {
       const errorText = await openAIResponse.text()
       console.error(`OpenAI API error: ${openAIResponse.status} - ${errorText}`)
-      throw new Error(`OpenAI API error: ${openAIResponse.status}`)
+      throw new Error(`OpenAI API error: ${openAIResponse.status} - ${errorText}`)
     }
 
     const openAIData = await openAIResponse.json()
+    console.log('OpenAI response received')
+    
     const aiResponse = openAIData.choices[0]?.message?.content || "I'm sorry, I couldn't process that request right now. Please try again."
+
+    console.log('Sending response back to client')
 
     return new Response(
       JSON.stringify({ response: aiResponse }),
@@ -149,7 +171,11 @@ Current user message: "${message}"`
     const fallbackResponse = fallbackResponses[Math.floor(Math.random() * fallbackResponses.length)]
 
     return new Response(
-      JSON.stringify({ response: fallbackResponse }),
+      JSON.stringify({ 
+        response: fallbackResponse,
+        error: error.message,
+        debug: 'Function executed but encountered an error'
+      }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 200,
