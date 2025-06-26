@@ -59,11 +59,23 @@ export const useChat = (user: User | null) => {
       // Update local state immediately
       setMessages(prev => [...prev, userMessage]);
 
-      // Generate AI response (mock for now)
-      const aiResponse = generateMockResponse(message);
+      // Call OpenAI API through Supabase Edge Function
+      const { data: aiResponseData, error: aiError } = await supabase.functions.invoke('chat-ai', {
+        body: {
+          message: message.trim(),
+          userId: user.id,
+        },
+      });
+
+      if (aiError) {
+        console.error('AI API Error:', aiError);
+        throw aiError;
+      }
+
+      const aiResponse = aiResponseData?.response || generateFallbackResponse();
 
       // Add AI response to database
-      const { data: aiMessage, error: aiError } = await supabase
+      const { data: aiMessage, error: aiMessageError } = await supabase
         .from('chat_logs')
         .insert({
           user_id: user.id,
@@ -73,7 +85,7 @@ export const useChat = (user: User | null) => {
         .select()
         .single();
 
-      if (aiError) throw aiError;
+      if (aiMessageError) throw aiMessageError;
 
       // Update local state with AI response
       setMessages(prev => [...prev, aiMessage]);
@@ -85,18 +97,34 @@ export const useChat = (user: User | null) => {
 
     } catch (error) {
       console.error('Error sending message:', error);
+      
+      // Add fallback response on error
+      const fallbackResponse = generateFallbackResponse();
+      const { data: fallbackMessage } = await supabase
+        .from('chat_logs')
+        .insert({
+          user_id: user.id,
+          message: fallbackResponse,
+          sender: 'assistant',
+        })
+        .select()
+        .single();
+
+      if (fallbackMessage) {
+        setMessages(prev => [...prev, fallbackMessage]);
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  const generateMockResponse = (userMessage: string): string => {
+  const generateFallbackResponse = (): string => {
     const responses = [
-      "That's a great question! Based on your financial profile, I'd recommend focusing on building your emergency fund first.",
-      "I can see you're making good progress with your savings goals. Have you considered automating your investments?",
-      "Your spending patterns look healthy overall. Let me help you optimize your budget for better returns.",
-      "I notice you're interested in investing. Would you like me to explain some beginner-friendly investment options?",
-      "Great job on staying engaged with your finances! Consistency is key to building wealth over time."
+      "I'm here to help with your financial goals! What would you like to know about budgeting, saving, or investing?",
+      "Great question! While I process that, remember that building good financial habits is key to long-term success.",
+      "I'm experiencing some technical difficulties, but I'm still here to help you make smart financial decisions!",
+      "Let me help you with your financial planning. What specific area would you like to focus on today?",
+      "Your financial journey is important to me. How can I assist you in reaching your goals today?"
     ];
     
     return responses[Math.floor(Math.random() * responses.length)];

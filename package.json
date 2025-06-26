@@ -16,7 +16,8 @@
     "react-dom": "^18.3.1",
     "framer-motion": "^10.16.16",
     "recharts": "^2.8.0",
-    "date-fns": "^2.30.0"
+    "date-fns": "^2.30.0",
+    "openai": "^4.24.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.1",
