@@ -20,7 +20,9 @@ import {
   Home,
   Briefcase,
   ArrowUpRight,
-  ArrowDownRight
+  ArrowDownRight,
+  RefreshCw,
+  Settings
 } from 'lucide-react';
 import { User } from '@supabase/supabase-js';
 import { useChat } from '../hooks/useChat';
@@ -73,7 +75,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, onXPUpdate }) => {
       value: '7.2/10',
       status: 'good',
       icon: Activity,
-      color: 'text-blue-600'
+      color: 'text-[#2A6F68]'
     },
     {
       label: 'Debt Ratio',
@@ -81,7 +83,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, onXPUpdate }) => {
       target: '18%',
       status: 'warning',
       icon: CreditCard,
-      color: 'text-orange-600'
+      color: 'text-[#B76E79]'
     },
     {
       label: 'Emergency Fund',
@@ -97,7 +99,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, onXPUpdate }) => {
       target: '15%+',
       status: 'good',
       icon: TrendingUp,
-      color: 'text-green-600'
+      color: 'text-[#2A6F68]'
     }
   ];
 
@@ -107,7 +109,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, onXPUpdate }) => {
       label: 'Analyze debt consolidation options',
       description: 'Find ways to reduce interest payments',
       icon: Calculator,
-      color: 'bg-red-500',
+      color: 'bg-gradient-to-r from-[#B76E79] to-rose-500',
       action: () => handleQuickAction('Analyze my debt consolidation options and show potential savings')
     },
     {
@@ -115,7 +117,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, onXPUpdate }) => {
       label: 'Review investment portfolio',
       description: 'Optimize your asset allocation',
       icon: BarChart3,
-      color: 'bg-blue-500',
+      color: 'bg-gradient-to-r from-[#2A6F68] to-emerald-500',
       action: () => handleQuickAction('Review my investment portfolio and suggest optimizations')
     },
     {
@@ -123,7 +125,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, onXPUpdate }) => {
       label: 'Plan emergency fund strategy',
       description: 'Build financial security',
       icon: Shield,
-      color: 'bg-green-500',
+      color: 'bg-gradient-to-r from-blue-500 to-indigo-500',
       action: () => handleQuickAction('Help me create a plan to build my emergency fund to 6 months of expenses')
     },
     {
@@ -131,7 +133,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, onXPUpdate }) => {
       label: 'Calculate house purchase timeline',
       description: 'Plan for homeownership',
       icon: Home,
-      color: 'bg-purple-500',
+      color: 'bg-gradient-to-r from-purple-500 to-violet-500',
       action: () => handleQuickAction('Calculate when I can afford to buy a house and what I need to save')
     },
     {
@@ -139,7 +141,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, onXPUpdate }) => {
       label: 'Optimize tax withholdings',
       description: 'Maximize your take-home pay',
       icon: Briefcase,
-      color: 'bg-indigo-500',
+      color: 'bg-gradient-to-r from-orange-500 to-red-500',
       action: () => handleQuickAction('Analyze my tax situation and suggest optimization strategies')
     }
   ];
@@ -187,17 +189,17 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, onXPUpdate }) => {
 
   const getStatusColor = (status: 'good' | 'warning' | 'critical') => {
     switch (status) {
-      case 'good': return 'text-green-600';
-      case 'warning': return 'text-orange-600';
+      case 'good': return 'text-[#2A6F68]';
+      case 'warning': return 'text-[#B76E79]';
       case 'critical': return 'text-red-600';
     }
   };
 
   const getStatusBg = (status: 'good' | 'warning' | 'critical') => {
     switch (status) {
-      case 'good': return 'bg-green-100';
-      case 'warning': return 'bg-orange-100';
-      case 'critical': return 'bg-red-100';
+      case 'good': return 'bg-[#2A6F68]/10';
+      case 'warning': return 'bg-[#B76E79]/10';
+      case 'critical': return 'bg-red-50';
     }
   };
 
@@ -218,33 +220,33 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, onXPUpdate }) => {
         )}
       </AnimatePresence>
 
-      {/* Sidebar */}
+      {/* Sidebar - Financial AI Section */}
       <AnimatePresence>
         {showSidebar && (
           <motion.div
             initial={{ x: -300, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: -300, opacity: 0 }}
-            className="w-80 bg-white rounded-2xl shadow-sm border border-gray-200 p-6 space-y-6 overflow-y-auto"
+            className="w-80 bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden"
           >
-            {/* AI Status */}
-            <div className="bg-gray-50 rounded-xl p-4">
+            {/* AI Status Header */}
+            <div className="bg-gradient-to-r from-[#2A6F68] to-[#B76E79] p-4 text-white">
               <div className="flex items-center space-x-3 mb-2">
-                <div className="w-8 h-8 bg-gradient-to-br from-[#2A6F68] to-[#B76E79] rounded-full flex items-center justify-center">
+                <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
                   <img 
                     src="/finapp.png" 
-                    alt="DoughJo AI" 
+                    alt="Financial AI" 
                     className="w-6 h-6 object-contain"
                   />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-[#333333]">AI Status</h3>
+                  <h3 className="font-semibold">Financial AI</h3>
                   <div className="flex items-center space-x-2">
                     <div className={`w-2 h-2 rounded-full ${
-                      aiStatus === 'idle' ? 'bg-green-500' : 'bg-blue-500'
+                      aiStatus === 'idle' ? 'bg-green-400' : 'bg-blue-400'
                     }`} />
-                    <span className="text-sm text-gray-600">
-                      {aiStatus === 'idle' ? 'Ready' : 
+                    <span className="text-sm text-white/90">
+                      {aiStatus === 'idle' ? 'Active' : 
                        aiStatus === 'analyzing' ? 'Analyzing...' : 'Running calculations...'}
                     </span>
                   </div>
@@ -252,123 +254,140 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, onXPUpdate }) => {
               </div>
             </div>
 
-            {/* Financial Health */}
-            <div>
-              <h3 className="font-semibold text-[#333333] mb-4">Financial Health</h3>
-              <div className="space-y-3">
-                {financialMetrics.map((metric, index) => {
-                  const IconComponent = metric.icon;
-                  return (
-                    <motion.div
-                      key={metric.label}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.1 }}
-                      className={`p-3 rounded-lg ${getStatusBg(metric.status)} border border-gray-200`}
-                    >
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-center space-x-2">
-                          <IconComponent className={`h-4 w-4 ${getStatusColor(metric.status)}`} />
-                          <span className="text-sm font-medium text-[#333333]">{metric.label}</span>
-                        </div>
-                        <span className={`text-sm font-bold ${getStatusColor(metric.status)}`}>
-                          {metric.value}
-                        </span>
-                      </div>
-                      {metric.target && (
-                        <div className="text-xs text-gray-600">
-                          Target: {metric.target}
-                        </div>
-                      )}
-                      {metric.label === 'Overall Score' && (
-                        <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-                          <div className="bg-blue-600 h-2 rounded-full" style={{ width: '72%' }} />
-                        </div>
-                      )}
-                      {metric.label === 'Debt Ratio' && (
-                        <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-                          <div className="bg-orange-500 h-2 rounded-full" style={{ width: '33%' }} />
-                        </div>
-                      )}
-                      {metric.label === 'Emergency Fund' && (
-                        <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-                          <div className="bg-red-500 h-2 rounded-full" style={{ width: '25%' }} />
-                        </div>
-                      )}
-                    </motion.div>
-                  );
-                })}
+            <div className="p-6 space-y-6 max-h-[calc(100vh-300px)] overflow-y-auto">
+              {/* User Analysis Header */}
+              <div className="text-center">
+                <h4 className="text-lg font-bold text-[#333333] mb-1">
+                  {user.user_metadata?.full_name || 'Your'} Financial Analysis
+                </h4>
+                <div className="text-sm text-gray-600 space-y-1">
+                  <div>Net Worth: $22,000 • Monthly Savings: $1,883</div>
+                  <div>Goals: {goals.length} active</div>
+                  <div className="flex items-center justify-center space-x-2 mt-2">
+                    <div className="w-2 h-2 bg-green-500 rounded-full" />
+                    <span className="text-xs">AI analyzing in real-time</span>
+                  </div>
+                </div>
               </div>
-            </div>
 
-            {/* Quick Actions */}
-            <div>
-              <h3 className="font-semibold text-[#333333] mb-4">Quick Actions</h3>
-              <div className="space-y-2">
-                {quickActions.map((action, index) => {
-                  const IconComponent = action.icon;
-                  return (
-                    <motion.button
-                      key={action.id}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.1 }}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={action.action}
-                      disabled={loading || aiStatus !== 'idle'}
-                      className="w-full text-left p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors border border-gray-200 disabled:opacity-50"
-                    >
-                      <div className="flex items-start space-x-3">
-                        <div className={`w-8 h-8 ${action.color} rounded-lg flex items-center justify-center flex-shrink-0`}>
-                          <IconComponent className="h-4 w-4 text-white" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="text-sm font-medium text-[#333333] mb-1">
-                            {action.label}
-                          </div>
-                          <div className="text-xs text-gray-600">
-                            {action.description}
-                          </div>
-                        </div>
-                      </div>
-                    </motion.button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Goals Summary */}
-            {goals.length > 0 && (
+              {/* Financial Health */}
               <div>
-                <h3 className="font-semibold text-[#333333] mb-4">Active Goals</h3>
-                <div className="space-y-2">
-                  {goals.slice(0, 3).map((goal) => {
-                    const progress = goal.target_amount 
-                      ? ((goal.saved_amount || 0) / goal.target_amount) * 100 
-                      : 0;
-                    
+                <h3 className="font-semibold text-[#333333] mb-4">Financial Health</h3>
+                <div className="space-y-3">
+                  {financialMetrics.map((metric, index) => {
+                    const IconComponent = metric.icon;
                     return (
-                      <div key={goal.id} className="p-3 bg-gray-50 rounded-lg border border-gray-200">
+                      <motion.div
+                        key={metric.label}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.1 }}
+                        className={`p-3 rounded-lg ${getStatusBg(metric.status)} border border-gray-200`}
+                      >
                         <div className="flex items-center justify-between mb-2">
-                          <span className="text-sm font-medium text-[#333333]">{goal.name}</span>
-                          <span className="text-xs text-gray-600">{progress.toFixed(0)}%</span>
+                          <div className="flex items-center space-x-2">
+                            <IconComponent className={`h-4 w-4 ${getStatusColor(metric.status)}`} />
+                            <span className="text-sm font-medium text-[#333333]">{metric.label}</span>
+                          </div>
+                          <span className={`text-sm font-bold ${getStatusColor(metric.status)}`}>
+                            {metric.value}
+                          </span>
                         </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2">
-                          <div 
-                            className="bg-gradient-to-r from-[#2A6F68] to-[#B76E79] h-2 rounded-full transition-all duration-500"
-                            style={{ width: `${Math.min(progress, 100)}%` }}
-                          />
-                        </div>
-                        <div className="text-xs text-gray-600 mt-1">
-                          ${(goal.saved_amount || 0).toLocaleString()} / ${(goal.target_amount || 0).toLocaleString()}
-                        </div>
-                      </div>
+                        {metric.target && (
+                          <div className="text-xs text-gray-600">
+                            Target: {metric.target}
+                          </div>
+                        )}
+                        {metric.label === 'Overall Score' && (
+                          <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                            <div className="bg-[#2A6F68] h-2 rounded-full" style={{ width: '72%' }} />
+                          </div>
+                        )}
+                        {metric.label === 'Debt Ratio' && (
+                          <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                            <div className="bg-[#B76E79] h-2 rounded-full" style={{ width: '33%' }} />
+                          </div>
+                        )}
+                        {metric.label === 'Emergency Fund' && (
+                          <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                            <div className="bg-red-500 h-2 rounded-full" style={{ width: '25%' }} />
+                          </div>
+                        )}
+                      </motion.div>
                     );
                   })}
                 </div>
               </div>
-            )}
+
+              {/* Quick Actions */}
+              <div>
+                <h3 className="font-semibold text-[#333333] mb-4">Quick Actions</h3>
+                <div className="space-y-2">
+                  {quickActions.map((action, index) => {
+                    const IconComponent = action.icon;
+                    return (
+                      <motion.button
+                        key={action.id}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.1 }}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={action.action}
+                        disabled={loading || aiStatus !== 'idle'}
+                        className="w-full text-left p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors border border-gray-200 disabled:opacity-50"
+                      >
+                        <div className="flex items-start space-x-3">
+                          <div className={`w-8 h-8 ${action.color} rounded-lg flex items-center justify-center flex-shrink-0`}>
+                            <IconComponent className="h-4 w-4 text-white" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="text-sm font-medium text-[#333333] mb-1">
+                              {action.label}
+                            </div>
+                            <div className="text-xs text-gray-600">
+                              {action.description}
+                            </div>
+                          </div>
+                        </div>
+                      </motion.button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Goals Summary */}
+              {goals.length > 0 && (
+                <div>
+                  <h3 className="font-semibold text-[#333333] mb-4">Active Goals</h3>
+                  <div className="space-y-2">
+                    {goals.slice(0, 3).map((goal) => {
+                      const progress = goal.target_amount 
+                        ? ((goal.saved_amount || 0) / goal.target_amount) * 100 
+                        : 0;
+                      
+                      return (
+                        <div key={goal.id} className="p-3 bg-gray-50 rounded-lg border border-gray-200">
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-sm font-medium text-[#333333]">{goal.name}</span>
+                            <span className="text-xs text-gray-600">{progress.toFixed(0)}%</span>
+                          </div>
+                          <div className="w-full bg-gray-200 rounded-full h-2">
+                            <div 
+                              className="bg-gradient-to-r from-[#2A6F68] to-[#B76E79] h-2 rounded-full transition-all duration-500"
+                              style={{ width: `${Math.min(progress, 100)}%` }}
+                            />
+                          </div>
+                          <div className="text-xs text-gray-600 mt-1">
+                            ${(goal.saved_amount || 0).toLocaleString()} / ${(goal.target_amount || 0).toLocaleString()}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -403,29 +422,22 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, onXPUpdate }) => {
               </motion.div>
               <div>
                 <h2 className="text-lg font-semibold text-[#333333]">
-                  Financial AI <span className="text-[#2A6F68]">Assistant</span>
+                  Sensei <span className="text-[#2A6F68]">DoughJo</span>
                 </h2>
                 <div className="flex items-center space-x-2">
                   <div className="w-2 h-2 bg-green-500 rounded-full" />
                   <span className="text-sm text-gray-600">
-                    AI analyzing in real-time
+                    Your AI Financial Sensei
                   </span>
                 </div>
               </div>
             </div>
             
             <div className="flex items-center space-x-2">
-              <div className="text-right">
-                <div className="text-sm font-medium text-[#333333]">
-                  Net Worth: $22,000
-                </div>
-                <div className="text-xs text-gray-600">
-                  Monthly Savings: $1,883 • Goals: {goals.length} active
-                </div>
-              </div>
               <button
                 onClick={() => setShowSidebar(!showSidebar)}
                 className="p-2 text-gray-500 hover:text-[#2A6F68] transition-colors rounded-lg hover:bg-gray-100"
+                title="Toggle Financial AI Panel"
               >
                 <PieChart className="h-5 w-5" />
               </button>
@@ -460,7 +472,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, onXPUpdate }) => {
                 />
               </motion.div>
               <p className="text-gray-500 mb-6">
-                Your AI Financial Assistant is ready to analyze your finances and provide personalized insights!
+                Welcome to the dojo, young grasshopper! Ask me anything about your financial journey. 
+                Together, we'll master the ancient art of money management! 🥋💰
               </p>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-3xl mx-auto">
@@ -537,7 +550,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, onXPUpdate }) => {
                     {/* Action buttons for AI responses */}
                     {message.sender === 'assistant' && message.message && message.message.includes('consolidate') && (
                       <div className="mt-3">
-                        <button className="bg-gradient-to-r from-purple-500 to-blue-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:shadow-lg transition-all">
+                        <button className="bg-gradient-to-r from-[#B76E79] to-rose-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:shadow-lg transition-all">
                           Debt Consolidation Analysis
                         </button>
                       </div>
@@ -603,7 +616,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, onXPUpdate }) => {
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
                 onKeyPress={handleKeyPress}
-                placeholder="Ask your AI financial assistant anything..."
+                placeholder="Ask Sensei DoughJo for financial wisdom..."
                 rows={1}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2A6F68] focus:border-transparent resize-none transition-all"
                 style={{ minHeight: '44px', maxHeight: '120px' }}
