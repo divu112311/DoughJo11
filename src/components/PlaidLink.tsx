@@ -22,20 +22,21 @@ const PlaidLink: React.FC<PlaidLinkProps> = ({ onSuccess, onError, userId }) => 
     setError(null);
 
     try {
-      // Call your backend to create a link token
-      const response = await fetch('/api/plaid/create-link-token', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ userId }),
+      console.log('Creating Plaid link token...');
+      
+      const { data, error: functionError } = await supabase.functions.invoke('plaid-create-link-token', {
+        body: { userId },
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to create link token');
+      if (functionError) {
+        throw new Error(functionError.message || 'Failed to create link token');
       }
 
-      const data = await response.json();
+      if (data.error) {
+        throw new Error(data.error);
+      }
+
+      console.log('Link token created successfully');
       setLinkToken(data.link_token);
     } catch (err: any) {
       console.error('Link token error:', err);
@@ -49,9 +50,39 @@ const PlaidLink: React.FC<PlaidLinkProps> = ({ onSuccess, onError, userId }) => 
   // Plaid Link configuration for sandbox
   const config = {
     token: linkToken,
-    onSuccess: (publicToken: string, metadata: any) => {
+    onSuccess: async (publicToken: string, metadata: any) => {
       console.log('Plaid Link success:', { publicToken, metadata });
-      onSuccess(publicToken, metadata);
+      
+      try {
+        setLoading(true);
+        
+        // Call our exchange token function
+        const { data, error: exchangeError } = await supabase.functions.invoke('plaid-exchange-token', {
+          body: {
+            publicToken,
+            userId,
+            institutionName: metadata.institution?.name || 'Unknown Bank',
+            accounts: metadata.accounts || []
+          },
+        });
+
+        if (exchangeError) {
+          throw new Error(exchangeError.message || 'Failed to exchange token');
+        }
+
+        if (data.error) {
+          throw new Error(data.error);
+        }
+
+        console.log('Token exchange successful:', data);
+        onSuccess(publicToken, metadata);
+      } catch (err: any) {
+        console.error('Token exchange error:', err);
+        setError(err.message || 'Failed to connect accounts');
+        if (onError) onError(err);
+      } finally {
+        setLoading(false);
+      }
     },
     onExit: (err: any, metadata: any) => {
       console.log('Plaid Link exit:', { err, metadata });
