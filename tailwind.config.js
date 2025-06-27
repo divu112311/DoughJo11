@@ -8,18 +8,31 @@ export default {
         'sans': ['Inter', 'sans-serif'],
       },
       colors: {
-        // Main color scheme from screenshot
-        primary: {
-          50: '#f0f9f7',
-          100: '#dbeee8',
-          200: '#b8ddd2',
-          300: '#8bc5b5',
-          400: '#5fa798',
-          500: '#4a8b7e', // Main teal from screenshot
-          600: '#3d7268',
-          700: '#2f5951',
-          800: '#22403b',
-          900: '#1a332f',
+        // Teal Green - Main brand color
+        teal: {
+          50: '#f0fdfa',
+          100: '#ccfbf1',
+          200: '#99f6e4',
+          300: '#5eead4',
+          400: '#2dd4bf',
+          500: '#14b8a6', // Main teal
+          600: '#0d9488',
+          700: '#0f766e',
+          800: '#115e59',
+          900: '#134e4a',
+        },
+        // Rose Gold - Accent color
+        rosegold: {
+          50: '#fdf2f8',
+          100: '#fce7f3',
+          200: '#fbcfe8',
+          300: '#f9a8d4',
+          400: '#f472b6',
+          500: '#ec4899', // Main rose gold
+          600: '#db2777',
+          700: '#be185d',
+          800: '#9d174d',
+          900: '#831843',
         },
         // Cream/off-white backgrounds
         cream: {
@@ -47,31 +60,44 @@ export default {
           800: '#212529',
           900: '#1a1d20',
         },
-        // Sage green (main brand color)
+        // Primary colors (using teal)
+        primary: {
+          50: '#f0fdfa',
+          100: '#ccfbf1',
+          200: '#99f6e4',
+          300: '#5eead4',
+          400: '#2dd4bf',
+          500: '#14b8a6', // Main teal
+          600: '#0d9488',
+          700: '#0f766e',
+          800: '#115e59',
+          900: '#134e4a',
+        },
+        // Secondary colors (using rose gold)
+        secondary: {
+          50: '#fdf2f8',
+          100: '#fce7f3',
+          200: '#fbcfe8',
+          300: '#f9a8d4',
+          400: '#f472b6',
+          500: '#ec4899', // Main rose gold
+          600: '#db2777',
+          700: '#be185d',
+          800: '#9d174d',
+          900: '#831843',
+        },
+        // Sage green (alternative teal)
         sage: {
           50: '#f0f9f7',
           100: '#dbeee8',
           200: '#b8ddd2',
           300: '#8bc5b5',
           400: '#5fa798',
-          500: '#4a8b7e', // Main sage from screenshot
+          500: '#4a8b7e',
           600: '#3d7268',
           700: '#2f5951',
           800: '#22403b',
           900: '#1a332f',
-        },
-        // Teal accent
-        teal: {
-          50: '#f0fdfa',
-          100: '#ccfbf1',
-          200: '#99f6e4',
-          300: '#5eead4',
-          400: '#2dd4bf',
-          500: '#14b8a6',
-          600: '#0d9488',
-          700: '#0f766e',
-          800: '#115e59',
-          900: '#134e4a',
         },
         // Bronze/warm accent
         bronze: {
@@ -85,19 +111,6 @@ export default {
           700: '#8b6f61',
           800: '#6f5a4f',
           900: '#5c4a42',
-        },
-        // Rose gold accent
-        rosegold: {
-          50: '#fdf2f8',
-          100: '#fce7f3',
-          200: '#fbcfe8',
-          300: '#f9a8d4',
-          400: '#f472b6',
-          500: '#ec4899',
-          600: '#db2777',
-          700: '#be185d',
-          800: '#9d174d',
-          900: '#831843',
         },
       },
       animation: {
