@@ -53,12 +53,13 @@ export const useUserProfile = (user: User | null) => {
         .eq('id', user.id)
         .single();
 
-      // Fetch user XP with timeout
+      // Fetch user XP with timeout - use maybeSingle to handle no records gracefully
       const xpPromise = supabase
         .from('xp')
         .select('*')
         .eq('user_id', user.id)
-        .single();
+        .limit(1)
+        .maybeSingle();
 
       const [profileResult, xpResult] = await Promise.allSettled([
         createTimeoutQuery(profilePromise, 20000, 'Profile query timeout'),
@@ -77,16 +78,25 @@ export const useUserProfile = (user: User | null) => {
         throw new Error('Failed to load user profile');
       }
 
-      // Handle XP result
+      // Handle XP result - create default XP if none exists
       if (xpResult.status === 'fulfilled') {
         if (xpResult.value.error) {
           console.error('XP fetch error:', xpResult.value.error);
           throw new Error(`Failed to load XP data: ${xpResult.value.error.message}`);
         }
-        setXP(xpResult.value.data);
+        
+        // If no XP record exists, create one
+        if (!xpResult.value.data) {
+          console.log('No XP record found, creating default XP for user:', user.id);
+          await createDefaultXP(user.id);
+        } else {
+          setXP(xpResult.value.data);
+        }
       } else {
         console.error('XP fetch failed:', xpResult.reason);
-        throw new Error('Failed to load XP data');
+        // Create default XP on fetch failure
+        console.log('XP fetch failed, creating default XP for user:', user.id);
+        await createDefaultXP(user.id);
       }
 
       console.log('User data fetched successfully');
@@ -110,6 +120,49 @@ export const useUserProfile = (user: User | null) => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const createDefaultXP = async (userId: string) => {
+    try {
+      const insertXPPromise = supabase
+        .from('xp')
+        .insert({
+          user_id: userId,
+          points: 100, // Welcome bonus
+          badges: ['Welcome'],
+        })
+        .select()
+        .single();
+
+      const { data, error } = await createTimeoutQuery(
+        insertXPPromise,
+        15000,
+        'XP creation timeout'
+      );
+
+      if (error) {
+        console.error('Error creating default XP:', error);
+        // Set fallback XP data
+        setXP({
+          id: 'fallback',
+          user_id: userId,
+          points: 100,
+          badges: ['Welcome']
+        });
+      } else {
+        setXP(data);
+        console.log('Default XP created successfully');
+      }
+    } catch (error: any) {
+      console.error('Error creating default XP:', error);
+      // Set fallback XP data
+      setXP({
+        id: 'fallback',
+        user_id: userId,
+        points: 100,
+        badges: ['Welcome']
+      });
     }
   };
 

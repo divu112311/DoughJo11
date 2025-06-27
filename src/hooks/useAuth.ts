@@ -99,16 +99,17 @@ export const useAuth = () => {
     try {
       console.log('🔍 Ensuring user profile exists for:', user.id);
 
-      // Check if user profile exists with timeout
+      // Check if user profile exists with timeout - use maybeSingle for better error handling
       const profilePromise = supabase
         .from('users')
         .select('id')
         .eq('id', user.id)
+        .limit(1)
         .maybeSingle();
 
       const { data: existingProfile, error: profileError } = await createTimeoutQuery(
         profilePromise,
-        15000,
+        20000, // Increased timeout
         'Profile check timeout'
       );
 
@@ -131,32 +132,57 @@ export const useAuth = () => {
 
         await createTimeoutQuery(
           insertProfilePromise,
-          15000,
+          20000, // Increased timeout
           'Profile creation timeout'
         );
 
-        // Create initial XP record with timeout
-        const insertXPPromise = supabase
+        // Check if XP record already exists before creating
+        const xpCheckPromise = supabase
           .from('xp')
-          .insert({
-            user_id: user.id,
-            points: 100, // Welcome bonus
-            badges: ['Welcome'],
-          });
+          .select('id')
+          .eq('user_id', user.id)
+          .limit(1)
+          .maybeSingle();
 
-        await createTimeoutQuery(
-          insertXPPromise,
+        const { data: existingXP, error: xpCheckError } = await createTimeoutQuery(
+          xpCheckPromise,
           15000,
-          'XP creation timeout'
+          'XP check timeout'
         );
 
-        console.log('✅ User profile and XP created successfully');
+        if (xpCheckError) {
+          console.error('❌ Error checking existing XP:', xpCheckError);
+        }
+
+        // Only create XP record if it doesn't exist
+        if (!existingXP) {
+          console.log('➕ Creating initial XP record for:', user.id);
+          
+          const insertXPPromise = supabase
+            .from('xp')
+            .insert({
+              user_id: user.id,
+              points: 100, // Welcome bonus
+              badges: ['Welcome'],
+            });
+
+          await createTimeoutQuery(
+            insertXPPromise,
+            20000, // Increased timeout
+            'XP creation timeout'
+          );
+
+          console.log('✅ User profile and XP created successfully');
+        } else {
+          console.log('✅ User profile created, XP already exists');
+        }
       } else {
         console.log('✅ User profile already exists');
       }
     } catch (error: any) {
       console.error('❌ Error ensuring user profile:', error);
       // Don't throw error here as it would break the auth flow
+      // The useUserProfile hook will handle creating missing XP records
     }
   };
 
