@@ -377,8 +377,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, xp, onXPUpdate }) =
                 <Send className="h-4 w-4" />
               </button>
             </div>
-          </div>
-       </motion.div>  ----- added by divya
+          </motion.div>
+        </div>
 
         {/* Right Sidebar - Financial Analysis */}
         <AnimatePresence>
