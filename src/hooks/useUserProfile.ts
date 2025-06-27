@@ -52,7 +52,7 @@ export const useUserProfile = (user: User | null) => {
           .from('users')
           .select('*')
           .eq('id', user.id)
-          .single();
+          .maybeSingle();
 
         return await createTimeoutQuery(profilePromise, 8000, 'Profile query timeout');
       }, 2, 1000);
@@ -124,7 +124,7 @@ export const useUserProfile = (user: User | null) => {
             badges: ['Welcome'],
           })
           .select()
-          .single();
+          .maybeSingle();
 
         return await createTimeoutQuery(
           insertXPPromise,
@@ -179,7 +179,7 @@ export const useUserProfile = (user: User | null) => {
           })
           .eq('user_id', user.id)
           .select()
-          .single();
+          .maybeSingle();
 
         return await createTimeoutQuery(
           updatePromise,
