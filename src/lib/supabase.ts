@@ -55,11 +55,10 @@ export const testConnection = async (retries: number = 3) => {
       console.log(`🔄 Testing Supabase connection (attempt ${attempt}/${retries})...`)
       
       const startTime = Date.now()
-      const { data, error } = await supabase
-  .from('profiles')
-  .select('*')
-  .eq('id', userId)
-  .single()
+      const { data, error, status, statusText } = await supabase
+        .from('users')
+        .select('count')
+        .limit(1)
       
       const duration = Date.now() - startTime
       
@@ -140,6 +139,70 @@ export const retryQuery = async <T>(
   }
   
   throw lastError
+}
+
+// Optimized function to get user profile with better error handling
+export const getUserProfile = async (userId: string) => {
+  if (!userId || !isSupabaseConfigured) {
+    return {
+      data: null,
+      error: new Error('Missing user ID or Supabase not configured')
+    }
+  }
+
+  try {
+    console.log('🔍 Fetching optimized user profile for:', userId)
+
+    // Use a single query to get both profile and XP data with a join
+    const { data, error } = await supabase
+      .from('users')
+      .select(`
+        *,
+        xp:xp(*)
+      `)
+      .eq('id', userId)
+      .maybeSingle()
+
+    if (error) {
+      console.error('❌ Error in getUserProfile:', error)
+      return { data: null, error }
+    }
+
+    // If no profile exists, return null
+    if (!data) {
+      console.log('ℹ️ No user profile found for:', userId)
+      return { data: null, error: null }
+    }
+
+    // Extract XP data from the joined result
+    const xpData = data.xp && data.xp.length > 0 ? data.xp[0] : null
+
+    // Return structured data
+    const profileData = {
+      profile: {
+        id: data.id,
+        email: data.email,
+        full_name: data.full_name,
+        created_at: data.created_at
+      },
+      xp: xpData || {
+        id: 'default',
+        user_id: userId,
+        points: 0,
+        badges: []
+      }
+    }
+
+    console.log('✅ User profile fetched successfully')
+    return { data: profileData, error: null }
+
+  } catch (error: any) {
+    console.error('❌ Exception in getUserProfile:', error)
+    return { 
+      data: null, 
+      error: new Error(`Failed to fetch user profile: ${error.message}`)
+    }
+  }
 }
 
 // Check if Supabase is properly configured

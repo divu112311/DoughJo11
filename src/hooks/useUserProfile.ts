@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { User } from '@supabase/supabase-js';
-import { supabase, createTimeoutQuery, retryQuery, isSupabaseConfigured } from '../lib/supabase';
+import { supabase, createTimeoutQuery, retryQuery, isSupabaseConfigured, getUserProfile } from '../lib/supabase';
 
 interface UserProfile {
   id: string;
@@ -46,50 +46,36 @@ export const useUserProfile = (user: User | null) => {
     try {
       console.log('Fetching user profile and XP for:', user.id);
 
-      // Use retry logic for better reliability
-      const profileResult = await retryQuery(async () => {
-        const profilePromise = supabase
-          .from('users')
-          .select('*')
-          .eq('id', user.id)
-          .maybeSingle();
+      // NEW - using the optimized function
+      const { data: profileData, error } = await getUserProfile(user.id);
 
-        return await createTimeoutQuery(profilePromise, 8000, 'Profile query timeout');
-      }, 2, 1000);
-
-      const xpResult = await retryQuery(async () => {
-        const xpPromise = supabase
-          .from('xp')
-          .select('*')
-          .eq('user_id', user.id)
-          .limit(1)
-          .maybeSingle();
-
-        return await createTimeoutQuery(xpPromise, 8000, 'XP query timeout');
-      }, 2, 1000);
-
-      // Handle profile result
-      if (profileResult.error) {
-        console.error('Profile fetch error:', profileResult.error);
-        throw new Error(`Failed to load profile: ${profileResult.error.message}`);
+      if (error) {
+        console.error('Error fetching user data:', error.message);
+        throw error;
       }
-      setProfile(profileResult.data);
 
-      // Handle XP result - create default XP if none exists
-      if (xpResult.error) {
-        console.error('XP fetch error:', xpResult.error);
-        throw new Error(`Failed to load XP data: ${xpResult.error.message}`);
-      }
-      
-      // If no XP record exists, create one
-      if (!xpResult.data) {
-        console.log('No XP record found, creating default XP for user:', user.id);
-        await createDefaultXP(user.id);
+      // Use profile data
+      if (profileData) {
+        setProfile(profileData.profile);
+        setXP(profileData.xp);
+        console.log('User data fetched successfully');
       } else {
-        setXP(xpResult.data);
+        // No profile found, set default values
+        setProfile({
+          id: user.id,
+          email: user.email,
+          full_name: user.user_metadata?.full_name || 'User',
+          created_at: new Date().toISOString()
+        });
+        
+        setXP({
+          id: 'default',
+          user_id: user.id,
+          points: 0,
+          badges: []
+        });
       }
 
-      console.log('User data fetched successfully');
     } catch (error: any) {
       console.error('Error fetching user data:', error);
       setError(error.message || 'Failed to load user data');
