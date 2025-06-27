@@ -62,7 +62,7 @@ const ResetPassword: React.FC = () => {
         <motion.div
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-8 border border-gray-200 text-center max-w-md w-full"
+          className="bg-white/30 backdrop-blur-md rounded-2xl shadow-lg p-8 border border-white/40 text-center max-w-md w-full"
         >
           <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <CheckCircle className="h-8 w-8 text-green-600" />
@@ -107,12 +107,12 @@ const ResetPassword: React.FC = () => {
           </div>
         </motion.div>
 
-        {/* Form Card */}
+        {/* Form Card - More transparent and blended */}
         <motion.div
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.2 }}
-          className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-8 border border-gray-200"
+          className="bg-white/30 backdrop-blur-md rounded-2xl shadow-lg p-8 border border-white/40"
         >
           <h2 className="text-2xl font-bold text-[#333333] mb-6 text-center">
             Set New Password
@@ -122,7 +122,7 @@ const ResetPassword: React.FC = () => {
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="flex items-center space-x-2 text-red-600 text-sm bg-red-50 p-3 rounded-lg mb-4"
+              className="flex items-center space-x-2 text-red-600 text-sm bg-red-50/80 backdrop-blur-sm p-3 rounded-lg mb-4 border border-red-200/50"
             >
               <AlertCircle className="h-4 w-4" />
               <span>{error}</span>
@@ -140,7 +140,7 @@ const ResetPassword: React.FC = () => {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2A6F68] focus:border-transparent transition-all bg-white/50"
+                  className="w-full px-4 py-3 pr-12 border border-gray-200/60 rounded-lg focus:ring-2 focus:ring-[#2A6F68] focus:border-transparent transition-all bg-white/40 backdrop-blur-sm placeholder-gray-500"
                   placeholder="Enter new password"
                 />
                 <button
@@ -166,7 +166,7 @@ const ResetPassword: React.FC = () => {
                   required
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#2A6F68] focus:border-transparent transition-all bg-white/50"
+                  className="w-full px-4 py-3 pr-12 border border-gray-200/60 rounded-lg focus:ring-2 focus:ring-[#2A6F68] focus:border-transparent transition-all bg-white/40 backdrop-blur-sm placeholder-gray-500"
                   placeholder="Confirm new password"
                 />
                 <button
@@ -184,7 +184,7 @@ const ResetPassword: React.FC = () => {
               whileTap={{ scale: 0.98 }}
               type="submit"
               disabled={loading}
-              className="w-full bg-[#2A6F68] text-white py-3 px-4 rounded-lg font-medium hover:bg-[#235A54] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-[#2A6F68] text-white py-3 px-4 rounded-lg font-medium hover:bg-[#235A54] transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
             >
               {loading ? (
                 <motion.div
