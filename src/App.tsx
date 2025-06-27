@@ -4,6 +4,8 @@ import LoginForm from './components/LoginForm';
 import Dashboard from './components/Dashboard';
 import ChatInterface from './components/ChatInterface';
 import LearningCenter from './components/LearningCenter';
+import AuthCallback from './components/AuthCallback';
+import ResetPassword from './components/ResetPassword';
 import { useAuth } from './hooks/useAuth';
 import { useUserProfile } from './hooks/useUserProfile';
 
@@ -11,6 +13,17 @@ function App() {
   const { user, loading: authLoading, signOut } = useAuth();
   const { profile, xp, loading: profileLoading, updateXP } = useUserProfile(user);
   const [activeView, setActiveView] = useState<'dashboard' | 'chat' | 'learning'>('chat');
+
+  // Handle routing based on URL
+  const currentPath = window.location.pathname;
+  
+  if (currentPath === '/auth/callback') {
+    return <AuthCallback />;
+  }
+  
+  if (currentPath === '/auth/reset-password' || currentPath === '/reset-password') {
+    return <ResetPassword />;
+  }
 
   const handleXPUpdate = async (points: number) => {
     await updateXP(points);
@@ -30,6 +43,41 @@ function App() {
 
   if (!user) {
     return <LoginForm />;
+  }
+
+  // Check if user email is verified
+  if (!user.email_confirmed_at) {
+    return (
+      <div className="min-h-screen bg-[#FAF9F6] flex items-center justify-center p-4">
+        <motion.div
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-8 border border-gray-200 text-center max-w-md w-full"
+        >
+          <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <motion.div
+              animate={{ scale: [1, 1.1, 1] }}
+              transition={{ duration: 2, repeat: Infinity }}
+            >
+              📧
+            </motion.div>
+          </div>
+          <h2 className="text-2xl font-bold text-[#333333] mb-2">Verify Your Email</h2>
+          <p className="text-gray-600 mb-4">
+            Please check your email and click the verification link to activate your account.
+          </p>
+          <p className="text-sm text-gray-500 mb-6">
+            Email sent to: <strong>{user.email}</strong>
+          </p>
+          <button
+            onClick={signOut}
+            className="text-[#2A6F68] hover:text-[#235A54] transition-colors"
+          >
+            Sign out and try again
+          </button>
+        </motion.div>
+      </div>
+    );
   }
 
   const level = Math.floor((xp?.points || 0) / 100) + 1;
