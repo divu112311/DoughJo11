@@ -55,10 +55,11 @@ export const testConnection = async (retries: number = 3) => {
       console.log(`🔄 Testing Supabase connection (attempt ${attempt}/${retries})...`)
       
       const startTime = Date.now()
-      const { data, error, status, statusText } = await supabase
-        .from('users')
-        .select('count')
-        .limit(1)
+      const { data, error } = await supabase
+  .from('profiles')
+  .select('*')
+  .eq('id', userId)
+  .single()
       
       const duration = Date.now() - startTime
       
