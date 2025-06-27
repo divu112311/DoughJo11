@@ -11,14 +11,15 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.39.0",
+    "caniuse-lite": "^1.0.30001726",
+    "date-fns": "^2.30.0",
+    "framer-motion": "^10.16.16",
     "lucide-react": "^0.344.0",
+    "openai": "^4.24.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "framer-motion": "^10.16.16",
-    "recharts": "^2.8.0",
-    "date-fns": "^2.30.0",
-    "openai": "^4.24.1",
-    "react-plaid-link": "^3.5.2"
+    "react-plaid-link": "^3.5.2",
+    "recharts": "^2.8.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.1",
