@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { User } from '@supabase/supabase-js';
-import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { supabase, isSupabaseConfigured, createTimeoutQuery } from '../lib/supabase';
 
 interface ChatMessage {
   id: string;
@@ -13,6 +13,7 @@ interface ChatMessage {
 export const useChat = (user: User | null) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (user && isSupabaseConfigured) {
@@ -24,20 +25,30 @@ export const useChat = (user: User | null) => {
     if (!user || !isSupabaseConfigured) return;
 
     try {
-      const { data, error } = await supabase
+      console.log('Fetching chat history for user:', user.id);
+
+      const queryPromise = supabase
         .from('chat_logs')
         .select('*')
         .eq('user_id', user.id)
         .order('timestamp', { ascending: true });
 
-      if (error) {
-        console.error('Error fetching chat history:', error);
+      const { data, error: fetchError } = await createTimeoutQuery(
+        queryPromise,
+        10000,
+        'Chat history query timeout'
+      );
+
+      if (fetchError) {
+        console.error('Error fetching chat history:', fetchError);
         return;
       }
 
+      console.log('Chat history fetched:', data?.length || 0, 'messages');
       setMessages(data || []);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching chat history:', error);
+      setError('Failed to load chat history');
     }
   };
 
@@ -45,6 +56,7 @@ export const useChat = (user: User | null) => {
     if (!user || !message.trim()) return;
 
     setLoading(true);
+    setError(null);
 
     try {
       if (!isSupabaseConfigured) {
@@ -73,8 +85,8 @@ export const useChat = (user: User | null) => {
         return;
       }
 
-      // Add user message to database
-      const { data: userMessage, error: userError } = await supabase
+      // Add user message to database with timeout
+      const userMessagePromise = supabase
         .from('chat_logs')
         .insert({
           user_id: user.id,
@@ -83,6 +95,12 @@ export const useChat = (user: User | null) => {
         })
         .select()
         .single();
+
+      const { data: userMessage, error: userError } = await createTimeoutQuery(
+        userMessagePromise,
+        8000,
+        'Failed to save user message'
+      );
 
       if (userError) throw userError;
 
@@ -104,8 +122,8 @@ export const useChat = (user: User | null) => {
 
       const aiResponse = aiResponseData?.response || generateContextualResponse(message);
 
-      // Add AI response to database
-      const { data: aiMessage, error: aiMessageError } = await supabase
+      // Add AI response to database with timeout
+      const aiMessagePromise = supabase
         .from('chat_logs')
         .insert({
           user_id: user.id,
@@ -114,6 +132,12 @@ export const useChat = (user: User | null) => {
         })
         .select()
         .single();
+
+      const { data: aiMessage, error: aiMessageError } = await createTimeoutQuery(
+        aiMessagePromise,
+        8000,
+        'Failed to save AI response'
+      );
 
       if (aiMessageError) throw aiMessageError;
 
@@ -125,15 +149,16 @@ export const useChat = (user: User | null) => {
         onXPUpdate(5);
       }
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error sending message:', error);
+      setError('Failed to send message');
       
       // Add fallback response on error
       const fallbackResponse = generateContextualResponse(message);
       
       if (isSupabaseConfigured) {
         try {
-          const { data: fallbackMessage } = await supabase
+          const fallbackPromise = supabase
             .from('chat_logs')
             .insert({
               user_id: user.id,
@@ -142,6 +167,12 @@ export const useChat = (user: User | null) => {
             })
             .select()
             .single();
+
+          const { data: fallbackMessage } = await createTimeoutQuery(
+            fallbackPromise,
+            5000,
+            'Failed to save fallback message'
+          );
 
           if (fallbackMessage) {
             setMessages(prev => [...prev, fallbackMessage]);
@@ -205,10 +236,14 @@ export const useChat = (user: User | null) => {
     return generalResponses[Math.floor(Math.random() * generalResponses.length)];
   };
 
+  const clearError = () => setError(null);
+
   return {
     messages,
     loading,
+    error,
     sendMessage,
     refetch: fetchChatHistory,
+    clearError,
   };
 };
