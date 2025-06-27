@@ -61,9 +61,14 @@ const LoginForm: React.FC = () => {
               className="w-16 h-16 mr-3"
             >
               <img 
-                src="/finapp.png" 
+                src="https://images.pexels.com/photos/6801648/pexels-photo-6801648.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop&crop=face" 
                 alt="DoughJo Mascot" 
-                className="w-full h-full object-contain"
+                className="w-full h-full object-cover rounded-full border-4 border-[#2A6F68]"
+                onError={(e) => {
+                  // Fallback if image doesn't load
+                  e.currentTarget.style.display = 'none';
+                  e.currentTarget.parentElement!.innerHTML = '<div class="w-16 h-16 bg-gradient-to-br from-[#2A6F68] to-[#B76E79] rounded-full flex items-center justify-center text-2xl">🥋</div>';
+                }}
               />
             </motion.div>
             <h1 className="text-4xl font-serif font-bold text-[#2A6F68]">DoughJo</h1>
