@@ -137,7 +137,7 @@ const LoginForm: React.FC = () => {
     } catch (err: any) {
       setGoogleLoading(false);
       if (err.message.includes('not configured')) {
-        setError('Google sign-in is not available yet. Please use email and password to sign in.');
+        setError('Google sign-in setup required. Please follow the setup guide or use email/password login.');
       } else {
         setError(err.message || 'Google sign-in failed. Please try again.');
       }
@@ -178,8 +178,21 @@ const LoginForm: React.FC = () => {
             <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
           </svg>
         )}
-        <span>{googleLoading ? 'Connecting...' : 'Continue with Google'}</span>
+        <span>{googleLoading ? 'Connecting to Google...' : 'Continue with Google'}</span>
       </motion.button>
+
+      {/* Setup Guide Link */}
+      <div className="mt-2 text-center">
+        <p className="text-xs text-gray-600">
+          Need to set up Google login? 
+          <button 
+            onClick={() => window.open('/SUPABASE_GOOGLE_OAUTH_GUIDE.md', '_blank')}
+            className="text-[#2A6F68] hover:text-[#235A54] ml-1 underline"
+          >
+            View setup guide
+          </button>
+        </p>
+      </div>
 
       {/* Divider */}
       <div className="flex items-center my-6">
