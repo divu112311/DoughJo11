@@ -25,7 +25,7 @@ const finalKey = (supabaseAnonKey && supabaseAnonKey.length > 20)
   ? supabaseAnonKey 
   : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBsYWNlaG9sZGVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NDUxOTI4MDAsImV4cCI6MTk2MDc2ODgwMH0.placeholder'
 
-// Create Supabase client with optimized settings for better connection handling
+// Create Supabase client with optimized settings
 export const supabase = createClient(finalUrl, finalKey, {
   auth: {
     autoRefreshToken: true,
@@ -48,100 +48,30 @@ export const supabase = createClient(finalUrl, finalKey, {
   }
 })
 
-// Enhanced connection test with detailed logging and retry logic
-export const testConnection = async (retries: number = 3) => {
-  for (let attempt = 1; attempt <= retries; attempt++) {
-    try {
-      console.log(`🔄 Testing Supabase connection (attempt ${attempt}/${retries})...`)
-      
-      const startTime = Date.now()
-      const { data, error, status, statusText } = await supabase
-        .from('users')
-        .select('count')
-        .limit(1)
-      
-      const duration = Date.now() - startTime
-      
-      console.log('📊 Connection test results:')
-      console.log('- Duration:', duration + 'ms')
-      console.log('- Status:', status)
-      console.log('- Status Text:', statusText)
-      console.log('- Error:', error)
-      console.log('- Data:', data)
-      
-      if (error) {
-        console.error(`❌ Supabase connection test failed (attempt ${attempt}):`, error)
-        if (attempt === retries) {
-          return false
-        }
-        // Wait before retry
-        await new Promise(resolve => setTimeout(resolve, 1000 * attempt))
-        continue
-      }
-      
-      console.log('✅ Supabase connection successful')
-      return true
-    } catch (err: any) {
-      console.error(`❌ Supabase connection error (attempt ${attempt}):`, err)
-      if (attempt === retries) {
-        return false
-      }
-      // Wait before retry
-      await new Promise(resolve => setTimeout(resolve, 1000 * attempt))
-    }
-  }
-  return false
-}
-
-// Helper function to create queries with timeout and better error handling
-export const createTimeoutQuery = <T>(
-  queryPromise: Promise<T> | any, 
-  timeoutMs: number = 10000, // Reduced from 15000 to 10000
-  errorMessage: string = 'Query timeout'
-): Promise<T> => {
-  // Convert Supabase query builder to native Promise
-  const nativePromise = Promise.resolve(queryPromise)
-  
-  const timeoutPromise = new Promise<never>((_, reject) => {
-    const timeoutId = setTimeout(() => {
-      console.error(`⏰ Query timeout after ${timeoutMs}ms:`, errorMessage)
-      reject(new Error(`${errorMessage} (${timeoutMs}ms)`))
-    }, timeoutMs)
+// Simplified connection test
+export const testConnection = async () => {
+  try {
+    console.log('🔄 Testing Supabase connection...')
     
-    // Clear timeout if query completes
-    nativePromise.finally(() => clearTimeout(timeoutId))
-  })
-  
-  return Promise.race([nativePromise, timeoutPromise])
-}
-
-// Helper function for retrying failed queries
-export const retryQuery = async <T>(
-  queryFn: () => Promise<T>,
-  maxRetries: number = 2,
-  delayMs: number = 1000
-): Promise<T> => {
-  let lastError: Error
-  
-  for (let attempt = 1; attempt <= maxRetries + 1; attempt++) {
-    try {
-      return await queryFn()
-    } catch (error: any) {
-      lastError = error
-      console.warn(`Query attempt ${attempt} failed:`, error.message)
-      
-      if (attempt <= maxRetries) {
-        console.log(`Retrying in ${delayMs}ms...`)
-        await new Promise(resolve => setTimeout(resolve, delayMs))
-        delayMs *= 1.5 // Exponential backoff
-      }
+    const { data, error } = await supabase
+      .from('users')
+      .select('count')
+      .limit(1)
+    
+    if (error) {
+      console.error('❌ Supabase connection test failed:', error)
+      return false
     }
+    
+    console.log('✅ Supabase connection successful')
+    return true
+  } catch (err: any) {
+    console.error('❌ Supabase connection error:', err)
+    return false
   }
-  
-  throw lastError
 }
 
-// Optimized function to get user profile with better error handling
+// Simplified function to get user profile
 export const getUserProfile = async (userId: string) => {
   if (!userId || !isSupabaseConfigured) {
     return {
@@ -151,9 +81,9 @@ export const getUserProfile = async (userId: string) => {
   }
 
   try {
-    console.log('🔍 Fetching optimized user profile for:', userId)
+    console.log('🔍 Fetching user profile for:', userId)
 
-    // Use a single query to get both profile and XP data with a join
+    // Get both profile and XP data with a join
     const { data, error } = await supabase
       .from('users')
       .select(`
@@ -168,7 +98,6 @@ export const getUserProfile = async (userId: string) => {
       return { data: null, error }
     }
 
-    // If no profile exists, return null
     if (!data) {
       console.log('ℹ️ No user profile found for:', userId)
       return { data: null, error: null }
@@ -205,7 +134,7 @@ export const getUserProfile = async (userId: string) => {
   }
 }
 
-// New optimized function to ensure user profile exists with fallback handling
+// Simplified function to ensure user profile exists
 export const ensureUserProfile = async (user: any) => {
   if (!user?.id || !isSupabaseConfigured) {
     return {
@@ -230,7 +159,7 @@ export const ensureUserProfile = async (user: any) => {
   try {
     console.log('🔍 Ensuring user profile exists for:', user.id)
 
-    // First, try to get existing profile and XP in a single query
+    // Try to get existing profile and XP
     const { data: existingData, error: fetchError } = await supabase
       .from('users')
       .select(`
@@ -279,10 +208,6 @@ export const ensureUserProfile = async (user: any) => {
             .select()
             .maybeSingle()
 
-          if (xpError) {
-            console.warn('Could not create XP record, using fallback')
-          }
-
           return {
             data: {
               profile: {
@@ -298,7 +223,7 @@ export const ensureUserProfile = async (user: any) => {
                 badges: ['Welcome']
               }
             },
-            error: null
+            error: xpError ? { fallback: true, message: 'XP creation failed, using fallback' } : null
           }
         } catch (error) {
           console.warn('XP creation failed, using fallback')
@@ -366,10 +291,6 @@ export const ensureUserProfile = async (user: any) => {
         })
         .select()
         .maybeSingle()
-
-      if (xpError) {
-        console.warn('XP creation failed, using fallback XP')
-      }
 
       return {
         data: {
@@ -440,9 +361,9 @@ export const isSupabaseConfigured = !!(supabaseUrl && supabaseAnonKey &&
 
 console.log('✅ Supabase configured:', isSupabaseConfigured)
 
-// Auto-test connection on load with retry logic
+// Auto-test connection on load
 if (isSupabaseConfigured) {
-  testConnection(2).then(success => {
+  testConnection().then(success => {
     if (success) {
       console.log('🎉 Initial connection test passed')
     } else {

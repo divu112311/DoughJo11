@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 import { User } from '@supabase/supabase-js';
 import PlaidLink from './PlaidLink';
-import { supabase, createTimeoutQuery, isSupabaseConfigured, testConnection } from '../lib/supabase';
+import { supabase, isSupabaseConfigured, testConnection } from '../lib/supabase';
 
 interface Account {
   id: string;
@@ -52,7 +52,7 @@ const BankAccounts: React.FC<BankAccountsProps> = ({ user }) => {
       setAccounts([]);
       setError(null);
     }
-  }, [user?.id]); // Only depend on user.id
+  }, [user?.id]);
 
   const fetchAccounts = async () => {
     if (!user?.id) {
@@ -77,17 +77,11 @@ const BankAccounts: React.FC<BankAccountsProps> = ({ user }) => {
         throw new Error('Unable to connect to database. Please check your Supabase configuration.');
       }
 
-      const queryPromise = supabase
+      const { data, error: fetchError } = await supabase
         .from('bank_accounts')
         .select('*')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
-
-      const { data, error: fetchError } = await createTimeoutQuery(
-        queryPromise,
-        30000, // Increased timeout to 30 seconds
-        'Bank accounts query timeout - please check your connection'
-      );
 
       if (fetchError) {
         console.error('Database error:', fetchError);
@@ -102,9 +96,7 @@ const BankAccounts: React.FC<BankAccountsProps> = ({ user }) => {
       // Provide more specific error messages
       let errorMessage = 'Failed to load bank accounts';
       
-      if (error.message.includes('timeout')) {
-        errorMessage = 'Connection timeout - please check your internet connection and try again. If this persists, the Supabase service may be unavailable.';
-      } else if (error.message.includes('Supabase is not properly configured')) {
+      if (error.message.includes('Supabase is not properly configured')) {
         errorMessage = 'Database not configured - please set up your Supabase connection';
       } else if (error.message.includes('Unable to connect to database')) {
         errorMessage = 'Cannot connect to database - please verify your Supabase URL and API key are correct';
@@ -182,19 +174,13 @@ const BankAccounts: React.FC<BankAccountsProps> = ({ user }) => {
 
       // Update balances in database
       for (const account of updatedAccounts) {
-        const updatePromise = supabase
+        await supabase
           .from('bank_accounts')
           .update({
             balance: account.balance,
             last_updated: account.last_updated
           })
           .eq('id', account.id);
-
-        await createTimeoutQuery(
-          updatePromise,
-          20000, // Increased timeout
-          'Update account timeout'
-        );
       }
 
       await fetchAccounts();
@@ -215,17 +201,11 @@ const BankAccounts: React.FC<BankAccountsProps> = ({ user }) => {
     try {
       setError(null);
       
-      const deletePromise = supabase
+      const { error } = await supabase
         .from('bank_accounts')
         .delete()
         .eq('id', accountId)
         .eq('user_id', user.id);
-
-      const { error } = await createTimeoutQuery(
-        deletePromise,
-        20000, // Increased timeout
-        'Delete account timeout'
-      );
 
       if (error) throw error;
       

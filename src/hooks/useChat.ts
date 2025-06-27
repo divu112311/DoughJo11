@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { User } from '@supabase/supabase-js';
-import { supabase, isSupabaseConfigured, createTimeoutQuery } from '../lib/supabase';
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
 
 interface ChatMessage {
   id: string;
@@ -23,7 +23,7 @@ export const useChat = (user: User | null) => {
       setMessages([]);
       setError(null);
     }
-  }, [user?.id]); // Only depend on user.id
+  }, [user?.id]);
 
   const fetchChatHistory = async () => {
     if (!user?.id || !isSupabaseConfigured) return;
@@ -31,17 +31,11 @@ export const useChat = (user: User | null) => {
     try {
       console.log('Fetching chat history for user:', user.id);
 
-      const queryPromise = supabase
+      const { data, error: fetchError } = await supabase
         .from('chat_logs')
         .select('*')
         .eq('user_id', user.id)
         .order('timestamp', { ascending: true });
-
-      const { data, error: fetchError } = await createTimeoutQuery(
-        queryPromise,
-        20000,
-        'Chat history query timeout'
-      );
 
       if (fetchError) {
         console.error('Error fetching chat history:', fetchError);
@@ -93,8 +87,8 @@ export const useChat = (user: User | null) => {
         return;
       }
 
-      // Add user message to database with timeout
-      const userMessagePromise = supabase
+      // Add user message to database
+      const { data: userMessage, error: userError } = await supabase
         .from('chat_logs')
         .insert({
           user_id: user.id,
@@ -103,12 +97,6 @@ export const useChat = (user: User | null) => {
         })
         .select()
         .maybeSingle();
-
-      const { data: userMessage, error: userError } = await createTimeoutQuery(
-        userMessagePromise,
-        15000,
-        'Failed to save user message'
-      );
 
       if (userError) throw userError;
 
@@ -132,8 +120,8 @@ export const useChat = (user: User | null) => {
 
       const aiResponse = aiResponseData?.response || generateContextualResponse(message);
 
-      // Add AI response to database with timeout
-      const aiMessagePromise = supabase
+      // Add AI response to database
+      const { data: aiMessage, error: aiMessageError } = await supabase
         .from('chat_logs')
         .insert({
           user_id: user.id,
@@ -142,12 +130,6 @@ export const useChat = (user: User | null) => {
         })
         .select()
         .maybeSingle();
-
-      const { data: aiMessage, error: aiMessageError } = await createTimeoutQuery(
-        aiMessagePromise,
-        15000,
-        'Failed to save AI response'
-      );
 
       if (aiMessageError) throw aiMessageError;
 
@@ -170,7 +152,7 @@ export const useChat = (user: User | null) => {
       
       if (isSupabaseConfigured) {
         try {
-          const fallbackPromise = supabase
+          const { data: fallbackMessage } = await supabase
             .from('chat_logs')
             .insert({
               user_id: user.id,
@@ -179,12 +161,6 @@ export const useChat = (user: User | null) => {
             })
             .select()
             .maybeSingle();
-
-          const { data: fallbackMessage } = await createTimeoutQuery(
-            fallbackPromise,
-            10000,
-            'Failed to save fallback message'
-          );
 
           if (fallbackMessage) {
             setMessages(prev => [...prev, fallbackMessage]);

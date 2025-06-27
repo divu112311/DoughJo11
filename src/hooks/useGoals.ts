@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { User } from '@supabase/supabase-js';
-import { supabase, createTimeoutQuery, isSupabaseConfigured } from '../lib/supabase';
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
 
 interface Goal {
   id: string;
@@ -26,7 +26,7 @@ export const useGoals = (user: User | null) => {
       setGoals([]);
       setError(null);
     }
-  }, [user?.id]); // Only depend on user.id
+  }, [user?.id]);
 
   const fetchGoals = async () => {
     if (!user?.id || !isSupabaseConfigured) {
@@ -40,17 +40,11 @@ export const useGoals = (user: User | null) => {
     try {
       console.log('Fetching goals for user:', user.id);
       
-      const queryPromise = supabase
+      const { data, error: fetchError } = await supabase
         .from('goals')
         .select('*')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
-
-      const { data, error: fetchError } = await createTimeoutQuery(
-        queryPromise,
-        20000,
-        'Goals query timeout - please check your connection'
-      );
 
       if (fetchError) {
         console.error('Error fetching goals:', fetchError);
@@ -76,7 +70,7 @@ export const useGoals = (user: User | null) => {
     }
 
     try {
-      const queryPromise = supabase
+      const { data, error } = await supabase
         .from('goals')
         .insert({
           user_id: user.id,
@@ -84,12 +78,6 @@ export const useGoals = (user: User | null) => {
         })
         .select()
         .single();
-
-      const { data, error } = await createTimeoutQuery(
-        queryPromise,
-        10000,
-        'Create goal timeout'
-      );
 
       if (error) {
         console.error('Error creating goal:', error);
@@ -111,19 +99,13 @@ export const useGoals = (user: User | null) => {
     }
 
     try {
-      const queryPromise = supabase
+      const { data, error } = await supabase
         .from('goals')
         .update(updates)
         .eq('id', id)
         .eq('user_id', user.id)
         .select()
         .single();
-
-      const { data, error } = await createTimeoutQuery(
-        queryPromise,
-        10000,
-        'Update goal timeout'
-      );
 
       if (error) {
         console.error('Error updating goal:', error);
@@ -145,17 +127,11 @@ export const useGoals = (user: User | null) => {
     }
 
     try {
-      const queryPromise = supabase
+      const { error } = await supabase
         .from('goals')
         .delete()
         .eq('id', id)
         .eq('user_id', user.id);
-
-      const { error } = await createTimeoutQuery(
-        queryPromise,
-        10000,
-        'Delete goal timeout'
-      );
 
       if (error) {
         console.error('Error deleting goal:', error);

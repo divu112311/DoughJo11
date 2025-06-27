@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { User } from '@supabase/supabase-js';
-import { supabase, createTimeoutQuery, retryQuery, isSupabaseConfigured, getUserProfile } from '../lib/supabase';
+import { supabase, isSupabaseConfigured, getUserProfile } from '../lib/supabase';
 
 interface UserProfile {
   id: string;
@@ -32,7 +32,7 @@ export const useUserProfile = (user: User | null) => {
       setLoading(false);
       setError(null);
     }
-  }, [user?.id]); // Only depend on user.id to avoid unnecessary re-fetches
+  }, [user?.id]);
 
   const fetchUserData = async () => {
     if (!user?.id || !isSupabaseConfigured) {
@@ -46,7 +46,7 @@ export const useUserProfile = (user: User | null) => {
     try {
       console.log('Fetching user profile and XP for:', user.id);
 
-      // NEW - using the optimized function
+      // Use the optimized function
       const { data: profileData, error } = await getUserProfile(user.id);
 
       if (error) {
@@ -101,26 +101,18 @@ export const useUserProfile = (user: User | null) => {
 
   const createDefaultXP = async (userId: string) => {
     try {
-      const result = await retryQuery(async () => {
-        const insertXPPromise = supabase
-          .from('xp')
-          .insert({
-            user_id: userId,
-            points: 100, // Welcome bonus
-            badges: ['Welcome'],
-          })
-          .select()
-          .maybeSingle();
+      const { data, error } = await supabase
+        .from('xp')
+        .insert({
+          user_id: userId,
+          points: 100, // Welcome bonus
+          badges: ['Welcome'],
+        })
+        .select()
+        .maybeSingle();
 
-        return await createTimeoutQuery(
-          insertXPPromise,
-          8000,
-          'XP creation timeout'
-        );
-      }, 2, 1000);
-
-      if (result.error) {
-        console.error('Error creating default XP:', result.error);
+      if (error) {
+        console.error('Error creating default XP:', error);
         // Set fallback XP data
         setXP({
           id: 'fallback',
@@ -129,7 +121,7 @@ export const useUserProfile = (user: User | null) => {
           badges: ['Welcome']
         });
       } else {
-        setXP(result.data);
+        setXP(data);
         console.log('Default XP created successfully');
       }
     } catch (error: any) {
@@ -156,31 +148,23 @@ export const useUserProfile = (user: User | null) => {
         ? [...(xp.badges || []), newBadge]
         : xp.badges;
 
-      const result = await retryQuery(async () => {
-        const updatePromise = supabase
-          .from('xp')
-          .update({
-            points: newPoints,
-            badges: newBadges,
-          })
-          .eq('user_id', user.id)
-          .select()
-          .maybeSingle();
+      const { data, error } = await supabase
+        .from('xp')
+        .update({
+          points: newPoints,
+          badges: newBadges,
+        })
+        .eq('user_id', user.id)
+        .select()
+        .maybeSingle();
 
-        return await createTimeoutQuery(
-          updatePromise,
-          8000,
-          'XP update timeout'
-        );
-      }, 2, 1000);
-
-      if (result.error) {
-        console.error('Error updating XP:', result.error);
+      if (error) {
+        console.error('Error updating XP:', error);
         return null;
       }
 
-      setXP(result.data);
-      return result.data;
+      setXP(data);
+      return data;
     } catch (error: any) {
       console.error('Error updating XP:', error);
       return null;
