@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 import { User } from '@supabase/supabase-js';
 import PlaidLink from './PlaidLink';
-import { supabase, createTimeoutQuery, isSupabaseConfigured } from '../lib/supabase';
+import { supabase, createTimeoutQuery, isSupabaseConfigured, testConnection } from '../lib/supabase';
 
 interface Account {
   id: string;
@@ -71,6 +71,12 @@ const BankAccounts: React.FC<BankAccountsProps> = ({ user }) => {
         throw new Error('Supabase is not properly configured. Please check your environment variables.');
       }
 
+      // Test connection first
+      const connectionTest = await testConnection();
+      if (!connectionTest) {
+        throw new Error('Unable to connect to database. Please check your Supabase configuration.');
+      }
+
       const queryPromise = supabase
         .from('bank_accounts')
         .select('*')
@@ -79,7 +85,7 @@ const BankAccounts: React.FC<BankAccountsProps> = ({ user }) => {
 
       const { data, error: fetchError } = await createTimeoutQuery(
         queryPromise,
-        10000,
+        20000, // Increased timeout to 20 seconds
         'Bank accounts query timeout - please check your connection'
       );
 
@@ -97,9 +103,11 @@ const BankAccounts: React.FC<BankAccountsProps> = ({ user }) => {
       let errorMessage = 'Failed to load bank accounts';
       
       if (error.message.includes('timeout')) {
-        errorMessage = 'Connection timeout - please check your internet connection and try again';
+        errorMessage = 'Connection timeout - please check your internet connection and try again. If this persists, the Supabase service may be unavailable.';
       } else if (error.message.includes('Supabase is not properly configured')) {
         errorMessage = 'Database not configured - please set up your Supabase connection';
+      } else if (error.message.includes('Unable to connect to database')) {
+        errorMessage = 'Cannot connect to database - please verify your Supabase URL and API key are correct';
       } else if (error.message.includes('Failed to load accounts')) {
         errorMessage = error.message;
       }
@@ -184,7 +192,7 @@ const BankAccounts: React.FC<BankAccountsProps> = ({ user }) => {
 
         await createTimeoutQuery(
           updatePromise,
-          5000,
+          10000, // Increased timeout
           'Update account timeout'
         );
       }
@@ -210,7 +218,7 @@ const BankAccounts: React.FC<BankAccountsProps> = ({ user }) => {
 
       const { error } = await createTimeoutQuery(
         deletePromise,
-        5000,
+        10000, // Increased timeout
         'Delete account timeout'
       );
 
