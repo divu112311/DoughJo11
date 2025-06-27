@@ -18,7 +18,7 @@ interface DashboardProps {
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ user, xp }) => {
-  const { goals, loading: goalsLoading } = useGoals(user);
+  const { goals, loading: goalsLoading, error: goalsError, clearError } = useGoals(user);
 
   const level = Math.floor((xp?.points || 0) / 100) + 1;
 
@@ -203,6 +203,24 @@ const Dashboard: React.FC<DashboardProps> = ({ user, xp }) => {
             <span>New Quest</span>
           </motion.button>
         </div>
+
+        {/* Goals Error Message */}
+        {goalsError && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex items-center space-x-2 text-red-600 text-sm bg-red-50 p-3 rounded-lg border border-red-200 mb-4"
+          >
+            <AlertCircle className="h-4 w-4 flex-shrink-0" />
+            <span>{goalsError}</span>
+            <button
+              onClick={clearError}
+              className="ml-auto text-red-400 hover:text-red-600 transition-colors"
+            >
+              ×
+            </button>
+          </motion.div>
+        )}
 
         {goalsLoading ? (
           <div className="flex items-center justify-center py-8">
