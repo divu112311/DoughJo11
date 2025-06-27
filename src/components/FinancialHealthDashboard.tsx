@@ -6,9 +6,7 @@ import {
   Shield, 
   CreditCard, 
   TrendingUp, 
-  PiggyBank,
-  Activity,
-  Target
+  PiggyBank
 } from 'lucide-react';
 
 interface FinancialMetric {

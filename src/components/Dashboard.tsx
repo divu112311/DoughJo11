@@ -5,16 +5,13 @@ import {
   TrendingUp, 
   Target, 
   Award,
-  Plus,
-  AlertCircle
+  Plus
 } from 'lucide-react';
 import { User } from '@supabase/supabase-js';
 import { useGoals } from '../hooks/useGoals';
 import BankAccounts from './BankAccounts';
 import FinancialHealthDashboard from './FinancialHealthDashboard';
-import RecentAchievements from './RecentAchievements';
-import AILearningInsights from './AILearningInsights';
-import FinancialGoals from './FinancialGoals';
+import WelcomeHeader from './WelcomeHeader';
 
 interface DashboardProps {
   user: User;
@@ -22,7 +19,7 @@ interface DashboardProps {
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ user, xp }) => {
-  const { goals, loading: goalsLoading, error: goalsError, clearError } = useGoals(user);
+  const { goals, loading: goalsLoading } = useGoals(user);
 
   const level = Math.floor((xp?.points || 0) / 100) + 1;
 
@@ -41,53 +38,8 @@ const Dashboard: React.FC<DashboardProps> = ({ user, xp }) => {
 
   return (
     <div className="space-y-8">
-      {/* Welcome Section */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="bg-gradient-to-r from-[#2A6F68] to-[#B76E79] rounded-2xl p-6 text-white relative overflow-hidden"
-      >
-        <div className="absolute top-4 right-4">
-          <motion.div
-            animate={{ 
-              rotate: [0, 5, -5, 0],
-              scale: [1, 1.05, 1]
-            }}
-            transition={{ 
-              duration: 3,
-              repeat: Infinity,
-              repeatType: "reverse"
-            }}
-            className="w-16 h-16 opacity-20"
-          >
-            <img 
-              src="/finapp.png" 
-              alt="DoughJo" 
-              className="w-full h-full object-contain"
-            />
-          </motion.div>
-        </div>
-        
-        <h1 className="text-2xl font-serif font-bold mb-2">
-          Welcome back, {user.user_metadata?.full_name || 'Financial Warrior'}! 🥋
-        </h1>
-        <p className="text-white/90 mb-4">
-          Continue your training in the <span className="text-white font-medium">DoughJo</span> dojo
-        </p>
-        <div className="flex items-center space-x-4">
-          <div className={`flex items-center space-x-2 bg-gradient-to-r ${beltRank.color} text-white rounded-lg px-3 py-1`}>
-            <span className="text-sm">{beltRank.emoji}</span>
-            <span className="text-sm font-medium">{beltRank.name}</span>
-          </div>
-          <div className="flex items-center space-x-2 bg-white/20 rounded-lg px-3 py-1">
-            <Award className="h-4 w-4" />
-            <span className="text-sm">Level {level}</span>
-          </div>
-          <div className="flex items-center space-x-2 bg-white/20 rounded-lg px-3 py-1">
-            <span className="text-sm">{xp?.points || 0} XP</span>
-          </div>
-        </div>
-      </motion.div>
+      {/* Welcome Header */}
+      <WelcomeHeader user={user} xp={xp} />
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -202,62 +154,104 @@ const Dashboard: React.FC<DashboardProps> = ({ user, xp }) => {
           </motion.div>
         </div>
 
-        {/* Right Column */}
+        {/* Right Column - Goals */}
         <div className="space-y-6">
-          {/* Financial Goals */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.7 }}
+            className="bg-white rounded-xl p-6 shadow-sm border border-gray-200"
           >
-            <FinancialGoals user={user} compact />
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold text-[#333333]">Financial Quests</h3>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="flex items-center space-x-2 bg-[#2A6F68] text-white px-4 py-2 rounded-lg hover:bg-[#235A54] transition-colors"
+              >
+                <Plus className="h-4 w-4" />
+                <span>New Quest</span>
+              </motion.button>
+            </div>
+
+            {goalsLoading ? (
+              <div className="flex items-center justify-center py-8">
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                  className="w-6 h-6 border-2 border-[#2A6F68] border-t-transparent rounded-full"
+                />
+              </div>
+            ) : goals.length === 0 ? (
+              <div className="text-center py-8">
+                <div className="w-16 h-16 mx-auto mb-4">
+                  <img 
+                    src="/finapp.png" 
+                    alt="DoughJo" 
+                    className="w-full h-full object-contain opacity-50"
+                  />
+                </div>
+                <p className="text-gray-500 mb-4">No quests yet, young warrior</p>
+                <p className="text-sm text-gray-400">Begin your journey by setting your first financial goal!</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {goals.map((goal, index) => {
+                  const progress = goal.target_amount 
+                    ? ((goal.saved_amount || 0) / goal.target_amount) * 100 
+                    : 0;
+                  
+                  return (
+                    <div key={goal.id} className="border-b border-gray-100 pb-4 last:border-b-0">
+                      <div className="flex justify-between items-center mb-2">
+                        <h4 className="font-medium text-[#333333]">🎯 {goal.name}</h4>
+                        <span className="text-sm text-gray-600">
+                          ${(goal.saved_amount || 0).toLocaleString()} / ${(goal.target_amount || 0).toLocaleString()}
+                        </span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <motion.div
+                          initial={{ width: 0 }}
+                          animate={{ width: `${progress}%` }}
+                          transition={{ delay: 0.8 + index * 0.1, duration: 1 }}
+                          className="bg-gradient-to-r from-[#2A6F68] to-[#B76E79] h-2 rounded-full"
+                        />
+                      </div>
+                      <p className="text-sm text-gray-600 mt-1">{progress.toFixed(1)}% complete</p>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </motion.div>
 
-          {/* Recent Achievements */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8 }}
-          >
-            <RecentAchievements compact />
-          </motion.div>
-
-          {/* AI Learning Insights */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.9 }}
-          >
-            <AILearningInsights compact />
-          </motion.div>
+          {/* Badges Section */}
+          {xp?.badges && xp.badges.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8 }}
+              className="bg-white rounded-xl p-6 shadow-sm border border-gray-200"
+            >
+              <h3 className="text-lg font-semibold text-[#333333] mb-4">Earned Achievements</h3>
+              <div className="flex flex-wrap gap-3">
+                {xp.badges.map((badge, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.9 + index * 0.1 }}
+                    className="flex items-center space-x-2 bg-gradient-to-r from-[#2A6F68] to-[#B76E79] text-white px-3 py-2 rounded-full text-sm"
+                  >
+                    <Award className="h-4 w-4" />
+                    <span>{badge}</span>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+          )}
         </div>
       </div>
-
-      {/* Badges Section */}
-      {xp?.badges && xp.badges.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.0 }}
-          className="bg-white rounded-xl p-6 shadow-sm border border-gray-200"
-        >
-          <h3 className="text-lg font-semibold text-[#333333] mb-4">Earned Achievements</h3>
-          <div className="flex flex-wrap gap-3">
-            {xp.badges.map((badge, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 1.1 + index * 0.1 }}
-                className="flex items-center space-x-2 bg-gradient-to-r from-[#2A6F68] to-[#B76E79] text-white px-3 py-2 rounded-full text-sm"
-              >
-                <Award className="h-4 w-4" />
-                <span>{badge}</span>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-      )}
     </div>
   );
 };

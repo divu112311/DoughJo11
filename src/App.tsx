@@ -32,13 +32,16 @@ function App() {
 
   if (authLoading || profileLoading) {
     return (
-      <div className="min-h-screen bg-[#FAF9F6] flex items-center justify-center">
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-          className="w-8 h-8 border-2 border-[#2A6F68] border-t-transparent rounded-full"
-        />
-      </div>
+      <>
+        <ConnectionStatus />
+        <div className="min-h-screen bg-[#FAF9F6] flex items-center justify-center">
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+            className="w-8 h-8 border-2 border-[#2A6F68] border-t-transparent rounded-full"
+          />
+        </div>
+      </>
     );
   }
 
@@ -182,7 +185,7 @@ function App() {
               exit={{ opacity: 0, x: 20 }}
               transition={{ duration: 0.3 }}
             >
-              <ChatInterface user={user} onXPUpdate={handleXPUpdate} />
+              <ChatInterface user={user} xp={xp} onXPUpdate={handleXPUpdate} />
             </motion.div>
           ) : activeView === 'dashboard' ? (
             <motion.div
@@ -202,7 +205,7 @@ function App() {
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3 }}
             >
-              <LearningCenter user={user} userLevel={level} onXPUpdate={handleXPUpdate} />
+              <LearningCenter user={user} userLevel={level} xp={xp} onXPUpdate={handleXPUpdate} />
             </motion.div>
           )}
         </AnimatePresence>
