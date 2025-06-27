@@ -1,6 +1,0 @@
-# Supabase Configuration
-VITE_SUPABASE_URL=https://hsmapspdbtdkdqscwujd.supabase.co
-VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhzbWFwc3BkYnRka2Rxc2N3dWpkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA5NjYwMzcsImV4cCI6MjA2NjU0MjAzN30.g_RoSR1M_pN0q78Ldr9Boix1adUwC8yUuzXyAw0W47U
-
-# OpenAI Configuration (for Edge Function)
-OPENAI_API_KEY=your_openai_api_key_here
