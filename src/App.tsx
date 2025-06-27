@@ -50,11 +50,7 @@ function App() {
                 className="flex items-center space-x-3"
               >
                 <div className="w-10 h-10 bg-gradient-to-br from-[#2A6F68] to-[#B76E79] rounded-full flex items-center justify-center">
-                  <img 
-                    src="/Teal & Rose Gold.png" 
-                    alt="DoughJo Mascot" 
-                    className="w-8 h-8 object-contain"
-                  />
+                  <span className="text-2xl">🥋</span>
                 </div>
                 <h1 className="text-2xl font-serif font-bold text-[#333333]">
                   DoughJo

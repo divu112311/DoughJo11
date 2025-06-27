@@ -58,13 +58,9 @@ const LoginForm: React.FC = () => {
                 repeat: Infinity,
                 repeatType: "reverse"
               }}
-              className="w-16 h-16 mr-3"
+              className="w-16 h-16 mr-3 text-6xl"
             >
-              <img 
-                src="/Teal & Rose Gold.png" 
-                alt="DoughJo Mascot" 
-                className="w-full h-full object-contain"
-              />
+              🥋
             </motion.div>
             <h1 className="text-4xl font-serif font-bold text-[#333333]">DoughJo</h1>
           </div>
