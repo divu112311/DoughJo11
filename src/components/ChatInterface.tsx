@@ -84,7 +84,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, xp, onXPUpdate }) =
       {/* Welcome Header */}
       <WelcomeHeader user={user} xp={xp} />
 
-      <div className="flex h-[calc(100vh-280px)] max-w-7xl mx-auto gap-4">
+      <div className="flex h-[calc(100vh-280px)] max-w-7xl mx-auto gap-6">
         {/* XP Gained Animation */}
         <AnimatePresence>
           {xpGained && (
@@ -100,8 +100,16 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, xp, onXPUpdate }) =
           )}
         </AnimatePresence>
 
+        {/* Left Sidebar - Quick Actions & Financial Analysis */}
+        {showSidebar && (
+          <div className="w-[300px] shrink-0 hidden lg:block space-y-4">
+            <QuickActions onQuickAction={handleQuickAction} />
+            <FinancialAnalysis user={user} />
+          </div>
+        )}
+
         {/* Main Chat Area */}
-        <div className={`${showSidebar ? 'flex-1' : 'w-full'} flex flex-col bg-cream-50 rounded-2xl shadow-sm border border-cream-200 min-w-0`}>
+        <div className="flex-1 flex flex-col bg-cream-50 rounded-2xl shadow-sm border border-cream-200 min-w-0">
           {/* Chat Header */}
           <motion.div
             initial={{ opacity: 0, y: -20 }}
@@ -145,10 +153,10 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, xp, onXPUpdate }) =
               <div className="flex items-center space-x-2">
                 <button
                   onClick={() => setShowSidebar(!showSidebar)}
-                  className="p-2 text-charcoal-500 hover:text-sage-600 transition-colors rounded-lg hover:bg-cream-100 flex items-center space-x-1"
+                  className="p-2 text-charcoal-500 hover:text-sage-600 transition-colors rounded-lg hover:bg-cream-100 flex items-center space-x-1 lg:hidden"
                   title="Toggle Financial AI Panel"
                 >
-                  {showSidebar ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+                  {showSidebar ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
                   <span className="text-sm hidden sm:block">
                     {showSidebar ? 'Hide' : 'Show'} AI Panel
                   </span>
@@ -313,38 +321,35 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, xp, onXPUpdate }) =
             animate={{ opacity: 1, y: 0 }}
             className="p-4 border-t border-cream-200 bg-gradient-to-r from-cream-50 to-cream-100 rounded-b-2xl"
           >
-           <div className="flex items-center space-x-2">
-    <input
-      type="text"
-      value={inputMessage}
-      onChange={(e) => setInputMessage(e.target.value)}
-      onKeyDown={handleKeyPress}
-      placeholder="Type your message..."
-      className="flex-1 p-3 rounded-lg border border-sage-300 bg-white focus:outline-none focus:ring-2 focus:ring-sage-500 text-sm"
-    />
-    <button
-      onClick={handleSendMessage}
-      disabled={!inputMessage.trim() || loading}
-      className="p-3 rounded-lg bg-sage-600 text-white hover:bg-sage-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
-    >
-      <Send className="h-4 w-4" />
-    </button>
-  </div>
-</motion.div>
-          </div> 
+            <div className="flex items-center space-x-2">
+              <input
+                type="text"
+                value={inputMessage}
+                onChange={(e) => setInputMessage(e.target.value)}
+                onKeyDown={handleKeyPress}
+                placeholder="Type your message..."
+                className="flex-1 p-3 rounded-lg border border-sage-300 bg-white focus:outline-none focus:ring-2 focus:ring-sage-500 text-sm"
+              />
+              <button
+                onClick={handleSendMessage}
+                disabled={!inputMessage.trim() || loading}
+                className="p-3 rounded-lg bg-sage-600 text-white hover:bg-sage-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
+              >
+                <Send className="h-4 w-4" />
+              </button>
+            </div>
+          </motion.div>
+        </div>
 
-        {/* Sidebar Panel */}
-{showSidebar && (
-  <div className="w-[300px] shrink-0 hidden md:block">
-    <FinancialHealthDashboard user={user} />
-    <FinancialAnalysis user={user} />
-    <QuickActions onQuickAction={handleQuickAction} />
-  </div>
-)}
-</div> 
-</div> 
-
-    );
+        {/* Right Sidebar - Financial Health Dashboard */}
+        {showSidebar && (
+          <div className="w-[300px] shrink-0 hidden lg:block">
+            <FinancialHealthDashboard user={user} />
+          </div>
+        )}
+      </div>
+    </div>
+  );
 };
 
 export default ChatInterface;

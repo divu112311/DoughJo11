@@ -18,11 +18,11 @@ interface QuickAction {
 }
 
 interface QuickActionsProps {
-  onActionClick: (message: string) => void;
+  onQuickAction: (message: string) => void;
   compact?: boolean;
 }
 
-const QuickActions: React.FC<QuickActionsProps> = ({ onActionClick, compact = false }) => {
+const QuickActions: React.FC<QuickActionsProps> = ({ onQuickAction, compact = false }) => {
   const quickActions: QuickAction[] = [
     {
       id: 'debt-consolidation',
@@ -30,7 +30,7 @@ const QuickActions: React.FC<QuickActionsProps> = ({ onActionClick, compact = fa
       description: 'Find ways to reduce interest',
       icon: Calculator,
       color: 'bg-gradient-to-r from-bronze-500 to-rosegold-500',
-      action: () => onActionClick('Analyze my debt consolidation options and show potential savings')
+      action: () => onQuickAction('Analyze my debt consolidation options and show potential savings')
     },
     {
       id: 'investment-review',
@@ -38,7 +38,7 @@ const QuickActions: React.FC<QuickActionsProps> = ({ onActionClick, compact = fa
       description: 'Optimize asset allocation',
       icon: BarChart3,
       color: 'bg-gradient-to-r from-sage-600 to-teal-500',
-      action: () => onActionClick('Review my investment portfolio and suggest optimizations')
+      action: () => onQuickAction('Review my investment portfolio and suggest optimizations')
     },
     {
       id: 'emergency-fund',
@@ -46,7 +46,7 @@ const QuickActions: React.FC<QuickActionsProps> = ({ onActionClick, compact = fa
       description: 'Build financial security',
       icon: Shield,
       color: 'bg-gradient-to-r from-teal-500 to-sage-500',
-      action: () => onActionClick('Help me create a plan to build my emergency fund to 6 months of expenses')
+      action: () => onQuickAction('Help me create a plan to build my emergency fund to 6 months of expenses')
     }
   ];
 

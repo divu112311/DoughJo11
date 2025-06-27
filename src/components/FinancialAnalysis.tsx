@@ -17,11 +17,11 @@ interface AnalysisMetric {
 }
 
 interface FinancialAnalysisProps {
-  userName: string;
+  user: any;
   compact?: boolean;
 }
 
-const FinancialAnalysis: React.FC<FinancialAnalysisProps> = ({ userName, compact = false }) => {
+const FinancialAnalysis: React.FC<FinancialAnalysisProps> = ({ user, compact = false }) => {
   const analysisMetrics: AnalysisMetric[] = [
     {
       label: 'Overall Score',

@@ -28,9 +28,9 @@ const WelcomeHeader: React.FC<WelcomeHeaderProps> = ({ user, xp }) => {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-gradient-to-r from-sage-600/90 to-bronze-500/90 backdrop-blur-sm rounded-2xl p-6 text-white relative overflow-hidden mb-8 border border-white/20 shadow-lg"
+      className="bg-teal-600 rounded-2xl p-4 text-white relative overflow-hidden mb-8 border border-teal-500 shadow-lg"
     >
-      <div className="absolute top-4 right-4">
+      <div className="absolute top-3 right-3">
         <motion.div
           animate={{ 
             rotate: [0, 5, -5, 0],
@@ -41,7 +41,7 @@ const WelcomeHeader: React.FC<WelcomeHeaderProps> = ({ user, xp }) => {
             repeat: Infinity,
             repeatType: "reverse"
           }}
-          className="w-12 h-12 opacity-30"
+          className="w-8 h-8 opacity-30"
         >
           <img 
             src="/finapp.png" 
@@ -51,12 +51,10 @@ const WelcomeHeader: React.FC<WelcomeHeaderProps> = ({ user, xp }) => {
         </motion.div>
       </div>
       
-      <h1 className="text-xl font-serif font-bold mb-2">
+      <h1 className="text-lg font-serif font-bold mb-3 text-teal-50">
         Welcome back, {user.user_metadata?.full_name || 'Financial Warrior'}! 🥋
       </h1>
-      <p className="text-white/90 mb-4 text-sm">
-        Continue your training in the <span className="text-white font-medium">DoughJo</span> dojo
-      </p>
+      
       <div className="flex items-center space-x-3">
         <div className={`flex items-center space-x-2 bg-gradient-to-r ${beltRank.color} text-white rounded-lg px-3 py-1 shadow-sm`}>
           <span className="text-xs">{beltRank.emoji}</span>
