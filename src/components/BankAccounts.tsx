@@ -11,7 +11,9 @@ import {
   Trash2,
   RefreshCw,
   AlertCircle,
-  CheckCircle
+  CheckCircle,
+  Zap,
+  DollarSign
 } from 'lucide-react';
 import { User } from '@supabase/supabase-js';
 import PlaidLink from './PlaidLink';
@@ -189,7 +191,7 @@ const BankAccounts: React.FC<BankAccountsProps> = ({ user }) => {
 
   if (loading && accounts.length === 0) {
     return (
-      <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+      <div className="bg-gray-50 rounded-xl p-6">
         <div className="flex items-center justify-center py-8">
           <motion.div
             animate={{ rotate: 360 }}
@@ -206,31 +208,33 @@ const BankAccounts: React.FC<BankAccountsProps> = ({ user }) => {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h3 className="text-lg font-semibold text-[#333333]">Bank Accounts</h3>
+          <h3 className="text-lg font-semibold text-[#333333]">Connected Accounts</h3>
           <p className="text-sm text-gray-600">
             {accounts.length > 0 
               ? `${accounts.length} connected account${accounts.length !== 1 ? 's' : ''}`
-              : 'Connect your bank accounts'
+              : 'No accounts connected yet'
             }
           </p>
         </div>
         <div className="flex items-center space-x-2">
-          <button
-            onClick={() => setShowBalances(!showBalances)}
-            className="p-2 text-gray-500 hover:text-[#2A6F68] transition-colors"
-            title={showBalances ? 'Hide balances' : 'Show balances'}
-          >
-            {showBalances ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-          </button>
           {accounts.length > 0 && (
-            <button
-              onClick={handleRefreshAccounts}
-              disabled={refreshing}
-              className="p-2 text-gray-500 hover:text-[#2A6F68] transition-colors disabled:opacity-50"
-              title="Refresh account data"
-            >
-              <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
-            </button>
+            <>
+              <button
+                onClick={() => setShowBalances(!showBalances)}
+                className="p-2 text-gray-500 hover:text-[#2A6F68] transition-colors"
+                title={showBalances ? 'Hide balances' : 'Show balances'}
+              >
+                {showBalances ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+              <button
+                onClick={handleRefreshAccounts}
+                disabled={refreshing}
+                className="p-2 text-gray-500 hover:text-[#2A6F68] transition-colors disabled:opacity-50"
+                title="Refresh account data"
+              >
+                <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
+              </button>
+            </>
           )}
           <motion.button
             whileHover={{ scale: 1.05 }}
@@ -244,36 +248,56 @@ const BankAccounts: React.FC<BankAccountsProps> = ({ user }) => {
         </div>
       </div>
 
-      {/* Setup Notice for New Users */}
+      {/* Quick Start Guide for New Users */}
       {accounts.length === 0 && (
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-6">
-          <div className="flex items-start space-x-3">
-            <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-              <CreditCard className="h-5 w-5 text-blue-600" />
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-6">
+          <div className="flex items-start space-x-4">
+            <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+              <Zap className="h-6 w-6 text-blue-600" />
             </div>
-            <div>
-              <h4 className="font-medium text-blue-900 mb-2">Connect Your Bank Accounts</h4>
-              <p className="text-blue-800 text-sm mb-3">
+            <div className="flex-1">
+              <h4 className="font-bold text-blue-900 mb-2">🚀 Quick Start: Connect Your First Account</h4>
+              <p className="text-blue-800 text-sm mb-4">
                 DoughJo can automatically track your finances by securely connecting to your bank accounts.
+                Choose your preferred connection method:
               </p>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-                <div className="flex items-center space-x-2 text-blue-700">
-                  <CheckCircle className="h-4 w-4" />
-                  <span>Bank-level security</span>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div className="bg-white/60 rounded-lg p-4 border border-blue-200">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <span className="text-lg">🎭</span>
+                    <span className="font-medium text-blue-900">Demo Mode</span>
+                  </div>
+                  <p className="text-sm text-blue-700 mb-2">Perfect for testing and demos</p>
+                  <ul className="text-xs text-blue-600 space-y-1">
+                    <li>• Chase Checking ($2,500)</li>
+                    <li>• Chase Savings ($15,000)</li>
+                    <li>• Credit Card (-$850)</li>
+                  </ul>
                 </div>
-                <div className="flex items-center space-x-2 text-blue-700">
-                  <CheckCircle className="h-4 w-4" />
-                  <span>Read-only access</span>
-                </div>
-                <div className="flex items-center space-x-2 text-blue-700">
-                  <CheckCircle className="h-4 w-4" />
-                  <span>Automatic balance updates</span>
-                </div>
-                <div className="flex items-center space-x-2 text-blue-700">
-                  <CheckCircle className="h-4 w-4" />
-                  <span>Demo & sandbox modes</span>
+                
+                <div className="bg-white/60 rounded-lg p-4 border border-blue-200">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <span className="text-lg">🏦</span>
+                    <span className="font-medium text-blue-900">Plaid Sandbox</span>
+                  </div>
+                  <p className="text-sm text-blue-700 mb-2">Real Plaid integration testing</p>
+                  <ul className="text-xs text-blue-600 space-y-1">
+                    <li>• Real test banks</li>
+                    <li>• user_good / pass_good</li>
+                    <li>• Production-ready</li>
+                  </ul>
                 </div>
               </div>
+
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setShowPlaidLink(true)}
+                className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+              >
+                Connect Your First Account →
+              </motion.button>
             </div>
           </div>
         </div>
@@ -299,7 +323,7 @@ const BankAccounts: React.FC<BankAccountsProps> = ({ user }) => {
                 </p>
               </div>
               <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-                <TrendingUp className="h-6 w-6" />
+                <DollarSign className="h-6 w-6" />
               </div>
             </div>
           </motion.div>
@@ -332,10 +356,10 @@ const BankAccounts: React.FC<BankAccountsProps> = ({ user }) => {
       )}
 
       {/* Accounts List */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+      <div className="bg-gray-50 rounded-xl border border-gray-200">
         {accounts.length === 0 ? (
           <div className="p-8 text-center">
-            <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+            <div className="w-16 h-16 mx-auto mb-4 bg-gray-200 rounded-full flex items-center justify-center">
               <CreditCard className="h-8 w-8 text-gray-400" />
             </div>
             <h4 className="text-lg font-medium text-[#333333] mb-2">Ready to connect?</h4>
@@ -359,7 +383,7 @@ const BankAccounts: React.FC<BankAccountsProps> = ({ user }) => {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="p-4 hover:bg-gray-50 transition-colors"
+                className="p-4 hover:bg-gray-100 transition-colors bg-white first:rounded-t-xl last:rounded-b-xl"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
@@ -457,7 +481,7 @@ const BankAccounts: React.FC<BankAccountsProps> = ({ user }) => {
                   Cancel
                 </button>
               </div>
-            </motion.div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

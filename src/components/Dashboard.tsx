@@ -35,7 +35,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user, xp }) => {
   const beltRank = getBeltRank(level);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Welcome Section */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -67,7 +67,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user, xp }) => {
           Welcome back, Financial Warrior! 🥋
         </h1>
         <p className="text-white/90 mb-4">
-          Your training continues in the <span className="text-white font-medium">DoughJo</span>
+          Your training continues in the <span className="text-white font-medium">DoughJo</span> dojo
         </p>
         <div className="flex items-center space-x-4">
           <div className={`flex items-center space-x-2 bg-gradient-to-r ${beltRank.color} text-white rounded-lg px-3 py-1`}>
@@ -156,13 +156,32 @@ const Dashboard: React.FC<DashboardProps> = ({ user, xp }) => {
         </motion.div>
       </div>
 
-      {/* Bank Accounts Section */}
+      {/* Bank Accounts Section - This should be prominently visible */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5 }}
+        className="bg-white rounded-xl p-1 shadow-sm border border-gray-200"
       >
-        <BankAccounts user={user} />
+        <div className="p-5">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-xl font-bold text-[#333333] flex items-center space-x-2">
+                <span>🏦</span>
+                <span>Bank Accounts</span>
+              </h2>
+              <p className="text-gray-600 text-sm mt-1">
+                Connect your accounts to track finances automatically
+              </p>
+            </div>
+            <div className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-medium">
+              Demo Ready!
+            </div>
+          </div>
+          
+          {/* Embedded Bank Accounts Component */}
+          <BankAccounts user={user} />
+        </div>
       </motion.div>
 
       {/* Goals Section */}
