@@ -12,6 +12,10 @@ import {
 } from 'lucide-react';
 import { User } from '@supabase/supabase-js';
 import { useChat } from '../hooks/useChat';
+import WelcomeHeader from './WelcomeHeader';
+import FinancialHealthDashboard from './FinancialHealthDashboard';
+import FinancialAnalysis from './FinancialAnalysis';
+import QuickActions from './QuickActions';
 
 interface ChatInterfaceProps {
   user: User;
@@ -77,6 +81,9 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, xp, onXPUpdate }) =
 
   return (
     <div className="space-y-6">
+      {/* Welcome Header */}
+      <WelcomeHeader user={user} xp={xp} />
+
       <div className="flex h-[calc(100vh-280px)] max-w-7xl mx-auto gap-4">
         {/* XP Gained Animation */}
         <AnimatePresence>
@@ -306,105 +313,38 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, xp, onXPUpdate }) =
             animate={{ opacity: 1, y: 0 }}
             className="p-4 border-t border-cream-200 bg-gradient-to-r from-cream-50 to-cream-100 rounded-b-2xl"
           >
-            <div className="flex space-x-3">
-              <div className="flex-1 relative">
-                <textarea
-                  value={inputMessage}
-                  onChange={(e) => setInputMessage(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  placeholder="Ask Sensei DoughJo for financial wisdom..."
-                  rows={1}
-                  className="w-full px-4 py-3 border border-cream-300 rounded-lg focus:ring-2 focus:ring-sage-500 focus:border-transparent resize-none transition-all bg-white"
-                  style={{ minHeight: '44px', maxHeight: '120px' }}
-                />
-              </div>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={handleSendMessage}
-                disabled={!inputMessage.trim() || loading}
-                className="bg-gradient-to-r from-sage-600 to-bronze-500 text-white p-3 rounded-lg hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-              >
-                <Send className="h-5 w-5" />
-              </motion.button>
-            </div>
-          </div>
-        </div>
+           <div className="flex items-center space-x-2">
+    <input
+      type="text"
+      value={inputMessage}
+      onChange={(e) => setInputMessage(e.target.value)}
+      onKeyDown={handleKeyPress}
+      placeholder="Type your message..."
+      className="flex-1 p-3 rounded-lg border border-sage-300 bg-white focus:outline-none focus:ring-2 focus:ring-sage-500 text-sm"
+    />
+    <button
+      onClick={handleSendMessage}
+      disabled={!inputMessage.trim() || loading}
+      className="p-3 rounded-lg bg-sage-600 text-white hover:bg-sage-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
+    >
+      <Send className="h-4 w-4" />
+    </button>
+  </div>
+</motion.div>
+          </div> 
 
-        {/* Sidebar - Financial AI Section */}
-        <AnimatePresence>
-          {showSidebar && (
-            <motion.div
-              initial={{ x: 300, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              exit={{ x: 300, opacity: 0 }}
-              className="w-72 space-y-3 flex-shrink-0"
-            >
-              {/* Financial Health Dashboard */}
-              <div className="bg-cream-50 rounded-2xl shadow-sm border border-cream-200 p-4">
-                <h3 className="text-base font-serif font-bold text-charcoal-800 mb-3 flex items-center space-x-2">
-                  <Activity className="h-4 w-4 text-sage-600" />
-                  <span>Financial Health</span>
-                </h3>
-                <div className="space-y-2">
-                  <div className="bg-sage-50 rounded-lg p-3 border border-cream-200">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-charcoal-700">Health Score</span>
-                      <span className="text-lg font-bold text-sage-600">7.2/10</span>
-                    </div>
-                  </div>
-                  <div className="bg-bronze-50 rounded-lg p-3 border border-cream-200">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-charcoal-700">Net Worth</span>
-                      <span className="text-lg font-bold text-bronze-600">$22,000</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Quick Actions */}
-              <div className="bg-cream-50 rounded-2xl shadow-sm border border-cream-200 p-4">
-                <h3 className="text-base font-serif font-bold text-charcoal-800 mb-3 flex items-center space-x-2">
-                  <Target className="h-4 w-4 text-sage-600" />
-                  <span>Quick Actions</span>
-                </h3>
-                
-                <div className="space-y-2">
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => handleQuickAction('Analyze my debt consolidation options and show potential savings')}
-                    className="w-full text-left p-3 rounded-lg bg-gradient-to-r from-cream-100 to-cream-200 hover:from-sage-50 hover:to-bronze-50 transition-all border border-cream-300 hover:border-sage-300"
-                  >
-                    <div className="text-sm font-medium text-charcoal-800 mb-1">
-                      Analyze debt consolidation
-                    </div>
-                    <div className="text-xs text-charcoal-600">
-                      Find ways to reduce interest
-                    </div>
-                  </motion.button>
-                  
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => handleQuickAction('Review my investment portfolio and suggest optimizations')}
-                    className="w-full text-left p-3 rounded-lg bg-gradient-to-r from-cream-100 to-cream-200 hover:from-sage-50 hover:to-bronze-50 transition-all border border-cream-300 hover:border-sage-300"
-                  >
-                    <div className="text-sm font-medium text-charcoal-800 mb-1">
-                      Review investments
-                    </div>
-                    <div className="text-xs text-charcoal-600">
-                      Optimize asset allocation
-                    </div>
-                  </motion.button>
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-    </div>
-  );
+        {/* Sidebar Panel */}
+{showSidebar && (
+  <div className="w-[300px] shrink-0 hidden md:block">
+    <FinancialHealthDashboard user={user} />
+    <FinancialAnalysis user={user} />
+    <QuickActions onQuickAction={handleQuickAction} />
+  </div>
+)}
+</div> 
+</div> 
+
+    );
 };
 
 export default ChatInterface;
