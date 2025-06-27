@@ -34,7 +34,7 @@ function App() {
     return (
       <>
         <ConnectionStatus />
-        <div className="min-h-screen bg-grey-50 flex items-center justify-center">
+        <div className="min-h-screen bg-gradient-to-br from-gold-50 via-warmyellow-50 to-gold-100 flex items-center justify-center">
           <motion.div
             animate={{ rotate: 360 }}
             transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
@@ -59,13 +59,13 @@ function App() {
     return (
       <>
         <ConnectionStatus />
-        <div className="min-h-screen bg-grey-50 flex items-center justify-center p-4">
+        <div className="min-h-screen bg-gradient-to-br from-gold-50 via-warmyellow-50 to-gold-100 flex items-center justify-center p-4">
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-8 border border-grey-200 text-center max-w-md w-full"
+            className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-8 border border-gold-200 text-center max-w-md w-full"
           >
-            <div className="w-16 h-16 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="w-16 h-16 bg-gold-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <motion.div
                 animate={{ scale: [1, 1.1, 1] }}
                 transition={{ duration: 2, repeat: Infinity }}
@@ -95,14 +95,14 @@ function App() {
   const level = Math.floor((xp?.points || 0) / 100) + 1;
 
   return (
-    <div className="min-h-screen bg-grey-50">
+    <div className="min-h-screen bg-gradient-to-br from-gold-50 via-warmyellow-50 to-gold-100">
       <ConnectionStatus />
       
-      {/* Header */}
+      {/* Header with warm gold background */}
       <motion.header 
         initial={{ y: -100 }}
         animate={{ y: 0 }}
-        className="bg-white/80 backdrop-blur-md border-b border-grey-200 sticky top-0 z-40"
+        className="bg-gradient-to-r from-gold-400 via-warmyellow-400 to-gold-500 backdrop-blur-md border-b border-gold-300 sticky top-0 z-40 shadow-lg"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
@@ -111,20 +111,20 @@ function App() {
                 whileHover={{ scale: 1.05 }}
                 className="flex items-center space-x-3"
               >
-                <div className="w-10 h-10 bg-gradient-to-br from-brand-teal to-brand-rosegold rounded-full flex items-center justify-center p-1">
+                <div className="w-10 h-10 bg-gradient-to-br from-brand-teal to-brand-rosegold rounded-full flex items-center justify-center p-1 shadow-md">
                   <img 
                     src="/finapp.png" 
                     alt="DoughJo Mascot" 
                     className="w-8 h-8 object-contain"
                   />
                 </div>
-                <h1 className="text-2xl font-serif font-bold text-brand-teal">
+                <h1 className="text-2xl font-serif font-bold text-white drop-shadow-md">
                   DoughJo
                 </h1>
               </motion.div>
-              <div className="flex items-center space-x-2 bg-brand-teal text-white px-3 py-1 rounded-full text-sm">
+              <div className="flex items-center space-x-2 bg-white/20 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm shadow-md">
                 <span>Level {level}</span>
-                <span className="text-rosegold-300">•</span>
+                <span className="text-gold-200">•</span>
                 <span>{xp?.points || 0} XP</span>
               </div>
             </div>
@@ -133,30 +133,30 @@ function App() {
               <nav className="flex space-x-2">
                 <button
                   onClick={() => setActiveView('chat')}
-                  className={`px-4 py-2 rounded-lg transition-all ${
+                  className={`px-4 py-2 rounded-lg transition-all font-medium ${
                     activeView === 'chat'
-                      ? 'bg-brand-teal text-white'
-                      : 'text-charcoal-700 hover:bg-grey-200'
+                      ? 'bg-white/30 backdrop-blur-sm text-white shadow-md'
+                      : 'text-white/80 hover:bg-white/20 hover:text-white'
                   }`}
                 >
                   Chat
                 </button>
                 <button
                   onClick={() => setActiveView('dashboard')}
-                  className={`px-4 py-2 rounded-lg transition-all ${
+                  className={`px-4 py-2 rounded-lg transition-all font-medium ${
                     activeView === 'dashboard'
-                      ? 'bg-brand-teal text-white'
-                      : 'text-charcoal-700 hover:bg-grey-200'
+                      ? 'bg-white/30 backdrop-blur-sm text-white shadow-md'
+                      : 'text-white/80 hover:bg-white/20 hover:text-white'
                   }`}
                 >
                   Dashboard
                 </button>
                 <button
                   onClick={() => setActiveView('learning')}
-                  className={`px-4 py-2 rounded-lg transition-all ${
+                  className={`px-4 py-2 rounded-lg transition-all font-medium ${
                     activeView === 'learning'
-                      ? 'bg-brand-teal text-white'
-                      : 'text-charcoal-700 hover:bg-grey-200'
+                      ? 'bg-white/30 backdrop-blur-sm text-white shadow-md'
+                      : 'text-white/80 hover:bg-white/20 hover:text-white'
                   }`}
                 >
                   Learning
@@ -165,7 +165,7 @@ function App() {
               
               <button
                 onClick={signOut}
-                className="text-charcoal-700 hover:text-brand-rosegold transition-colors"
+                className="text-white/80 hover:text-white transition-colors font-medium"
               >
                 Sign Out
               </button>
