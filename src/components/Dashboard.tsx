@@ -186,7 +186,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user, xp }) => {
               <div className="text-center py-8">
                 <div className="w-16 h-16 mx-auto mb-4">
                   <img 
-                    src="/asset/finapp.png" 
+                    src="./asset/finapp.png" 
                     alt="DoughJo" 
                     className="w-full h-full object-contain opacity-50"
                   />

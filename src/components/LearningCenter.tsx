@@ -38,7 +38,7 @@ const LearningCenter: React.FC<LearningCenterProps> = ({ user, userLevel, xp, on
       >
         <h3 className="text-lg font-semibold text-[#333333] mb-3 flex items-center space-x-2">
           <img 
-            src="/asset/finapp.png" 
+            src="./asset/finapp.png" 
             alt="DoughJo" 
             className="w-6 h-6 object-contain"
           />

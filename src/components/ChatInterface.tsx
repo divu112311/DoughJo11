@@ -143,7 +143,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, xp, onXPUpdate }) =
                   className="w-10 h-10 bg-gradient-to-br from-brand-teal to-brand-rosegold rounded-full flex items-center justify-center p-1"
                 >
                   <img 
-                    src="/asset/finapp.png" 
+                    src="./asset/finapp.png" 
                     alt="DoughJo Sensei" 
                     className="w-full h-full object-contain"
                   />
@@ -225,7 +225,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, xp, onXPUpdate }) =
                   className="w-16 h-16 mx-auto mb-4"
                 >
                   <img 
-                    src="/asset/finapp.png" 
+                    src="./asset/finapp.png" 
                     alt="DoughJo Sensei" 
                     className="w-full h-full object-contain opacity-70"
                   />
@@ -276,7 +276,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, xp, onXPUpdate }) =
                     {message.sender !== 'user' && (
                       <div className="w-5 h-5 mt-1 flex-shrink-0">
                         <img 
-                          src="/asset/finapp.png" 
+                          src="./asset/finapp.png" 
                           alt="DoughJo" 
                           className="w-full h-full object-contain"
                         />
@@ -324,7 +324,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, xp, onXPUpdate }) =
                   <div className="flex items-center space-x-2">
                     <div className="w-5 h-5">
                       <img 
-                        src="/asset/finapp.png" 
+                        src="./asset/finapp.png" 
                         alt="DoughJo" 
                         className="w-full h-full object-contain"
                       />
