@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { usePlaidLink } from 'react-plaid-link';
 import { motion } from 'framer-motion';
-import { CreditCard, AlertCircle, CheckCircle, Loader, Info } from 'lucide-react';
+import { CreditCard, AlertCircle, CheckCircle, Loader, Info, ExternalLink } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 interface PlaidLinkProps {
@@ -15,6 +15,7 @@ const PlaidLink: React.FC<PlaidLinkProps> = ({ onSuccess, onError, userId }) => 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [mode, setMode] = useState<'demo' | 'sandbox'>('demo');
+  const [setupInstructions, setSetupInstructions] = useState(false);
 
   // Generate link token for real Plaid sandbox
   const generateLinkToken = async () => {
@@ -29,10 +30,15 @@ const PlaidLink: React.FC<PlaidLinkProps> = ({ onSuccess, onError, userId }) => 
       });
 
       if (functionError) {
-        throw new Error(functionError.message || 'Failed to create link token');
+        console.error('Function error:', functionError);
+        throw new Error('Plaid Edge Function not deployed. Please deploy the functions first.');
       }
 
       if (data.error) {
+        console.error('Plaid API error:', data.error);
+        if (data.error.includes('not configured')) {
+          throw new Error('Plaid credentials not configured in Supabase secrets');
+        }
         throw new Error(data.error);
       }
 
@@ -40,8 +46,8 @@ const PlaidLink: React.FC<PlaidLinkProps> = ({ onSuccess, onError, userId }) => 
       setLinkToken(data.link_token);
     } catch (err: any) {
       console.error('Link token error:', err);
-      setError('Plaid sandbox not configured. Using demo mode instead.');
-      setMode('demo');
+      setError(err.message);
+      setSetupInstructions(true);
     } finally {
       setLoading(false);
     }
@@ -223,6 +229,29 @@ const PlaidLink: React.FC<PlaidLinkProps> = ({ onSuccess, onError, userId }) => 
         </motion.div>
       )}
 
+      {/* Setup Instructions */}
+      {setupInstructions && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-blue-50 border border-blue-200 rounded-lg p-4"
+        >
+          <div className="flex items-start space-x-2 mb-3">
+            <Info className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
+            <div className="text-sm text-blue-800">
+              <p className="font-medium mb-2">Plaid Sandbox Setup Required</p>
+              <p className="mb-3">To use real Plaid integration, you need to:</p>
+              <ol className="list-decimal list-inside space-y-1 mb-3">
+                <li>Get Plaid credentials from <a href="https://dashboard.plaid.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline inline-flex items-center">dashboard.plaid.com <ExternalLink className="h-3 w-3 ml-1" /></a></li>
+                <li>Deploy the Edge Functions to Supabase</li>
+                <li>Add credentials to Supabase Secrets</li>
+              </ol>
+              <p className="text-xs">For now, use Demo Mode to test all banking features!</p>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
       {/* Mode Selection */}
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
         <div className="flex items-start space-x-2 mb-3">
@@ -235,18 +264,6 @@ const PlaidLink: React.FC<PlaidLinkProps> = ({ onSuccess, onError, userId }) => 
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <button
-            onClick={() => setMode('sandbox')}
-            className={`p-3 rounded-lg border-2 transition-all text-left ${
-              mode === 'sandbox' 
-                ? 'border-blue-500 bg-blue-50' 
-                : 'border-gray-200 hover:border-gray-300'
-            }`}
-          >
-            <div className="font-medium text-sm">Real Plaid Sandbox</div>
-            <div className="text-xs text-gray-600">Connect to actual Plaid test banks</div>
-          </button>
-          
-          <button
             onClick={() => setMode('demo')}
             className={`p-3 rounded-lg border-2 transition-all text-left ${
               mode === 'demo' 
@@ -254,8 +271,20 @@ const PlaidLink: React.FC<PlaidLinkProps> = ({ onSuccess, onError, userId }) => 
                 : 'border-gray-200 hover:border-gray-300'
             }`}
           >
-            <div className="font-medium text-sm">Demo Mode</div>
-            <div className="text-xs text-gray-600">Simulated accounts with test data</div>
+            <div className="font-medium text-sm">✅ Demo Mode (Recommended)</div>
+            <div className="text-xs text-gray-600">Realistic test accounts - works immediately!</div>
+          </button>
+          
+          <button
+            onClick={() => setMode('sandbox')}
+            className={`p-3 rounded-lg border-2 transition-all text-left ${
+              mode === 'sandbox' 
+                ? 'border-blue-500 bg-blue-50' 
+                : 'border-gray-200 hover:border-gray-300'
+            }`}
+          >
+            <div className="font-medium text-sm">🔧 Real Plaid Sandbox</div>
+            <div className="text-xs text-gray-600">Requires setup - connect to actual Plaid test banks</div>
           </button>
         </div>
       </div>
@@ -295,7 +324,7 @@ const PlaidLink: React.FC<PlaidLinkProps> = ({ onSuccess, onError, userId }) => 
         {mode === 'sandbox' ? (
           <div>
             <p className="text-xs text-gray-500 mb-2">
-              🔒 Real Plaid sandbox with test institutions
+              🔧 Real Plaid sandbox with test institutions
             </p>
             <div className="text-xs text-gray-400 space-y-1">
               <div>Use credentials: <strong>user_good</strong> / <strong>pass_good</strong></div>
@@ -305,7 +334,7 @@ const PlaidLink: React.FC<PlaidLinkProps> = ({ onSuccess, onError, userId }) => 
         ) : (
           <div>
             <p className="text-xs text-gray-500 mb-2">
-              🎭 Demo accounts with realistic test data
+              🎭 Demo accounts with realistic test data - works immediately!
             </p>
             <div className="flex items-center justify-center space-x-4 text-xs text-gray-400">
               <div className="flex items-center space-x-1">
@@ -324,6 +353,21 @@ const PlaidLink: React.FC<PlaidLinkProps> = ({ onSuccess, onError, userId }) => 
           </div>
         )}
       </div>
+
+      {/* Quick Setup Guide */}
+      {mode === 'sandbox' && (
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+          <div className="text-xs text-yellow-800">
+            <p className="font-medium mb-1">Quick Plaid Setup:</p>
+            <ol className="list-decimal list-inside space-y-1">
+              <li>Sign up at <a href="https://dashboard.plaid.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">dashboard.plaid.com</a></li>
+              <li>Get your Client ID and Sandbox Secret</li>
+              <li>Add them to Supabase → Settings → Secrets</li>
+              <li>Deploy the Edge Functions manually via dashboard</li>
+            </ol>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
