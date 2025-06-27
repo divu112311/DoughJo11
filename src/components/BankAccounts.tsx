@@ -45,17 +45,17 @@ const BankAccounts: React.FC<BankAccountsProps> = ({ user }) => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (user) {
+    if (user?.id) {
       fetchAccounts();
     } else {
       setLoading(false);
       setAccounts([]);
       setError(null);
     }
-  }, [user]);
+  }, [user?.id]); // Only depend on user.id
 
   const fetchAccounts = async () => {
-    if (!user) {
+    if (!user?.id) {
       setLoading(false);
       return;
     }
@@ -207,6 +207,11 @@ const BankAccounts: React.FC<BankAccountsProps> = ({ user }) => {
   };
 
   const removeAccount = async (accountId: string) => {
+    if (!user?.id) {
+      console.warn('Cannot remove account - missing user ID');
+      return;
+    }
+
     try {
       setError(null);
       

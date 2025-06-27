@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { User } from '@supabase/supabase-js';
-import { supabase, createTimeoutQuery } from '../lib/supabase';
+import { supabase, createTimeoutQuery, isSupabaseConfigured } from '../lib/supabase';
 
 interface Goal {
   id: string;
@@ -18,17 +18,18 @@ export const useGoals = (user: User | null) => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (user) {
+    if (user?.id && isSupabaseConfigured) {
       fetchGoals();
     } else {
+      // Clear goals when no user or Supabase not configured
       setLoading(false);
       setGoals([]);
       setError(null);
     }
-  }, [user]);
+  }, [user?.id]); // Only depend on user.id
 
   const fetchGoals = async () => {
-    if (!user) {
+    if (!user?.id || !isSupabaseConfigured) {
       setLoading(false);
       return;
     }
@@ -69,7 +70,10 @@ export const useGoals = (user: User | null) => {
   };
 
   const createGoal = async (goal: Omit<Goal, 'id' | 'user_id' | 'created_at'>) => {
-    if (!user) return;
+    if (!user?.id || !isSupabaseConfigured) {
+      console.warn('Cannot create goal - missing user ID or Supabase not configured');
+      return null;
+    }
 
     try {
       const queryPromise = supabase
@@ -101,7 +105,10 @@ export const useGoals = (user: User | null) => {
   };
 
   const updateGoal = async (id: string, updates: Partial<Goal>) => {
-    if (!user) return;
+    if (!user?.id || !isSupabaseConfigured) {
+      console.warn('Cannot update goal - missing user ID or Supabase not configured');
+      return null;
+    }
 
     try {
       const queryPromise = supabase
@@ -132,7 +139,10 @@ export const useGoals = (user: User | null) => {
   };
 
   const deleteGoal = async (id: string) => {
-    if (!user) return;
+    if (!user?.id || !isSupabaseConfigured) {
+      console.warn('Cannot delete goal - missing user ID or Supabase not configured');
+      return false;
+    }
 
     try {
       const queryPromise = supabase
