@@ -57,8 +57,8 @@ export const useUserProfile = (user: User | null) => {
         .single();
 
       const [profileResult, xpResult] = await Promise.all([
-        createTimeoutQuery(profilePromise, 10000, 'Profile query timeout'),
-        createTimeoutQuery(xpPromise, 10000, 'XP query timeout')
+        createTimeoutQuery(profilePromise, 20000, 'Profile query timeout'),
+        createTimeoutQuery(xpPromise, 20000, 'XP query timeout')
       ]);
 
       if (profileResult.error) {
@@ -103,7 +103,7 @@ export const useUserProfile = (user: User | null) => {
 
       const { data, error } = await createTimeoutQuery(
         updatePromise,
-        8000,
+        15000,
         'XP update timeout'
       );
 

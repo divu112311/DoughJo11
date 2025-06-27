@@ -47,7 +47,7 @@ export const useGoals = (user: User | null) => {
 
       const { data, error: fetchError } = await createTimeoutQuery(
         queryPromise,
-        8000,
+        20000,
         'Goals query timeout - please check your connection'
       );
 
@@ -83,7 +83,7 @@ export const useGoals = (user: User | null) => {
 
       const { data, error } = await createTimeoutQuery(
         queryPromise,
-        5000,
+        10000,
         'Create goal timeout'
       );
 
@@ -114,7 +114,7 @@ export const useGoals = (user: User | null) => {
 
       const { data, error } = await createTimeoutQuery(
         queryPromise,
-        5000,
+        10000,
         'Update goal timeout'
       );
 
@@ -143,7 +143,7 @@ export const useGoals = (user: User | null) => {
 
       const { error } = await createTimeoutQuery(
         queryPromise,
-        5000,
+        10000,
         'Delete goal timeout'
       );
 

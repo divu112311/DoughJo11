@@ -85,7 +85,7 @@ const BankAccounts: React.FC<BankAccountsProps> = ({ user }) => {
 
       const { data, error: fetchError } = await createTimeoutQuery(
         queryPromise,
-        20000, // Increased timeout to 20 seconds
+        30000, // Increased timeout to 30 seconds
         'Bank accounts query timeout - please check your connection'
       );
 
@@ -192,7 +192,7 @@ const BankAccounts: React.FC<BankAccountsProps> = ({ user }) => {
 
         await createTimeoutQuery(
           updatePromise,
-          10000, // Increased timeout
+          20000, // Increased timeout
           'Update account timeout'
         );
       }
@@ -218,7 +218,7 @@ const BankAccounts: React.FC<BankAccountsProps> = ({ user }) => {
 
       const { error } = await createTimeoutQuery(
         deletePromise,
-        10000, // Increased timeout
+        20000, // Increased timeout
         'Delete account timeout'
       );
 

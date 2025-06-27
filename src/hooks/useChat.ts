@@ -35,7 +35,7 @@ export const useChat = (user: User | null) => {
 
       const { data, error: fetchError } = await createTimeoutQuery(
         queryPromise,
-        10000,
+        20000,
         'Chat history query timeout'
       );
 
@@ -98,7 +98,7 @@ export const useChat = (user: User | null) => {
 
       const { data: userMessage, error: userError } = await createTimeoutQuery(
         userMessagePromise,
-        8000,
+        15000,
         'Failed to save user message'
       );
 
@@ -135,7 +135,7 @@ export const useChat = (user: User | null) => {
 
       const { data: aiMessage, error: aiMessageError } = await createTimeoutQuery(
         aiMessagePromise,
-        8000,
+        15000,
         'Failed to save AI response'
       );
 
@@ -170,7 +170,7 @@ export const useChat = (user: User | null) => {
 
           const { data: fallbackMessage } = await createTimeoutQuery(
             fallbackPromise,
-            5000,
+            10000,
             'Failed to save fallback message'
           );
 
