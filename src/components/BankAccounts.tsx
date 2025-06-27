@@ -13,7 +13,8 @@ import {
   AlertCircle,
   CheckCircle,
   Zap,
-  DollarSign
+  DollarSign,
+  Info
 } from 'lucide-react';
 import { User } from '@supabase/supabase-js';
 import PlaidLink from './PlaidLink';
@@ -41,6 +42,7 @@ const BankAccounts: React.FC<BankAccountsProps> = ({ user }) => {
   const [showBalances, setShowBalances] = useState(true);
   const [showPlaidLink, setShowPlaidLink] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchAccounts();
@@ -48,6 +50,7 @@ const BankAccounts: React.FC<BankAccountsProps> = ({ user }) => {
 
   const fetchAccounts = async () => {
     try {
+      setError(null);
       const { data, error } = await supabase
         .from('bank_accounts')
         .select('*')
@@ -58,6 +61,7 @@ const BankAccounts: React.FC<BankAccountsProps> = ({ user }) => {
       setAccounts(data || []);
     } catch (error) {
       console.error('Error fetching accounts:', error);
+      setError('Failed to load bank accounts');
     } finally {
       setLoading(false);
     }
@@ -66,6 +70,7 @@ const BankAccounts: React.FC<BankAccountsProps> = ({ user }) => {
   const handlePlaidSuccess = async (publicToken: string, metadata: any) => {
     try {
       setLoading(true);
+      setError(null);
       console.log('Bank connection successful:', { publicToken, metadata });
       
       // For demo mode, accounts are already created in PlaidLink component
@@ -77,13 +82,21 @@ const BankAccounts: React.FC<BankAccountsProps> = ({ user }) => {
       
     } catch (error) {
       console.error('Error handling bank connection:', error);
+      setError('Failed to connect bank accounts');
     } finally {
       setLoading(false);
     }
   };
 
+  const handlePlaidError = (error: any) => {
+    console.error('Plaid connection error:', error);
+    setError('Failed to connect to bank. Please try again.');
+    setShowPlaidLink(false);
+  };
+
   const handleRefreshAccounts = async () => {
     setRefreshing(true);
+    setError(null);
     try {
       // Simulate refreshing account balances
       await new Promise(resolve => setTimeout(resolve, 1500));
@@ -128,6 +141,7 @@ const BankAccounts: React.FC<BankAccountsProps> = ({ user }) => {
       await fetchAccounts();
     } catch (error) {
       console.error('Error refreshing accounts:', error);
+      setError('Failed to refresh account balances');
     } finally {
       setRefreshing(false);
     }
@@ -135,6 +149,7 @@ const BankAccounts: React.FC<BankAccountsProps> = ({ user }) => {
 
   const removeAccount = async (accountId: string) => {
     try {
+      setError(null);
       const { error } = await supabase
         .from('bank_accounts')
         .delete()
@@ -146,6 +161,7 @@ const BankAccounts: React.FC<BankAccountsProps> = ({ user }) => {
       setAccounts(prev => prev.filter(acc => acc.id !== accountId));
     } catch (error) {
       console.error('Error removing account:', error);
+      setError('Failed to remove account');
     }
   };
 
@@ -198,6 +214,7 @@ const BankAccounts: React.FC<BankAccountsProps> = ({ user }) => {
             transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
             className="w-6 h-6 border-2 border-[#2A6F68] border-t-transparent rounded-full"
           />
+          <span className="ml-3 text-gray-600">Loading bank accounts...</span>
         </div>
       </div>
     );
@@ -205,6 +222,24 @@ const BankAccounts: React.FC<BankAccountsProps> = ({ user }) => {
 
   return (
     <div className="space-y-6">
+      {/* Error Message */}
+      {error && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex items-center space-x-2 text-red-600 text-sm bg-red-50 p-3 rounded-lg border border-red-200"
+        >
+          <AlertCircle className="h-4 w-4 flex-shrink-0" />
+          <span>{error}</span>
+          <button
+            onClick={() => setError(null)}
+            className="ml-auto text-red-400 hover:text-red-600"
+          >
+            ×
+          </button>
+        </motion.div>
+      )}
+
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
@@ -249,7 +284,7 @@ const BankAccounts: React.FC<BankAccountsProps> = ({ user }) => {
       </div>
 
       {/* Quick Start Guide for New Users */}
-      {accounts.length === 0 && (
+      {accounts.length === 0 && !loading && (
         <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-6">
           <div className="flex items-start space-x-4">
             <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
@@ -357,7 +392,7 @@ const BankAccounts: React.FC<BankAccountsProps> = ({ user }) => {
 
       {/* Accounts List */}
       <div className="bg-gray-50 rounded-xl border border-gray-200">
-        {accounts.length === 0 ? (
+        {accounts.length === 0 && !loading ? (
           <div className="p-8 text-center">
             <div className="w-16 h-16 mx-auto mb-4 bg-gray-200 rounded-full flex items-center justify-center">
               <CreditCard className="h-8 w-8 text-gray-400" />
@@ -455,34 +490,32 @@ const BankAccounts: React.FC<BankAccountsProps> = ({ user }) => {
               exit={{ scale: 0.9, opacity: 0 }}
               className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto"
             >
-              <>
-                <div className="text-center mb-6">
-                  <div className="w-16 h-16 bg-[#2A6F68]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <CreditCard className="h-8 w-8 text-[#2A6F68]" />
-                  </div>
-                  <h3 className="text-xl font-bold text-[#333333] mb-2">
-                    Connect Bank Accounts
-                  </h3>
-                  <p className="text-gray-600">
-                    Choose your connection method and start tracking your finances automatically
-                  </p>
+              <div className="text-center mb-6">
+                <div className="w-16 h-16 bg-[#2A6F68]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <CreditCard className="h-8 w-8 text-[#2A6F68]" />
                 </div>
+                <h3 className="text-xl font-bold text-[#333333] mb-2">
+                  Connect Bank Accounts
+                </h3>
+                <p className="text-gray-600">
+                  Choose your connection method and start tracking your finances automatically
+                </p>
+              </div>
 
-                <PlaidLink
-                  userId={user.id}
-                  onSuccess={handlePlaidSuccess}
-                  onError={(error) => console.error('Plaid error:', error)}
-                />
+              <PlaidLink
+                userId={user.id}
+                onSuccess={handlePlaidSuccess}
+                onError={handlePlaidError}
+              />
 
-                <div className="mt-6 text-center">
-                  <button
-                    onClick={() => setShowPlaidLink(false)}
-                    className="text-gray-500 hover:text-[#333333] transition-colors"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </>
+              <div className="mt-6 text-center">
+                <button
+                  onClick={() => setShowPlaidLink(false)}
+                  className="text-gray-500 hover:text-[#333333] transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
             </motion.div>
           </motion.div>
         )}
