@@ -513,7 +513,7 @@ const BankAccounts: React.FC<BankAccountsProps> = ({ user }) => {
                   Cancel
                 </button>
               </div>
-            </motion.div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
