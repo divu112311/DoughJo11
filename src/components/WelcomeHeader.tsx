@@ -12,14 +12,14 @@ const WelcomeHeader: React.FC<WelcomeHeaderProps> = ({ user, xp }) => {
   const level = Math.floor((xp?.points || 0) / 100) + 1;
 
   const getBeltRank = (level: number) => {
-    if (level >= 50) return { name: "Grand Master", color: "from-yellow-400 to-yellow-600", emoji: "🏆" };
-    if (level >= 40) return { name: "Master", color: "from-purple-400 to-purple-600", emoji: "👑" };
-    if (level >= 30) return { name: "Black Belt", color: "from-gray-800 to-black", emoji: "🥋" };
-    if (level >= 20) return { name: "Brown Belt", color: "from-amber-600 to-amber-800", emoji: "🤎" };
-    if (level >= 15) return { name: "Blue Belt", color: "from-blue-400 to-blue-600", emoji: "💙" };
-    if (level >= 10) return { name: "Green Belt", color: "from-green-400 to-green-600", emoji: "💚" };
-    if (level >= 5) return { name: "Yellow Belt", color: "from-yellow-300 to-yellow-500", emoji: "💛" };
-    return { name: "White Belt", color: "from-gray-100 to-gray-300", emoji: "🤍" };
+    if (level >= 50) return { name: "Grand Master", color: "from-bronze-400 to-bronze-600", emoji: "🏆" };
+    if (level >= 40) return { name: "Master", color: "from-rosegold-400 to-rosegold-600", emoji: "👑" };
+    if (level >= 30) return { name: "Black Belt", color: "from-charcoal-700 to-charcoal-900", emoji: "🥋" };
+    if (level >= 20) return { name: "Brown Belt", color: "from-bronze-600 to-bronze-800", emoji: "🤎" };
+    if (level >= 15) return { name: "Blue Belt", color: "from-teal-400 to-teal-600", emoji: "💙" };
+    if (level >= 10) return { name: "Green Belt", color: "from-sage-400 to-sage-600", emoji: "💚" };
+    if (level >= 5) return { name: "Yellow Belt", color: "from-bronze-300 to-bronze-500", emoji: "💛" };
+    return { name: "White Belt", color: "from-cream-300 to-cream-500", emoji: "🤍" };
   };
 
   const beltRank = getBeltRank(level);
@@ -28,7 +28,7 @@ const WelcomeHeader: React.FC<WelcomeHeaderProps> = ({ user, xp }) => {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-gradient-to-r from-[#2A6F68]/80 to-[#B76E79]/80 backdrop-blur-sm rounded-2xl p-6 text-white relative overflow-hidden mb-8 border border-white/20"
+      className="bg-gradient-to-r from-sage-600/90 to-bronze-500/90 backdrop-blur-sm rounded-2xl p-6 text-white relative overflow-hidden mb-8 border border-white/20 shadow-lg"
     >
       <div className="absolute top-4 right-4">
         <motion.div
@@ -54,11 +54,11 @@ const WelcomeHeader: React.FC<WelcomeHeaderProps> = ({ user, xp }) => {
       <h1 className="text-xl font-serif font-bold mb-2">
         Welcome back, {user.user_metadata?.full_name || 'Financial Warrior'}! 🥋
       </h1>
-      <p className="text-white/80 mb-4 text-sm">
+      <p className="text-white/90 mb-4 text-sm">
         Continue your training in the <span className="text-white font-medium">DoughJo</span> dojo
       </p>
       <div className="flex items-center space-x-3">
-        <div className={`flex items-center space-x-2 bg-gradient-to-r ${beltRank.color} text-white rounded-lg px-3 py-1`}>
+        <div className={`flex items-center space-x-2 bg-gradient-to-r ${beltRank.color} text-white rounded-lg px-3 py-1 shadow-sm`}>
           <span className="text-xs">{beltRank.emoji}</span>
           <span className="text-xs font-medium">{beltRank.name}</span>
         </div>
