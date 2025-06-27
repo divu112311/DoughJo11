@@ -104,29 +104,29 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, xp, onXPUpdate }) =
           )}
         </AnimatePresence>
 
-        {/* Left Sidebar - Quick Actions & Financial Analysis */}
+        {/* Left Sidebar - Quick Actions & AI Insights */}
         <AnimatePresence>
           {showLeftSidebar && (
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
-              className="w-[320px] shrink-0 hidden lg:block space-y-4"
+              className="w-1/3 shrink-0 hidden lg:block space-y-4 h-full overflow-y-auto"
             >
               <QuickActions onQuickAction={handleQuickAction} />
-              <FinancialAnalysis user={user} />
               <AILearningInsights compact={true} />
+              <FinancialHealthDashboard compact={true} />
             </motion.div>
           )}
         </AnimatePresence>
 
         {/* Main Chat Area */}
-        <div className="flex-1 flex flex-col bg-white rounded-2xl shadow-sm border border-grey-200 min-w-0">
+        <div className={`${showLeftSidebar && showRightSidebar ? 'w-1/3' : showLeftSidebar || showRightSidebar ? 'flex-1' : 'w-full'} flex flex-col bg-white rounded-2xl shadow-sm border border-grey-200 min-w-0 h-full`}>
           {/* Chat Header */}
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="p-4 border-b border-grey-200 bg-gradient-to-r from-grey-50 to-white rounded-t-2xl"
+            className="p-4 border-b border-grey-200 bg-gradient-to-r from-gold-50 to-warmyellow-50 rounded-t-2xl"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
@@ -165,7 +165,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, xp, onXPUpdate }) =
               <div className="flex items-center space-x-2">
                 <button
                   onClick={() => setShowLeftSidebar(!showLeftSidebar)}
-                  className="p-2 text-charcoal-500 hover:text-brand-teal transition-colors rounded-lg hover:bg-grey-100 flex items-center space-x-1 lg:flex hidden"
+                  className="p-2 text-charcoal-500 hover:text-brand-teal transition-colors rounded-lg hover:bg-gold-100 flex items-center space-x-1 lg:flex hidden"
                   title="Toggle Quick Actions Panel"
                 >
                   {showLeftSidebar ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
@@ -175,11 +175,11 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, xp, onXPUpdate }) =
                 </button>
                 <button
                   onClick={() => setShowRightSidebar(!showRightSidebar)}
-                  className="p-2 text-charcoal-500 hover:text-brand-teal transition-colors rounded-lg hover:bg-grey-100 flex items-center space-x-1 lg:flex hidden"
-                  title="Toggle Financial Health Panel"
+                  className="p-2 text-charcoal-500 hover:text-brand-teal transition-colors rounded-lg hover:bg-gold-100 flex items-center space-x-1 lg:flex hidden"
+                  title="Toggle Financial Analysis Panel"
                 >
                   <span className="text-sm hidden xl:block">
-                    {showRightSidebar ? 'Hide' : 'Show'} Health
+                    {showRightSidebar ? 'Hide' : 'Show'} Analysis
                   </span>
                   {showRightSidebar ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
                 </button>
@@ -235,7 +235,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, xp, onXPUpdate }) =
                   Together, we'll master the ancient art of money management! 🥋💰
                 </p>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-3xl mx-auto">
+                <div className="grid grid-cols-1 gap-3 max-w-2xl mx-auto">
                   {suggestedQuestions.map((question, index) => (
                     <motion.button
                       key={index}
@@ -245,7 +245,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, xp, onXPUpdate }) =
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       onClick={() => setInputMessage(question)}
-                      className="p-3 text-left bg-gradient-to-r from-grey-50 to-grey-100 hover:from-rosegold-50 hover:to-teal-50 rounded-lg text-sm text-charcoal-700 transition-all border border-grey-200 hover:border-brand-teal"
+                      className="p-3 text-left bg-gradient-to-r from-gold-50 to-warmyellow-50 hover:from-rosegold-50 hover:to-teal-50 rounded-lg text-sm text-charcoal-700 transition-all border border-gold-200 hover:border-brand-teal"
                     >
                       <div className="flex items-start space-x-2">
                         <Lightbulb className="h-4 w-4 text-brand-teal mt-0.5 flex-shrink-0" />
@@ -266,10 +266,10 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, xp, onXPUpdate }) =
                 className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 <div
-                  className={`max-w-xs lg:max-w-2xl px-4 py-3 rounded-2xl ${
+                  className={`max-w-xs lg:max-w-md px-4 py-3 rounded-2xl ${
                     message.sender === 'user'
                       ? 'bg-brand-teal text-white rounded-br-sm'
-                      : 'bg-gradient-to-r from-grey-50 to-grey-100 text-charcoal-800 rounded-bl-sm border border-grey-200'
+                      : 'bg-gradient-to-r from-gold-50 to-warmyellow-50 text-charcoal-800 rounded-bl-sm border border-gold-200'
                   }`}
                 >
                   <div className="flex items-start space-x-2">
@@ -320,7 +320,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, xp, onXPUpdate }) =
                 animate={{ opacity: 1 }}
                 className="flex justify-start"
               >
-                <div className="bg-gradient-to-r from-grey-50 to-grey-100 rounded-2xl rounded-bl-sm px-4 py-3 max-w-xs border border-grey-200">
+                <div className="bg-gradient-to-r from-gold-50 to-warmyellow-50 rounded-2xl rounded-bl-sm px-4 py-3 max-w-xs border border-gold-200">
                   <div className="flex items-center space-x-2">
                     <div className="w-5 h-5">
                       <img 
@@ -358,7 +358,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, xp, onXPUpdate }) =
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="p-4 border-t border-grey-200 bg-gradient-to-r from-grey-50 to-white rounded-b-2xl"
+            className="p-4 border-t border-grey-200 bg-gradient-to-r from-gold-50 to-warmyellow-50 rounded-b-2xl"
           >
             <div className="flex items-center space-x-2">
               <input
@@ -367,7 +367,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, xp, onXPUpdate }) =
                 onChange={(e) => setInputMessage(e.target.value)}
                 onKeyDown={handleKeyPress}
                 placeholder="Ask Sensei DoughJo for financial wisdom..."
-                className="flex-1 p-3 rounded-lg border border-grey-300 bg-white focus:outline-none focus:ring-2 focus:ring-brand-teal focus:border-transparent text-sm placeholder-charcoal-500"
+                className="flex-1 p-3 rounded-lg border border-gold-200 bg-white focus:outline-none focus:ring-2 focus:ring-brand-teal focus:border-transparent text-sm placeholder-charcoal-500"
               />
               <button
                 onClick={handleSendMessage}
@@ -377,19 +377,19 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, xp, onXPUpdate }) =
                 <Send className="h-4 w-4" />
               </button>
             </div>
-          </motion.div>
+          </div>
         </div>
 
-        {/* Right Sidebar - Financial Health Dashboard */}
+        {/* Right Sidebar - Financial Analysis */}
         <AnimatePresence>
           {showRightSidebar && (
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 20 }}
-              className="w-[320px] shrink-0 hidden lg:block"
+              className="w-1/3 shrink-0 hidden lg:block h-full overflow-y-auto"
             >
-              <FinancialHealthDashboard compact={true} />
+              <FinancialAnalysis user={user} compact={true} />
             </motion.div>
           )}
         </AnimatePresence>

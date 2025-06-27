@@ -15,9 +15,9 @@ export default {
         },
         // Ultra-light warm gold/yellow palette for outer elements
         gold: {
-          50: '#fffef7',   // Almost white with tiny gold hint
-          100: '#fffbeb',  // Barely perceptible warm undertone
-          200: '#fef7e0',  // Very subtle warm cream
+          50: '#fffef9',   // Even lighter - almost pure white with tiniest gold hint
+          100: '#fffdf0',  // Barely perceptible warm undertone
+          200: '#fef9e7',  // Very subtle warm cream
           300: '#fde68a',
           400: '#fbbf24',
           500: '#f59e0b',
@@ -28,9 +28,9 @@ export default {
         },
         // Ultra-light warm yellow variations
         warmyellow: {
-          50: '#fffef5',   // Almost pure white with warm hint
-          100: '#fffce8',  // Barely visible warm undertone
-          200: '#fefbf0',  // Very subtle cream
+          50: '#fffef8',   // Almost pure white with tiniest warm hint
+          100: '#fffdf2',  // Barely visible warm undertone
+          200: '#fefcf3',  // Very subtle cream
           300: '#fde047',
           400: '#facc15',
           500: '#eab308',
