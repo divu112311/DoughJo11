@@ -25,11 +25,22 @@ export const useAuth = () => {
           setUser(null);
         } else {
           console.log('Initial session:', session?.user?.id ? 'User logged in' : 'No user');
-          setUser(session?.user ?? null);
           
-          // If we have a user, ensure their profile exists
+          // Security check: Validate session age
           if (session?.user) {
-            await ensureUserProfile(session.user);
+            const sessionAge = Date.now() - new Date(session.user.created_at || 0).getTime();
+            const maxSessionAge = 30 * 60 * 1000; // 30 minutes
+            
+            if (sessionAge > maxSessionAge) {
+              console.log('Session too old, forcing logout');
+              await supabase.auth.signOut();
+              setUser(null);
+            } else {
+              setUser(session.user);
+              await ensureUserProfile(session.user);
+            }
+          } else {
+            setUser(null);
           }
         }
       } catch (err: any) {
@@ -55,6 +66,11 @@ export const useAuth = () => {
           // Handle successful sign-in (including OAuth)
           if (event === 'SIGNED_IN' && session?.user) {
             console.log('User signed in:', session.user.id);
+            
+            // Security: Clear any existing session data
+            localStorage.removeItem('currentSessionId');
+            sessionStorage.clear();
+            
             await ensureUserProfile(session.user);
           }
 
@@ -63,6 +79,10 @@ export const useAuth = () => {
             console.log('User signed out');
             setUser(null);
             setError(null);
+            
+            // Security: Clear all session data
+            localStorage.clear();
+            sessionStorage.clear();
           }
 
           // Handle email confirmation
@@ -259,6 +279,10 @@ export const useAuth = () => {
   const signOut = async () => {
     setError(null);
     
+    // Security: Clear all session data immediately
+    localStorage.clear();
+    sessionStorage.clear();
+    
     if (!isSupabaseConfigured) {
       setUser(null);
       return;
@@ -272,6 +296,11 @@ export const useAuth = () => {
     
     // Clear user state immediately
     setUser(null);
+    
+    // Force page reload to ensure clean state
+    setTimeout(() => {
+      window.location.reload();
+    }, 100);
   };
 
   const clearError = () => setError(null);

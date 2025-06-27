@@ -7,13 +7,25 @@ import LearningCenter from './components/LearningCenter';
 import AuthCallback from './components/AuthCallback';
 import ResetPassword from './components/ResetPassword';
 import ConnectionStatus from './components/ConnectionStatus';
+import SessionWarningModal from './components/SessionWarningModal';
+import SessionExpiredModal from './components/SessionExpiredModal';
 import { useAuth } from './hooks/useAuth';
 import { useUserProfile } from './hooks/useUserProfile';
+import { useSessionSecurity } from './hooks/useSessionSecurity';
 
 function App() {
   const { user, loading: authLoading, signOut } = useAuth();
   const { profile, xp, loading: profileLoading, updateXP } = useUserProfile(user);
   const [activeView, setActiveView] = useState<'dashboard' | 'chat' | 'learning'>('chat');
+  
+  // Session security hook
+  const { 
+    showWarning, 
+    timeRemaining, 
+    isSessionExpired, 
+    extendSession, 
+    resetActivity 
+  } = useSessionSecurity(user);
 
   // Handle routing based on URL
   const currentPath = window.location.pathname;
@@ -28,6 +40,24 @@ function App() {
 
   const handleXPUpdate = async (points: number) => {
     await updateXP(points);
+  };
+
+  const handleExtendSession = () => {
+    extendSession();
+  };
+
+  const handleForceLogout = async () => {
+    try {
+      await signOut();
+    } catch (error) {
+      console.error('Error during forced logout:', error);
+      // Force reload if logout fails
+      window.location.reload();
+    }
+  };
+
+  const handleSessionExpiredReload = () => {
+    window.location.reload();
   };
 
   if (authLoading || profileLoading) {
@@ -98,6 +128,19 @@ function App() {
     <div className="min-h-screen bg-gradient-to-br from-gold-50 via-warmyellow-50 to-white">
       <ConnectionStatus />
       
+      {/* Session Security Modals */}
+      <SessionWarningModal
+        isVisible={showWarning}
+        timeRemaining={timeRemaining}
+        onExtendSession={handleExtendSession}
+        onLogout={handleForceLogout}
+      />
+      
+      <SessionExpiredModal
+        isVisible={isSessionExpired}
+        onReload={handleSessionExpiredReload}
+      />
+      
       {/* Header with ultra-light warm gold background */}
       <motion.header 
         initial={{ y: -100 }}
@@ -110,6 +153,7 @@ function App() {
               <motion.div 
                 whileHover={{ scale: 1.05 }}
                 className="flex items-center space-x-3"
+                onClick={resetActivity} // Reset activity on logo click
               >
                 <div className="w-10 h-10 bg-gradient-to-br from-brand-teal to-brand-rosegold rounded-full flex items-center justify-center p-1 shadow-md">
                   <img 
@@ -127,12 +171,21 @@ function App() {
                 <span className="text-brand-rosegold">•</span>
                 <span>{xp?.points || 0} XP</span>
               </div>
+              
+              {/* Security Indicator */}
+              <div className="flex items-center space-x-1 bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs">
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                <span>Secure Session</span>
+              </div>
             </div>
 
             <div className="flex items-center space-x-4">
               <nav className="flex space-x-2">
                 <button
-                  onClick={() => setActiveView('chat')}
+                  onClick={() => {
+                    setActiveView('chat');
+                    resetActivity();
+                  }}
                   className={`px-4 py-2 rounded-lg transition-all font-medium ${
                     activeView === 'chat'
                       ? 'bg-brand-teal/10 backdrop-blur-sm text-brand-teal shadow-sm border border-brand-teal/20'
@@ -142,7 +195,10 @@ function App() {
                   Chat
                 </button>
                 <button
-                  onClick={() => setActiveView('dashboard')}
+                  onClick={() => {
+                    setActiveView('dashboard');
+                    resetActivity();
+                  }}
                   className={`px-4 py-2 rounded-lg transition-all font-medium ${
                     activeView === 'dashboard'
                       ? 'bg-brand-teal/10 backdrop-blur-sm text-brand-teal shadow-sm border border-brand-teal/20'
@@ -152,7 +208,10 @@ function App() {
                   Dashboard
                 </button>
                 <button
-                  onClick={() => setActiveView('learning')}
+                  onClick={() => {
+                    setActiveView('learning');
+                    resetActivity();
+                  }}
                   className={`px-4 py-2 rounded-lg transition-all font-medium ${
                     activeView === 'learning'
                       ? 'bg-brand-teal/10 backdrop-blur-sm text-brand-teal shadow-sm border border-brand-teal/20'
