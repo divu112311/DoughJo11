@@ -39,19 +39,20 @@ export default {
           800: '#B76E79', // Main brand color
           900: '#9a5d68',
         },
-        // Neutral colors
-        cream: {
-          50: '#fefdfb',
-          100: '#fdf9f3',
-          200: '#fbf3e7',
-          300: '#f8eddb',
-          400: '#f5e7cf',
-          500: '#f2e1c3',
-          600: '#efdbb7',
-          700: '#ecd5ab',
-          800: '#e9cf9f',
-          900: '#e6c993',
+        // Clean greys (replacing cream)
+        grey: {
+          50: '#f9fafb',
+          100: '#f3f4f6',
+          200: '#e5e7eb',
+          300: '#d1d5db',
+          400: '#9ca3af',
+          500: '#6b7280',
+          600: '#4b5563',
+          700: '#374151',
+          800: '#1f2937',
+          900: '#111827',
         },
+        // Charcoal colors (keeping these)
         charcoal: {
           50: '#f8f9fa',
           100: '#e9ecef',

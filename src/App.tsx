@@ -34,7 +34,7 @@ function App() {
     return (
       <>
         <ConnectionStatus />
-        <div className="min-h-screen bg-cream-50 flex items-center justify-center">
+        <div className="min-h-screen bg-grey-50 flex items-center justify-center">
           <motion.div
             animate={{ rotate: 360 }}
             transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
@@ -59,11 +59,11 @@ function App() {
     return (
       <>
         <ConnectionStatus />
-        <div className="min-h-screen bg-cream-50 flex items-center justify-center p-4">
+        <div className="min-h-screen bg-grey-50 flex items-center justify-center p-4">
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-8 border border-cream-200 text-center max-w-md w-full"
+            className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-8 border border-grey-200 text-center max-w-md w-full"
           >
             <div className="w-16 h-16 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <motion.div
@@ -95,14 +95,14 @@ function App() {
   const level = Math.floor((xp?.points || 0) / 100) + 1;
 
   return (
-    <div className="min-h-screen bg-cream-50">
+    <div className="min-h-screen bg-grey-50">
       <ConnectionStatus />
       
       {/* Header */}
       <motion.header 
         initial={{ y: -100 }}
         animate={{ y: 0 }}
-        className="bg-white/80 backdrop-blur-md border-b border-cream-200 sticky top-0 z-40"
+        className="bg-white/80 backdrop-blur-md border-b border-grey-200 sticky top-0 z-40"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
@@ -136,7 +136,7 @@ function App() {
                   className={`px-4 py-2 rounded-lg transition-all ${
                     activeView === 'chat'
                       ? 'bg-brand-teal text-white'
-                      : 'text-charcoal-700 hover:bg-cream-200'
+                      : 'text-charcoal-700 hover:bg-grey-200'
                   }`}
                 >
                   Chat
@@ -146,7 +146,7 @@ function App() {
                   className={`px-4 py-2 rounded-lg transition-all ${
                     activeView === 'dashboard'
                       ? 'bg-brand-teal text-white'
-                      : 'text-charcoal-700 hover:bg-cream-200'
+                      : 'text-charcoal-700 hover:bg-grey-200'
                   }`}
                 >
                   Dashboard
@@ -156,7 +156,7 @@ function App() {
                   className={`px-4 py-2 rounded-lg transition-all ${
                     activeView === 'learning'
                       ? 'bg-brand-teal text-white'
-                      : 'text-charcoal-700 hover:bg-cream-200'
+                      : 'text-charcoal-700 hover:bg-grey-200'
                   }`}
                 >
                   Learning
