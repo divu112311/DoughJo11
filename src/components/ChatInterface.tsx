@@ -85,7 +85,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, xp, onXPUpdate }) =
       {/* Welcome Header */}
       <WelcomeHeader user={user} xp={xp} />
 
-      <div className="flex h-[calc(100vh-300px)] max-w-7xl mx-auto gap-6">
+      <div className="flex h-[calc(100vh-280px)] max-w-7xl mx-auto gap-4">
         {/* XP Gained Animation */}
         <AnimatePresence>
           {xpGained && (
@@ -101,40 +101,13 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, xp, onXPUpdate }) =
           )}
         </AnimatePresence>
 
-        {/* Sidebar - Financial AI Section */}
-        <AnimatePresence>
-          {showSidebar && (
-            <motion.div
-              initial={{ x: -300, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              exit={{ x: -300, opacity: 0 }}
-              className="w-80 space-y-4"
-            >
-              {/* Financial Health Dashboard */}
-              <FinancialHealthDashboard showTitle={false} compact />
-              
-              {/* Financial Analysis */}
-              <FinancialAnalysis 
-                userName={user.user_metadata?.full_name || 'User'} 
-                compact 
-              />
-              
-              {/* Quick Actions */}
-              <QuickActions 
-                onActionClick={handleQuickAction} 
-                compact 
-              />
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Main Chat Area */}
-        <div className="flex-1 flex flex-col bg-white rounded-2xl shadow-sm border border-gray-200">
+        {/* Main Chat Area - Now takes more space */}
+        <div className={`${showSidebar ? 'flex-1' : 'w-full'} flex flex-col bg-white rounded-2xl shadow-sm border border-gray-200 min-w-0`}>
           {/* Chat Header */}
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="p-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white"
+            className="p-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white rounded-t-2xl"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
@@ -176,7 +149,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, xp, onXPUpdate }) =
                   className="p-2 text-gray-500 hover:text-[#2A6F68] transition-colors rounded-lg hover:bg-gray-100 flex items-center space-x-1"
                   title="Toggle Financial AI Panel"
                 >
-                  {showSidebar ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                  {showSidebar ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
                   <span className="text-sm hidden sm:block">
                     {showSidebar ? 'Hide' : 'Show'} AI Panel
                   </span>
@@ -216,7 +189,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, xp, onXPUpdate }) =
                   Together, we'll master the ancient art of money management! 🥋💰
                 </p>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-2xl mx-auto">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-3xl mx-auto">
                   {suggestedQuestions.map((question, index) => (
                     <motion.button
                       key={index}
@@ -339,7 +312,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, xp, onXPUpdate }) =
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="p-4 border-t border-gray-200 bg-gradient-to-r from-white to-gray-50"
+            className="p-4 border-t border-gray-200 bg-gradient-to-r from-white to-gray-50 rounded-b-2xl"
           >
             <div className="flex space-x-3">
               <div className="flex-1 relative">
@@ -363,8 +336,35 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, xp, onXPUpdate }) =
                 <Send className="h-5 w-5" />
               </motion.button>
             </div>
-          </motion.div>
+          </div>
         </div>
+
+        {/* Sidebar - Financial AI Section - Now more compact */}
+        <AnimatePresence>
+          {showSidebar && (
+            <motion.div
+              initial={{ x: 300, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: 300, opacity: 0 }}
+              className="w-72 space-y-3 flex-shrink-0"
+            >
+              {/* Financial Health Dashboard */}
+              <FinancialHealthDashboard showTitle={false} compact />
+              
+              {/* Financial Analysis */}
+              <FinancialAnalysis 
+                userName={user.user_metadata?.full_name || 'User'} 
+                compact 
+              />
+              
+              {/* Quick Actions */}
+              <QuickActions 
+                onActionClick={handleQuickAction} 
+                compact 
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
