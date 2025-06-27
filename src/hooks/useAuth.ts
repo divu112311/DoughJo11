@@ -1,15 +1,27 @@
 import { useState, useEffect } from 'react';
 import { User } from '@supabase/supabase-js';
-import { supabase } from '../lib/supabase';
+import { supabase, isSupabaseConfigured, createTimeoutQuery } from '../lib/supabase';
 
 export const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!isSupabaseConfigured) {
+      console.warn('Supabase not configured - auth will not work');
+      setLoading(false);
+      return;
+    }
+
     // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
+    supabase.auth.getSession().then(({ data: { session }, error }) => {
+      if (error) {
+        console.error('Error getting session:', error);
+        setError('Failed to get authentication session');
+      } else {
+        setUser(session?.user ?? null);
+      }
       setLoading(false);
     });
 
@@ -19,6 +31,7 @@ export const useAuth = () => {
         console.log('Auth event:', event, session?.user?.email);
         setUser(session?.user ?? null);
         setLoading(false);
+        setError(null);
 
         // Handle successful sign-in (including OAuth)
         if (event === 'SIGNED_IN' && session?.user) {
@@ -37,17 +50,25 @@ export const useAuth = () => {
   }, []);
 
   const ensureUserProfile = async (user: User) => {
+    if (!isSupabaseConfigured) return;
+
     try {
       // Check if user profile exists
-      const { data: existingProfile } = await supabase
+      const profilePromise = supabase
         .from('users')
         .select('id')
         .eq('id', user.id)
         .single();
 
+      const { data: existingProfile } = await createTimeoutQuery(
+        profilePromise,
+        10000,
+        'Profile check timeout'
+      );
+
       if (!existingProfile) {
         // Create user profile
-        const { error: profileError } = await supabase
+        const insertProfilePromise = supabase
           .from('users')
           .insert({
             id: user.id,
@@ -55,12 +76,14 @@ export const useAuth = () => {
             full_name: user.user_metadata?.full_name || user.user_metadata?.name || 'User',
           });
 
-        if (profileError) {
-          console.error('Error creating user profile:', profileError);
-        }
+        await createTimeoutQuery(
+          insertProfilePromise,
+          10000,
+          'Profile creation timeout'
+        );
 
         // Create initial XP record
-        const { error: xpError } = await supabase
+        const insertXPPromise = supabase
           .from('xp')
           .insert({
             user_id: user.id,
@@ -68,9 +91,11 @@ export const useAuth = () => {
             badges: ['Welcome'],
           });
 
-        if (xpError) {
-          console.error('Error creating XP record:', xpError);
-        }
+        await createTimeoutQuery(
+          insertXPPromise,
+          10000,
+          'XP creation timeout'
+        );
       }
     } catch (error) {
       console.error('Error ensuring user profile:', error);
@@ -78,6 +103,10 @@ export const useAuth = () => {
   };
 
   const signUp = async (email: string, password: string, fullName: string) => {
+    if (!isSupabaseConfigured) {
+      throw new Error('Authentication not configured');
+    }
+
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -96,6 +125,10 @@ export const useAuth = () => {
   };
 
   const signIn = async (email: string, password: string) => {
+    if (!isSupabaseConfigured) {
+      throw new Error('Authentication not configured');
+    }
+
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -112,6 +145,10 @@ export const useAuth = () => {
   };
 
   const signInWithGoogle = async () => {
+    if (!isSupabaseConfigured) {
+      throw new Error('Authentication not configured');
+    }
+
     try {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
@@ -137,6 +174,10 @@ export const useAuth = () => {
   };
 
   const resetPassword = async (email: string) => {
+    if (!isSupabaseConfigured) {
+      throw new Error('Authentication not configured');
+    }
+
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/auth/reset-password`,
     });
@@ -145,6 +186,10 @@ export const useAuth = () => {
   };
 
   const updatePassword = async (accessToken: string, newPassword: string) => {
+    if (!isSupabaseConfigured) {
+      throw new Error('Authentication not configured');
+    }
+
     const { error } = await supabase.auth.updateUser({
       password: newPassword
     });
@@ -153,18 +198,27 @@ export const useAuth = () => {
   };
 
   const signOut = async () => {
+    if (!isSupabaseConfigured) {
+      setUser(null);
+      return;
+    }
+
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
   };
 
+  const clearError = () => setError(null);
+
   return {
     user,
     loading,
+    error,
     signUp,
     signIn,
     signInWithGoogle,
     resetPassword,
     updatePassword,
     signOut,
+    clearError,
   };
 };

@@ -12,10 +12,6 @@ import {
 } from 'lucide-react';
 import { User } from '@supabase/supabase-js';
 import { useChat } from '../hooks/useChat';
-import WelcomeHeader from './WelcomeHeader';
-import FinancialHealthDashboard from './FinancialHealthDashboard';
-import FinancialAnalysis from './FinancialAnalysis';
-import QuickActions from './QuickActions';
 
 interface ChatInterfaceProps {
   user: User;
@@ -81,9 +77,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, xp, onXPUpdate }) =
 
   return (
     <div className="space-y-6">
-      {/* Welcome Header */}
-      <WelcomeHeader user={user} xp={xp} />
-
       <div className="flex h-[calc(100vh-280px)] max-w-7xl mx-auto gap-4">
         {/* XP Gained Animation */}
         <AnimatePresence>
@@ -348,19 +341,64 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, xp, onXPUpdate }) =
               className="w-72 space-y-3 flex-shrink-0"
             >
               {/* Financial Health Dashboard */}
-              <FinancialHealthDashboard showTitle={false} compact />
-              
-              {/* Financial Analysis */}
-              <FinancialAnalysis 
-                userName={user.user_metadata?.full_name || 'User'} 
-                compact 
-              />
+              <div className="bg-cream-50 rounded-2xl shadow-sm border border-cream-200 p-4">
+                <h3 className="text-base font-serif font-bold text-charcoal-800 mb-3 flex items-center space-x-2">
+                  <Activity className="h-4 w-4 text-sage-600" />
+                  <span>Financial Health</span>
+                </h3>
+                <div className="space-y-2">
+                  <div className="bg-sage-50 rounded-lg p-3 border border-cream-200">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-charcoal-700">Health Score</span>
+                      <span className="text-lg font-bold text-sage-600">7.2/10</span>
+                    </div>
+                  </div>
+                  <div className="bg-bronze-50 rounded-lg p-3 border border-cream-200">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-charcoal-700">Net Worth</span>
+                      <span className="text-lg font-bold text-bronze-600">$22,000</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
               
               {/* Quick Actions */}
-              <QuickActions 
-                onActionClick={handleQuickAction} 
-                compact 
-              />
+              <div className="bg-cream-50 rounded-2xl shadow-sm border border-cream-200 p-4">
+                <h3 className="text-base font-serif font-bold text-charcoal-800 mb-3 flex items-center space-x-2">
+                  <Target className="h-4 w-4 text-sage-600" />
+                  <span>Quick Actions</span>
+                </h3>
+                
+                <div className="space-y-2">
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => handleQuickAction('Analyze my debt consolidation options and show potential savings')}
+                    className="w-full text-left p-3 rounded-lg bg-gradient-to-r from-cream-100 to-cream-200 hover:from-sage-50 hover:to-bronze-50 transition-all border border-cream-300 hover:border-sage-300"
+                  >
+                    <div className="text-sm font-medium text-charcoal-800 mb-1">
+                      Analyze debt consolidation
+                    </div>
+                    <div className="text-xs text-charcoal-600">
+                      Find ways to reduce interest
+                    </div>
+                  </motion.button>
+                  
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => handleQuickAction('Review my investment portfolio and suggest optimizations')}
+                    className="w-full text-left p-3 rounded-lg bg-gradient-to-r from-cream-100 to-cream-200 hover:from-sage-50 hover:to-bronze-50 transition-all border border-cream-300 hover:border-sage-300"
+                  >
+                    <div className="text-sm font-medium text-charcoal-800 mb-1">
+                      Review investments
+                    </div>
+                    <div className="text-xs text-charcoal-600">
+                      Optimize asset allocation
+                    </div>
+                  </motion.button>
+                </div>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
