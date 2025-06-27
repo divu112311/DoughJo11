@@ -61,7 +61,7 @@ const LoginForm: React.FC = () => {
               className="w-16 h-16 mr-3"
             >
               <img 
-                src="/doughjo-mascot.png" 
+                src="/doughjo-mascot.svg" 
                 alt="DoughJo Mascot" 
                 className="w-full h-full object-contain"
               />
