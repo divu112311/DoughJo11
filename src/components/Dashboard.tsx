@@ -56,7 +56,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user, xp }) => {
             className="w-16 h-16 opacity-20"
           >
             <img 
-              src="/Teal & Rose Gold.png" 
+              src="/doughjo-mascot.png" 
               alt="DoughJo" 
               className="w-full h-full object-contain"
             />
@@ -67,7 +67,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user, xp }) => {
           Welcome back, Financial Warrior! 🥋
         </h1>
         <p className="text-white/90 mb-4">
-          Your training continues in the DoughJo
+          Your training continues in the <span className="text-white font-medium">DoughJo</span>
         </p>
         <div className="flex items-center space-x-4">
           <div className={`flex items-center space-x-2 bg-gradient-to-r ${beltRank.color} text-white rounded-lg px-3 py-1`}>
@@ -196,7 +196,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user, xp }) => {
           <div className="text-center py-8">
             <div className="w-16 h-16 mx-auto mb-4">
               <img 
-                src="/Teal & Rose Gold.png" 
+                src="/doughjo-mascot.png" 
                 alt="DoughJo" 
                 className="w-full h-full object-contain opacity-50"
               />

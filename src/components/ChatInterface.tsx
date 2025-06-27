@@ -88,13 +88,13 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, onXPUpdate }) => {
             className="w-12 h-12 bg-gradient-to-br from-[#2A6F68] to-[#B76E79] rounded-full flex items-center justify-center p-1"
           >
             <img 
-              src="/Teal & Rose Gold.png" 
+              src="/doughjo-mascot.png" 
               alt="DoughJo Sensei" 
               className="w-full h-full object-contain"
             />
           </motion.div>
           <div>
-            <h2 className="text-lg font-semibold text-[#333333]">Sensei DoughJo</h2>
+            <h2 className="text-lg font-semibold text-[#333333]">Sensei <span className="text-[#2A6F68]">DoughJo</span></h2>
             <p className="text-sm text-gray-600">Your AI Financial Sensei</p>
           </div>
         </div>
@@ -125,12 +125,12 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, onXPUpdate }) => {
               className="w-20 h-20 mx-auto mb-4"
             >
               <img 
-                src="/Teal & Rose Gold.png" 
+                src="/doughjo-mascot.png" 
                 alt="DoughJo Sensei" 
                 className="w-full h-full object-contain opacity-70"
               />
             </motion.div>
-            <p className="text-gray-500 mb-6">Begin your training with Sensei DoughJo!</p>
+            <p className="text-gray-500 mb-6">Begin your training with Sensei <span className="text-[#2A6F68] font-medium">DoughJo</span>!</p>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-2xl mx-auto">
               {suggestedQuestions.map((question, index) => (
@@ -170,7 +170,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, onXPUpdate }) => {
                 {message.sender !== 'user' && (
                   <div className="w-5 h-5 mt-1 flex-shrink-0">
                     <img 
-                      src="/Teal & Rose Gold.png" 
+                      src="/doughjo-mascot.png" 
                       alt="DoughJo" 
                       className="w-full h-full object-contain"
                     />
@@ -195,7 +195,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, onXPUpdate }) => {
               <div className="flex items-center space-x-2">
                 <div className="w-5 h-5">
                   <img 
-                    src="/Teal & Rose Gold.png" 
+                    src="/doughjo-mascot.png" 
                     alt="DoughJo" 
                     className="w-full h-full object-contain"
                   />

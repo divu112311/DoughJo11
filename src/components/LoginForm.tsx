@@ -58,11 +58,15 @@ const LoginForm: React.FC = () => {
                 repeat: Infinity,
                 repeatType: "reverse"
               }}
-              className="w-16 h-16 mr-3 text-6xl"
+              className="w-16 h-16 mr-3"
             >
-              🥋
+              <img 
+                src="/doughjo-mascot.png" 
+                alt="DoughJo Mascot" 
+                className="w-full h-full object-contain"
+              />
             </motion.div>
-            <h1 className="text-4xl font-serif font-bold text-[#333333]">DoughJo</h1>
+            <h1 className="text-4xl font-serif font-bold text-[#2A6F68]">DoughJo</h1>
           </div>
           <p className="text-[#666666] text-lg">Your AI Financial Sensei</p>
           <p className="text-[#888888] text-sm mt-2">Master your money with ancient wisdom and modern AI</p>
@@ -183,7 +187,7 @@ const LoginForm: React.FC = () => {
 
           <div className="mt-6 text-center">
             <p className="text-xs text-gray-500">
-              "The way of the warrior is to stop trouble before it starts" - DoughJo Wisdom
+              "The way of the warrior is to stop trouble before it starts" - <span className="text-[#2A6F68] font-medium">DoughJo</span> Wisdom
             </p>
           </div>
         </motion.div>
