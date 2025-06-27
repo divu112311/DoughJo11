@@ -118,6 +118,9 @@ const BankAccounts: React.FC<BankAccountsProps> = ({ user }) => {
       setError(null);
       console.log('Bank connection successful:', { publicToken, metadata });
       
+      // For demo mode, accounts are already created in PlaidLink component
+      // For real Plaid, you'd call your backend API here to exchange tokens
+      
       // Refresh accounts list to show the newly connected accounts
       await fetchAccounts();
       setShowPlaidLink(false);
@@ -140,25 +143,50 @@ const BankAccounts: React.FC<BankAccountsProps> = ({ user }) => {
     setRefreshing(true);
     setError(null);
     try {
-      console.log('Refreshing account balances...');
+      // Simulate refreshing account balances
+      await new Promise(resolve => setTimeout(resolve, 1500));
       
-      const { data, error: refreshError } = await supabase.functions.invoke('plaid-refresh-accounts', {
-        body: { userId: user.id },
+      // In a real app, this would call Plaid API to get updated balances
+      // For demo, we'll add some realistic variation to existing balances
+      const updatedAccounts = accounts.map(account => {
+        let newBalance = account.balance;
+        
+        // Add realistic balance changes based on account type
+        if (account.type === 'depository') {
+          if (account.subtype === 'checking') {
+            // Checking: small random transactions
+            newBalance += (Math.random() - 0.5) * 200;
+          } else if (account.subtype === 'savings') {
+            // Savings: small positive growth
+            newBalance += Math.random() * 50;
+          }
+        } else if (account.type === 'credit') {
+          // Credit cards: small spending changes
+          newBalance -= Math.random() * 100;
+        }
+        
+        return {
+          ...account,
+          balance: Math.round(newBalance * 100) / 100, // Round to 2 decimals
+          last_updated: new Date().toISOString()
+        };
       });
 
-      if (refreshError) {
-        throw new Error(refreshError.message || 'Failed to refresh accounts');
+      // Update balances in database
+      for (const account of updatedAccounts) {
+        await supabase
+          .from('bank_accounts')
+          .update({
+            balance: account.balance,
+            last_updated: account.last_updated
+          })
+          .eq('id', account.id);
       }
 
-      if (data?.error) {
-        throw new Error(data.error);
-      }
-
-      console.log('Accounts refreshed successfully');
       await fetchAccounts();
     } catch (error: any) {
       console.error('Error refreshing accounts:', error);
-      setError('Failed to refresh account balances. Please try again.');
+      setError('Failed to refresh account balances');
     } finally {
       setRefreshing(false);
     }
@@ -223,6 +251,10 @@ const BankAccounts: React.FC<BankAccountsProps> = ({ user }) => {
   const totalCredit = accounts
     .filter(account => account.type === 'credit')
     .reduce((sum, account) => sum + Math.abs(account.balance), 0);
+
+  const isDemoAccount = (account: Account) => {
+    return account.plaid_account_id.startsWith('demo_');
+  };
 
   // Show loading only for initial load
   if (loading && accounts.length === 0) {
@@ -311,22 +343,38 @@ const BankAccounts: React.FC<BankAccountsProps> = ({ user }) => {
               <Zap className="h-6 w-6 text-blue-600" />
             </div>
             <div className="flex-1">
-              <h4 className="font-bold text-blue-900 mb-2">🚀 Connect Your Bank Accounts</h4>
+              <h4 className="font-bold text-blue-900 mb-2">🚀 Quick Start: Connect Your First Account</h4>
               <p className="text-blue-800 text-sm mb-4">
-                DoughJo can automatically track your finances by securely connecting to your bank accounts using Plaid.
+                DoughJo can automatically track your finances by securely connecting to your bank accounts.
+                Choose your preferred connection method:
               </p>
               
-              <div className="bg-white/60 rounded-lg p-4 border border-blue-200 mb-4">
-                <div className="flex items-center space-x-2 mb-2">
-                  <span className="text-lg">🏦</span>
-                  <span className="font-medium text-blue-900">Plaid Sandbox</span>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div className="bg-white/60 rounded-lg p-4 border border-blue-200">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <span className="text-lg">🎭</span>
+                    <span className="font-medium text-blue-900">Demo Mode</span>
+                  </div>
+                  <p className="text-sm text-blue-700 mb-2">Perfect for testing and demos</p>
+                  <ul className="text-xs text-blue-600 space-y-1">
+                    <li>• Chase Checking ($2,500)</li>
+                    <li>• Chase Savings ($15,000)</li>
+                    <li>• Credit Card (-$850)</li>
+                  </ul>
                 </div>
-                <p className="text-sm text-blue-700 mb-2">Real Plaid integration with test banks</p>
-                <ul className="text-xs text-blue-600 space-y-1">
-                  <li>• Real test banks and institutions</li>
-                  <li>• Use: user_good / pass_good</li>
-                  <li>• Production-ready architecture</li>
-                </ul>
+                
+                <div className="bg-white/60 rounded-lg p-4 border border-blue-200">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <span className="text-lg">🏦</span>
+                    <span className="font-medium text-blue-900">Plaid Sandbox</span>
+                  </div>
+                  <p className="text-sm text-blue-700 mb-2">Real Plaid integration testing</p>
+                  <ul className="text-xs text-blue-600 space-y-1">
+                    <li>• Real test banks</li>
+                    <li>• user_good / pass_good</li>
+                    <li>• Production-ready</li>
+                  </ul>
+                </div>
               </div>
 
               <motion.button
@@ -403,7 +451,7 @@ const BankAccounts: React.FC<BankAccountsProps> = ({ user }) => {
             </div>
             <h4 className="text-lg font-medium text-[#333333] mb-2">Ready to connect?</h4>
             <p className="text-gray-600 mb-4">
-              Connect your bank accounts securely with Plaid
+              Choose between demo accounts or real Plaid sandbox integration
             </p>
             <motion.button
               whileHover={{ scale: 1.02 }}
@@ -428,9 +476,16 @@ const BankAccounts: React.FC<BankAccountsProps> = ({ user }) => {
                   <div className="flex items-center space-x-3">
                     {getAccountIcon(account.type, account.subtype)}
                     <div>
-                      <h4 className="font-medium text-[#333333]">
-                        {account.name}
-                      </h4>
+                      <div className="flex items-center space-x-2">
+                        <h4 className="font-medium text-[#333333]">
+                          {account.name}
+                        </h4>
+                        {isDemoAccount(account) && (
+                          <span className="bg-blue-100 text-blue-700 text-xs px-2 py-0.5 rounded-full">
+                            Demo
+                          </span>
+                        )}
+                      </div>
                       <p className="text-sm text-gray-600">
                         {account.institution_name} • {getAccountTypeLabel(account.type, account.subtype)} ••••{account.mask}
                       </p>
@@ -492,10 +547,10 @@ const BankAccounts: React.FC<BankAccountsProps> = ({ user }) => {
                   <CreditCard className="h-8 w-8 text-[#2A6F68]" />
                 </div>
                 <h3 className="text-xl font-bold text-[#333333] mb-2">
-                  Connect Bank Account
+                  Connect Bank Accounts
                 </h3>
                 <p className="text-gray-600">
-                  Securely connect your bank account using Plaid
+                  Choose your connection method and start tracking your finances automatically
                 </p>
               </div>
 
