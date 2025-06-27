@@ -6,6 +6,7 @@ import ChatInterface from './components/ChatInterface';
 import LearningCenter from './components/LearningCenter';
 import AuthCallback from './components/AuthCallback';
 import ResetPassword from './components/ResetPassword';
+import ConnectionStatus from './components/ConnectionStatus';
 import { useAuth } from './hooks/useAuth';
 import { useUserProfile } from './hooks/useUserProfile';
 
@@ -42,41 +43,49 @@ function App() {
   }
 
   if (!user) {
-    return <LoginForm />;
+    return (
+      <>
+        <ConnectionStatus />
+        <LoginForm />
+      </>
+    );
   }
 
   // Check if user email is verified
   if (!user.email_confirmed_at) {
     return (
-      <div className="min-h-screen bg-[#FAF9F6] flex items-center justify-center p-4">
-        <motion.div
-          initial={{ scale: 0.9, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-8 border border-gray-200 text-center max-w-md w-full"
-        >
-          <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <motion.div
-              animate={{ scale: [1, 1.1, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            >
-              📧
-            </motion.div>
-          </div>
-          <h2 className="text-2xl font-bold text-[#333333] mb-2">Verify Your Email</h2>
-          <p className="text-gray-600 mb-4">
-            Please check your email and click the verification link to activate your account.
-          </p>
-          <p className="text-sm text-gray-500 mb-6">
-            Email sent to: <strong>{user.email}</strong>
-          </p>
-          <button
-            onClick={signOut}
-            className="text-[#2A6F68] hover:text-[#235A54] transition-colors"
+      <>
+        <ConnectionStatus />
+        <div className="min-h-screen bg-[#FAF9F6] flex items-center justify-center p-4">
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-8 border border-gray-200 text-center max-w-md w-full"
           >
-            Sign out and try again
-          </button>
-        </motion.div>
-      </div>
+            <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <motion.div
+                animate={{ scale: [1, 1.1, 1] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                📧
+              </motion.div>
+            </div>
+            <h2 className="text-2xl font-bold text-[#333333] mb-2">Verify Your Email</h2>
+            <p className="text-gray-600 mb-4">
+              Please check your email and click the verification link to activate your account.
+            </p>
+            <p className="text-sm text-gray-500 mb-6">
+              Email sent to: <strong>{user.email}</strong>
+            </p>
+            <button
+              onClick={signOut}
+              className="text-[#2A6F68] hover:text-[#235A54] transition-colors"
+            >
+              Sign out and try again
+            </button>
+          </motion.div>
+        </div>
+      </>
     );
   }
 
@@ -84,6 +93,8 @@ function App() {
 
   return (
     <div className="min-h-screen bg-[#FAF9F6]">
+      <ConnectionStatus />
+      
       {/* Header */}
       <motion.header 
         initial={{ y: -100 }}
