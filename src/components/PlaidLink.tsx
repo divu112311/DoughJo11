@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { usePlaidLink } from 'react-plaid-link';
 import { motion } from 'framer-motion';
-import { CreditCard, AlertCircle, CheckCircle, Loader, Info, ExternalLink } from 'lucide-react';
+import { CreditCard, AlertCircle, CheckCircle, Loader, Info, ExternalLink, Settings } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 interface PlaidLinkProps {
@@ -21,6 +21,7 @@ const PlaidLink: React.FC<PlaidLinkProps> = ({ onSuccess, onError, userId }) => 
   const generateLinkToken = async () => {
     setLoading(true);
     setError(null);
+    setSetupInstructions(false);
 
     try {
       console.log('Creating Plaid link token...');
@@ -31,12 +32,15 @@ const PlaidLink: React.FC<PlaidLinkProps> = ({ onSuccess, onError, userId }) => 
 
       if (functionError) {
         console.error('Function error:', functionError);
-        throw new Error('Plaid Edge Function not deployed. Please deploy the functions first.');
+        if (functionError.message?.includes('not found') || functionError.message?.includes('404')) {
+          throw new Error('Plaid Edge Functions not deployed. Please deploy the functions first.');
+        }
+        throw new Error(functionError.message || 'Failed to create link token');
       }
 
-      if (data.error) {
+      if (data?.error) {
         console.error('Plaid API error:', data.error);
-        if (data.error.includes('not configured')) {
+        if (data.error.includes('not configured') || data.error.includes('credentials')) {
           throw new Error('Plaid credentials not configured in Supabase secrets');
         }
         throw new Error(data.error);
@@ -237,16 +241,32 @@ const PlaidLink: React.FC<PlaidLinkProps> = ({ onSuccess, onError, userId }) => 
           className="bg-blue-50 border border-blue-200 rounded-lg p-4"
         >
           <div className="flex items-start space-x-2 mb-3">
-            <Info className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
+            <Settings className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
             <div className="text-sm text-blue-800">
-              <p className="font-medium mb-2">Plaid Sandbox Setup Required</p>
-              <p className="mb-3">To use real Plaid integration, you need to:</p>
-              <ol className="list-decimal list-inside space-y-1 mb-3">
-                <li>Get Plaid credentials from <a href="https://dashboard.plaid.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline inline-flex items-center">dashboard.plaid.com <ExternalLink className="h-3 w-3 ml-1" /></a></li>
-                <li>Deploy the Edge Functions to Supabase</li>
-                <li>Add credentials to Supabase Secrets</li>
-              </ol>
-              <p className="text-xs">For now, use Demo Mode to test all banking features!</p>
+              <p className="font-medium mb-2">🔧 Plaid Sandbox Setup Required</p>
+              <p className="mb-3">Since you have Plaid sandbox credentials, here's how to connect them:</p>
+              
+              <div className="bg-blue-100 rounded-lg p-3 mb-3">
+                <p className="font-medium mb-2">Quick Setup Steps:</p>
+                <ol className="list-decimal list-inside space-y-1 text-xs">
+                  <li>Add your Plaid credentials to <strong>Supabase → Settings → Secrets</strong></li>
+                  <li>Deploy the 3 Edge Functions via <strong>Supabase Dashboard</strong></li>
+                  <li>Test with real Plaid sandbox banks</li>
+                </ol>
+              </div>
+              
+              <div className="flex items-center space-x-2">
+                <a 
+                  href="https://dashboard.plaid.com" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="text-blue-600 hover:underline inline-flex items-center text-xs"
+                >
+                  Plaid Dashboard <ExternalLink className="h-3 w-3 ml-1" />
+                </a>
+                <span className="text-blue-400">•</span>
+                <span className="text-xs">For now, use Demo Mode below!</span>
+              </div>
             </div>
           </div>
         </motion.div>
@@ -354,17 +374,20 @@ const PlaidLink: React.FC<PlaidLinkProps> = ({ onSuccess, onError, userId }) => 
         )}
       </div>
 
-      {/* Quick Setup Guide */}
+      {/* Quick Setup Guide for Sandbox Mode */}
       {mode === 'sandbox' && (
         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
           <div className="text-xs text-yellow-800">
-            <p className="font-medium mb-1">Quick Plaid Setup:</p>
+            <p className="font-medium mb-1">🚀 Quick Plaid Setup (since you have sandbox access):</p>
             <ol className="list-decimal list-inside space-y-1">
-              <li>Sign up at <a href="https://dashboard.plaid.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">dashboard.plaid.com</a></li>
-              <li>Get your Client ID and Sandbox Secret</li>
-              <li>Add them to Supabase → Settings → Secrets</li>
-              <li>Deploy the Edge Functions manually via dashboard</li>
+              <li>Go to <strong>Supabase → Settings → Secrets</strong></li>
+              <li>Add: <code>PLAID_CLIENT_ID</code>, <code>PLAID_SECRET</code>, <code>PLAID_ENV=sandbox</code></li>
+              <li>Deploy Edge Functions via <strong>Supabase → Edge Functions</strong></li>
+              <li>Copy function code from project files</li>
             </ol>
+            <p className="mt-2 text-yellow-700">
+              <strong>For now:</strong> Use Demo Mode - it works perfectly and shows the full experience!
+            </p>
           </div>
         </div>
       )}
