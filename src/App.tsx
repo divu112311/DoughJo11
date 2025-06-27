@@ -51,9 +51,9 @@ function App() {
               >
                 <div className="w-10 h-10 bg-gradient-to-br from-[#2A6F68] to-[#B76E79] rounded-full flex items-center justify-center p-1">
                   <img 
-                    src="https://images.pexels.com/photos/6801648/pexels-photo-6801648.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop&crop=face" 
+                    src="/doughjo-mascot.png" 
                     alt="DoughJo Mascot" 
-                    className="w-8 h-8 object-cover rounded-full"
+                    className="w-8 h-8 object-contain"
                     onError={(e) => {
                       // Fallback if image doesn't load
                       e.currentTarget.style.display = 'none';
