@@ -102,7 +102,7 @@ export const useChat = (user: User | null) => {
           sender: 'user',
         })
         .select()
-        .single();
+        .maybeSingle();
 
       const { data: userMessage, error: userError } = await createTimeoutQuery(
         userMessagePromise,
@@ -113,7 +113,9 @@ export const useChat = (user: User | null) => {
       if (userError) throw userError;
 
       // Update local state immediately
-      setMessages(prev => [...prev, userMessage]);
+      if (userMessage) {
+        setMessages(prev => [...prev, userMessage]);
+      }
 
       // Call AI API through Supabase Edge Function
       const { data: aiResponseData, error: aiError } = await supabase.functions.invoke('chat-ai', {
@@ -139,7 +141,7 @@ export const useChat = (user: User | null) => {
           sender: 'assistant',
         })
         .select()
-        .single();
+        .maybeSingle();
 
       const { data: aiMessage, error: aiMessageError } = await createTimeoutQuery(
         aiMessagePromise,
@@ -150,7 +152,9 @@ export const useChat = (user: User | null) => {
       if (aiMessageError) throw aiMessageError;
 
       // Update local state with AI response
-      setMessages(prev => [...prev, aiMessage]);
+      if (aiMessage) {
+        setMessages(prev => [...prev, aiMessage]);
+      }
 
       // Award XP for chat interaction
       if (onXPUpdate) {
@@ -174,7 +178,7 @@ export const useChat = (user: User | null) => {
               sender: 'assistant',
             })
             .select()
-            .single();
+            .maybeSingle();
 
           const { data: fallbackMessage } = await createTimeoutQuery(
             fallbackPromise,
