@@ -39,8 +39,8 @@ const FinancialHealthDashboard: React.FC<FinancialHealthDashboardProps> = ({
       percentage: 68,
       status: 'good',
       icon: Shield,
-      color: 'text-sage-600',
-      bgColor: 'bg-sage-50'
+      color: 'text-brand-teal',
+      bgColor: 'bg-teal-50'
     },
     {
       id: 'debt-management',
@@ -49,8 +49,8 @@ const FinancialHealthDashboard: React.FC<FinancialHealthDashboardProps> = ({
       percentage: 72,
       status: 'good',
       icon: CreditCard,
-      color: 'text-sage-600',
-      bgColor: 'bg-sage-50'
+      color: 'text-brand-teal',
+      bgColor: 'bg-teal-50'
     },
     {
       id: 'savings-rate',
@@ -59,8 +59,8 @@ const FinancialHealthDashboard: React.FC<FinancialHealthDashboardProps> = ({
       percentage: 85,
       status: 'good',
       icon: PiggyBank,
-      color: 'text-bronze-600',
-      bgColor: 'bg-bronze-50'
+      color: 'text-brand-rosegold',
+      bgColor: 'bg-rosegold-50'
     },
     {
       id: 'investment-growth',
@@ -69,8 +69,8 @@ const FinancialHealthDashboard: React.FC<FinancialHealthDashboardProps> = ({
       percentage: 45,
       status: 'warning',
       icon: TrendingUp,
-      color: 'text-bronze-600',
-      bgColor: 'bg-bronze-50'
+      color: 'text-brand-rosegold',
+      bgColor: 'bg-rosegold-50'
     }
   ];
 
@@ -79,10 +79,10 @@ const FinancialHealthDashboard: React.FC<FinancialHealthDashboardProps> = ({
       {showTitle && (
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-xl font-serif font-bold text-charcoal-800 flex items-center space-x-2">
-            <BarChart3 className="h-5 w-5 text-sage-600" />
+            <BarChart3 className="h-5 w-5 text-brand-teal" />
             <span>Financial Health Dashboard</span>
           </h3>
-          <button className="text-sage-600 hover:text-sage-700 text-sm transition-colors flex items-center space-x-1">
+          <button className="text-brand-teal hover:text-teal-700 text-sm transition-colors flex items-center space-x-1">
             <RefreshCw className="h-4 w-4" />
             <span>Refresh</span>
           </button>
@@ -116,14 +116,14 @@ const FinancialHealthDashboard: React.FC<FinancialHealthDashboardProps> = ({
             />
             <defs>
               <linearGradient id="healthGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#4a8b7e" />
-                <stop offset="100%" stopColor="#a08072" />
+                <stop offset="0%" stopColor="#125B5F" />
+                <stop offset="100%" stopColor="#B76E79" />
               </linearGradient>
             </defs>
           </svg>
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center">
-              <div className={`${compact ? 'text-lg' : 'text-xl'} font-bold text-sage-700`}>
+              <div className={`${compact ? 'text-lg' : 'text-xl'} font-bold text-brand-teal`}>
                 {healthScore}%
               </div>
               <div className={`${compact ? 'text-xs' : 'text-sm'} text-charcoal-600`}>

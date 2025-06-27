@@ -29,7 +29,7 @@ const QuickActions: React.FC<QuickActionsProps> = ({ onQuickAction, compact = fa
       label: 'Analyze debt consolidation',
       description: 'Find ways to reduce interest',
       icon: Calculator,
-      color: 'bg-gradient-to-r from-bronze-500 to-rosegold-500',
+      color: 'bg-gradient-to-r from-brand-rosegold to-rosegold-600',
       action: () => onQuickAction('Analyze my debt consolidation options and show potential savings')
     },
     {
@@ -37,7 +37,7 @@ const QuickActions: React.FC<QuickActionsProps> = ({ onQuickAction, compact = fa
       label: 'Review investments',
       description: 'Optimize asset allocation',
       icon: BarChart3,
-      color: 'bg-gradient-to-r from-sage-600 to-teal-500',
+      color: 'bg-gradient-to-r from-brand-teal to-teal-600',
       action: () => onQuickAction('Review my investment portfolio and suggest optimizations')
     },
     {
@@ -45,7 +45,7 @@ const QuickActions: React.FC<QuickActionsProps> = ({ onQuickAction, compact = fa
       label: 'Plan emergency fund',
       description: 'Build financial security',
       icon: Shield,
-      color: 'bg-gradient-to-r from-teal-500 to-sage-500',
+      color: 'bg-gradient-to-r from-brand-teal to-teal-700',
       action: () => onQuickAction('Help me create a plan to build my emergency fund to 6 months of expenses')
     }
   ];
@@ -53,7 +53,7 @@ const QuickActions: React.FC<QuickActionsProps> = ({ onQuickAction, compact = fa
   return (
     <div className={`bg-cream-50 rounded-2xl shadow-sm border border-cream-200 ${compact ? 'p-4' : 'p-6'}`}>
       <h3 className="text-base font-serif font-bold text-charcoal-800 mb-3 flex items-center space-x-2">
-        <Target className="h-4 w-4 text-sage-600" />
+        <Target className="h-4 w-4 text-brand-teal" />
         <span>Quick Actions</span>
       </h3>
       
@@ -69,7 +69,7 @@ const QuickActions: React.FC<QuickActionsProps> = ({ onQuickAction, compact = fa
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={action.action}
-              className="w-full text-left p-3 rounded-lg bg-gradient-to-r from-cream-100 to-cream-200 hover:from-sage-50 hover:to-bronze-50 transition-all border border-cream-300 hover:border-sage-300"
+              className="w-full text-left p-3 rounded-lg bg-gradient-to-r from-cream-100 to-cream-200 hover:from-teal-50 hover:to-rosegold-50 transition-all border border-cream-300 hover:border-brand-teal"
             >
               <div className="flex items-start space-x-3">
                 <div className={`w-6 h-6 ${action.color} rounded-lg flex items-center justify-center flex-shrink-0`}>

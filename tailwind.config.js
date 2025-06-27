@@ -8,33 +8,38 @@ export default {
         'sans': ['Inter', 'sans-serif'],
       },
       colors: {
-        // Teal Green - Main brand color
+        // Exact brand colors
+        brand: {
+          teal: '#125B5F',
+          rosegold: '#B76E79',
+        },
+        // Teal variations
         teal: {
-          50: '#f0fdfa',
-          100: '#ccfbf1',
-          200: '#99f6e4',
-          300: '#5eead4',
-          400: '#2dd4bf',
-          500: '#14b8a6', // Main teal
-          600: '#0d9488',
-          700: '#0f766e',
-          800: '#115e59',
-          900: '#134e4a',
+          50: '#f0f9fa',
+          100: '#d9f2f4',
+          200: '#b3e5e9',
+          300: '#8dd8de',
+          400: '#67cbd3',
+          500: '#41bec8',
+          600: '#2a9ba5',
+          700: '#1f7882',
+          800: '#125B5F', // Main brand color
+          900: '#0d4347',
         },
-        // Rose Gold - Accent color
+        // Rose gold variations
         rosegold: {
-          50: '#fdf2f8',
-          100: '#fce7f3',
-          200: '#fbcfe8',
-          300: '#f9a8d4',
-          400: '#f472b6',
-          500: '#ec4899', // Main rose gold
-          600: '#db2777',
-          700: '#be185d',
-          800: '#9d174d',
-          900: '#831843',
+          50: '#fdf2f5',
+          100: '#fce7ec',
+          200: '#f9cfd9',
+          300: '#f5b7c6',
+          400: '#f29fb3',
+          500: '#ee87a0',
+          600: '#e16f8d',
+          700: '#d4577a',
+          800: '#B76E79', // Main brand color
+          900: '#9a5d68',
         },
-        // Cream/off-white backgrounds
+        // Neutral colors
         cream: {
           50: '#fefdfb',
           100: '#fdf9f3',
@@ -47,7 +52,6 @@ export default {
           800: '#e9cf9f',
           900: '#e6c993',
         },
-        // Soft charcoal for text
         charcoal: {
           50: '#f8f9fa',
           100: '#e9ecef',
@@ -60,57 +64,31 @@ export default {
           800: '#212529',
           900: '#1a1d20',
         },
-        // Primary colors (using teal)
+        // Primary colors (using exact teal)
         primary: {
-          50: '#f0fdfa',
-          100: '#ccfbf1',
-          200: '#99f6e4',
-          300: '#5eead4',
-          400: '#2dd4bf',
-          500: '#14b8a6', // Main teal
-          600: '#0d9488',
-          700: '#0f766e',
-          800: '#115e59',
-          900: '#134e4a',
+          50: '#f0f9fa',
+          100: '#d9f2f4',
+          200: '#b3e5e9',
+          300: '#8dd8de',
+          400: '#67cbd3',
+          500: '#41bec8',
+          600: '#2a9ba5',
+          700: '#1f7882',
+          800: '#125B5F', // Main brand color
+          900: '#0d4347',
         },
-        // Secondary colors (using rose gold)
+        // Secondary colors (using exact rose gold)
         secondary: {
-          50: '#fdf2f8',
-          100: '#fce7f3',
-          200: '#fbcfe8',
-          300: '#f9a8d4',
-          400: '#f472b6',
-          500: '#ec4899', // Main rose gold
-          600: '#db2777',
-          700: '#be185d',
-          800: '#9d174d',
-          900: '#831843',
-        },
-        // Sage green (alternative teal)
-        sage: {
-          50: '#f0f9f7',
-          100: '#dbeee8',
-          200: '#b8ddd2',
-          300: '#8bc5b5',
-          400: '#5fa798',
-          500: '#4a8b7e',
-          600: '#3d7268',
-          700: '#2f5951',
-          800: '#22403b',
-          900: '#1a332f',
-        },
-        // Bronze/warm accent
-        bronze: {
-          50: '#fdf8f6',
-          100: '#f2e8e5',
-          200: '#eaddd7',
-          300: '#e0cec7',
-          400: '#d2bab0',
-          500: '#bfa094',
-          600: '#a08072',
-          700: '#8b6f61',
-          800: '#6f5a4f',
-          900: '#5c4a42',
+          50: '#fdf2f5',
+          100: '#fce7ec',
+          200: '#f9cfd9',
+          300: '#f5b7c6',
+          400: '#f29fb3',
+          500: '#ee87a0',
+          600: '#e16f8d',
+          700: '#d4577a',
+          800: '#B76E79', // Main brand color
+          900: '#9a5d68',
         },
       },
       animation: {

@@ -28,7 +28,7 @@ const FinancialAnalysis: React.FC<FinancialAnalysisProps> = ({ user, compact = f
       value: '7.2/10',
       status: 'good',
       icon: Activity,
-      color: 'text-sage-600'
+      color: 'text-brand-teal'
     },
     {
       label: 'Debt Ratio',
@@ -36,7 +36,7 @@ const FinancialAnalysis: React.FC<FinancialAnalysisProps> = ({ user, compact = f
       target: '18%',
       status: 'warning',
       icon: TrendingDown,
-      color: 'text-bronze-600'
+      color: 'text-brand-rosegold'
     },
     {
       label: 'Emergency Fund',
@@ -52,22 +52,22 @@ const FinancialAnalysis: React.FC<FinancialAnalysisProps> = ({ user, compact = f
       target: '15%+',
       status: 'good',
       icon: TrendingUp,
-      color: 'text-sage-600'
+      color: 'text-brand-teal'
     }
   ];
 
   const getStatusColor = (status: 'good' | 'warning' | 'critical') => {
     switch (status) {
-      case 'good': return 'text-sage-600';
-      case 'warning': return 'text-bronze-600';
+      case 'good': return 'text-brand-teal';
+      case 'warning': return 'text-brand-rosegold';
       case 'critical': return 'text-red-600';
     }
   };
 
   const getStatusBg = (status: 'good' | 'warning' | 'critical') => {
     switch (status) {
-      case 'good': return 'bg-sage-50';
-      case 'warning': return 'bg-bronze-50';
+      case 'good': return 'bg-teal-50';
+      case 'warning': return 'bg-rosegold-50';
       case 'critical': return 'bg-red-50';
     }
   };
@@ -77,7 +77,7 @@ const FinancialAnalysis: React.FC<FinancialAnalysisProps> = ({ user, compact = f
       {/* Header */}
       <div className="mb-4">
         <div className="flex items-center space-x-3 mb-2">
-          <div className="w-8 h-8 bg-sage-100 rounded-full flex items-center justify-center">
+          <div className="w-8 h-8 bg-teal-100 rounded-full flex items-center justify-center">
             <img 
               src="/finapp.png" 
               alt="Financial AI" 
@@ -91,7 +91,7 @@ const FinancialAnalysis: React.FC<FinancialAnalysisProps> = ({ user, compact = f
             <div className="text-xs text-charcoal-600">
               <div>Net Worth: $22,000 • Monthly Savings: $1,883</div>
               <div className="flex items-center space-x-2 mt-1">
-                <div className="w-2 h-2 bg-teal-500 rounded-full" />
+                <div className="w-2 h-2 bg-brand-teal rounded-full" />
                 <span className="text-xs">AI analyzing in real-time</span>
               </div>
             </div>
