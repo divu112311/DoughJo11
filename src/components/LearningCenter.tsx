@@ -290,7 +290,7 @@ const LearningCenter: React.FC<LearningCenterProps> = ({ user, userLevel, onXPUp
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
-              className="space-y-6"
+              transition={{ duration: 0.3 }}
             >
               <h3 className="text-xl font-semibold text-[#333333] mb-6">
                 {currentQuestion.question}
@@ -504,7 +504,7 @@ const LearningCenter: React.FC<LearningCenterProps> = ({ user, userLevel, onXPUp
         <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-r from-[#2A6F68] to-[#B76E79] rounded-full flex items-center justify-center">
           <BookOpen className="h-8 w-8 text-white" />
         </div>
-        <h1 className="text-2xl font-bold text-[#333333] mb-2">Financial Dojo Training</h1>
+        <h1 className="text-2xl font-bold text-[#333333] mb-2">Financial <span className="text-[#2A6F68]">DoughJo</span> Training</h1>
         <p className="text-gray-600">
           Test your knowledge and earn XP with personalized financial quizzes
         </p>
@@ -560,7 +560,7 @@ const LearningCenter: React.FC<LearningCenterProps> = ({ user, userLevel, onXPUp
         transition={{ delay: 0.6 }}
         className="bg-gradient-to-r from-[#2A6F68]/5 to-[#B76E79]/5 rounded-xl p-6 border border-gray-200"
       >
-        <h3 className="text-lg font-semibold text-[#333333] mb-3">Training Tips from Sensei DoughJo</h3>
+        <h3 className="text-lg font-semibold text-[#333333] mb-3">Training Tips from Sensei <span className="text-[#2A6F68]">DoughJo</span></h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700">
           <div className="flex items-start space-x-2">
             <Target className="h-4 w-4 text-[#2A6F68] mt-0.5 flex-shrink-0" />
