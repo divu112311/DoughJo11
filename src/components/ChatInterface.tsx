@@ -378,7 +378,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, xp, onXPUpdate }) =
               </button>
             </div>
           </div>
-        </div>
+       </motion.div> 
 
         {/* Right Sidebar - Financial Analysis */}
         <AnimatePresence>
