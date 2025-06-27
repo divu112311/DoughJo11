@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { User } from '@supabase/supabase-js';
-import { supabase, isSupabaseConfigured, createTimeoutQuery, retryQuery } from '../lib/supabase';
+import { supabase, isSupabaseConfigured, ensureUserProfile } from '../lib/supabase';
 
 export const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -27,17 +27,7 @@ export const useAuth = () => {
         } else if (session?.user?.id) {
           console.log('✅ User found in session:', session.user.id);
           setUser(session.user);
-          await // In your useAuth.ts file, around line 138
-import { getOrCreateUserProfileFast } from '../lib/supabase'
-
-// Replace the current ensureUserProfile call with:
-const { data: profile, error } = await getOrCreateUserProfileFast(user)
-
-if (error && !error.fallback) {
-  console.warn('Profile creation had issues, but continuing with fallback')
-}
-
-// Continue with your auth flow using the profile data(session.user);
+          await handleUserProfile(session.user);
         } else {
           console.log('ℹ️ No active session found');
           setUser(null);
@@ -65,7 +55,7 @@ if (error && !error.fallback) {
           if (event === 'SIGNED_IN' && session?.user?.id) {
             console.log('✅ User signed in:', session.user.id);
             setUser(session.user);
-            await ensureUserProfile(session.user);
+            await handleUserProfile(session.user);
           }
 
           // Handle sign out
@@ -100,113 +90,24 @@ if (error && !error.fallback) {
     return () => subscription.unsubscribe();
   }, []);
 
-  const // In your useAuth.ts file, around line 138
-import { getOrCreateUserProfileFast } from '../lib/supabase'
-
-// Replace the current ensureUserProfile call with:
-const { data: profile, error } = await getOrCreateUserProfileFast(user)
-
-if (error && !error.fallback) {
-  console.warn('Profile creation had issues, but continuing with fallback')
-}
-
-// Continue with your auth flow using the profile data = async (user: User) => {
-    if (!isSupabaseConfigured || !user?.id) {
-      console.warn('⚠️ Cannot ensure user profile - missing user ID or Supabase not configured');
-      return;
-    }
-
+  const handleUserProfile = async (user: User) => {
     try {
-      console.log('🔍 Ensuring user profile exists for:', user.id);
+      const { data: profile, error } = await ensureUserProfile(user);
 
-      // Check if user profile exists with timeout and retry logic
-      const profileResult = await retryQuery(async () => {
-        const profilePromise = supabase
-          .from('users')
-          .select('id')
-          .eq('id', user.id)
-          .limit(1)
-          .maybeSingle();
-
-        return await createTimeoutQuery(
-          profilePromise,
-          8000, // Reduced timeout
-          'Profile check timeout'
-        );
-      }, 2, 1000);
-
-      if (profileResult.error) {
-        console.error('❌ Error checking user profile:', profileResult.error);
-        return;
+      if (error) {
+        if (error.fallback) {
+          console.log('Using fallback profile due to database issues');
+        } else {
+          console.error('Critical profile error:', error);
+        }
       }
 
-      if (!profileResult.data) {
-        console.log('➕ Creating new user profile for:', user.id);
-        
-        // Create user profile with timeout and retry
-        await retryQuery(async () => {
-          const insertProfilePromise = supabase
-            .from('users')
-            .insert({
-              id: user.id,
-              email: user.email,
-              full_name: user.user_metadata?.full_name || user.user_metadata?.name || 'User',
-            });
-
-          return await createTimeoutQuery(
-            insertProfilePromise,
-            8000, // Reduced timeout
-            'Profile creation timeout'
-          );
-        }, 2, 1000);
-
-        // Check if XP record already exists before creating
-        const xpResult = await retryQuery(async () => {
-          const xpCheckPromise = supabase
-            .from('xp')
-            .select('id')
-            .eq('user_id', user.id)
-            .limit(1)
-            .maybeSingle();
-
-          return await createTimeoutQuery(xpCheckPromise, 8000, 'XP check timeout');
-        }, 2, 1000);
-
-        if (xpResult.error) {
-          console.error('❌ Error checking existing XP:', xpResult.error);
-        }
-
-        // Only create XP record if it doesn't exist
-        if (!xpResult.data) {
-          console.log('➕ Creating initial XP record for:', user.id);
-          
-          await retryQuery(async () => {
-            const insertXPPromise = supabase
-              .from('xp')
-              .insert({
-                user_id: user.id,
-                points: 100, // Welcome bonus
-                badges: ['Welcome'],
-              });
-
-            return await createTimeoutQuery(
-              insertXPPromise,
-              8000, // Reduced timeout
-              'XP creation timeout'
-            );
-          }, 2, 1000);
-
-          console.log('✅ User profile and XP created successfully');
-        } else {
-          console.log('✅ User profile created, XP already exists');
-        }
-      } else {
-        console.log('✅ User profile already exists');
+      if (profile) {
+        console.log('✅ User profile ensured successfully');
       }
     } catch (error: any) {
-      console.error('❌ Error ensuring user profile:', error);
+      console.error('❌ Error handling user profile:', error);
       // Don't throw error here as it would break the auth flow
-      // The useUserProfile hook will handle creating missing XP records
     }
   };
 

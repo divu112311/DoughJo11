@@ -205,6 +205,232 @@ export const getUserProfile = async (userId: string) => {
   }
 }
 
+// New optimized function to ensure user profile exists with fallback handling
+export const ensureUserProfile = async (user: any) => {
+  if (!user?.id || !isSupabaseConfigured) {
+    return {
+      data: {
+        profile: {
+          id: user?.id || 'fallback',
+          email: user?.email || null,
+          full_name: user?.user_metadata?.full_name || 'User',
+          created_at: new Date().toISOString()
+        },
+        xp: {
+          id: 'fallback',
+          user_id: user?.id || 'fallback',
+          points: 100,
+          badges: ['Welcome']
+        }
+      },
+      error: { fallback: true, message: 'Using fallback profile - Supabase not configured' }
+    }
+  }
+
+  try {
+    console.log('🔍 Ensuring user profile exists for:', user.id)
+
+    // First, try to get existing profile and XP in a single query
+    const { data: existingData, error: fetchError } = await supabase
+      .from('users')
+      .select(`
+        *,
+        xp:xp(*)
+      `)
+      .eq('id', user.id)
+      .maybeSingle()
+
+    if (fetchError) {
+      console.error('❌ Error fetching existing profile:', fetchError)
+      // Return fallback data
+      return {
+        data: {
+          profile: {
+            id: user.id,
+            email: user.email,
+            full_name: user.user_metadata?.full_name || 'User',
+            created_at: new Date().toISOString()
+          },
+          xp: {
+            id: 'fallback',
+            user_id: user.id,
+            points: 100,
+            badges: ['Welcome']
+          }
+        },
+        error: { fallback: true, message: 'Database error, using fallback profile' }
+      }
+    }
+
+    // If profile exists, return it
+    if (existingData) {
+      const xpData = existingData.xp && existingData.xp.length > 0 ? existingData.xp[0] : null
+      
+      // If profile exists but no XP, create XP record
+      if (!xpData) {
+        try {
+          const { data: newXP, error: xpError } = await supabase
+            .from('xp')
+            .insert({
+              user_id: user.id,
+              points: 100,
+              badges: ['Welcome']
+            })
+            .select()
+            .maybeSingle()
+
+          if (xpError) {
+            console.warn('Could not create XP record, using fallback')
+          }
+
+          return {
+            data: {
+              profile: {
+                id: existingData.id,
+                email: existingData.email,
+                full_name: existingData.full_name,
+                created_at: existingData.created_at
+              },
+              xp: newXP || {
+                id: 'fallback',
+                user_id: user.id,
+                points: 100,
+                badges: ['Welcome']
+              }
+            },
+            error: null
+          }
+        } catch (error) {
+          console.warn('XP creation failed, using fallback')
+          return {
+            data: {
+              profile: {
+                id: existingData.id,
+                email: existingData.email,
+                full_name: existingData.full_name,
+                created_at: existingData.created_at
+              },
+              xp: {
+                id: 'fallback',
+                user_id: user.id,
+                points: 100,
+                badges: ['Welcome']
+              }
+            },
+            error: { fallback: true, message: 'XP creation failed, using fallback' }
+          }
+        }
+      }
+
+      return {
+        data: {
+          profile: {
+            id: existingData.id,
+            email: existingData.email,
+            full_name: existingData.full_name,
+            created_at: existingData.created_at
+          },
+          xp: xpData
+        },
+        error: null
+      }
+    }
+
+    // Profile doesn't exist, create it
+    console.log('➕ Creating new user profile for:', user.id)
+    
+    try {
+      // Create profile
+      const { data: newProfile, error: profileError } = await supabase
+        .from('users')
+        .insert({
+          id: user.id,
+          email: user.email,
+          full_name: user.user_metadata?.full_name || user.user_metadata?.name || 'User',
+        })
+        .select()
+        .maybeSingle()
+
+      if (profileError) {
+        console.error('Profile creation failed:', profileError)
+        throw profileError
+      }
+
+      // Create XP record
+      const { data: newXP, error: xpError } = await supabase
+        .from('xp')
+        .insert({
+          user_id: user.id,
+          points: 100,
+          badges: ['Welcome']
+        })
+        .select()
+        .maybeSingle()
+
+      if (xpError) {
+        console.warn('XP creation failed, using fallback XP')
+      }
+
+      return {
+        data: {
+          profile: newProfile,
+          xp: newXP || {
+            id: 'fallback',
+            user_id: user.id,
+            points: 100,
+            badges: ['Welcome']
+          }
+        },
+        error: xpError ? { fallback: true, message: 'XP creation failed, using fallback' } : null
+      }
+
+    } catch (error: any) {
+      console.error('❌ Error creating user profile:', error)
+      
+      // Return fallback data
+      return {
+        data: {
+          profile: {
+            id: user.id,
+            email: user.email,
+            full_name: user.user_metadata?.full_name || 'User',
+            created_at: new Date().toISOString()
+          },
+          xp: {
+            id: 'fallback',
+            user_id: user.id,
+            points: 100,
+            badges: ['Welcome']
+          }
+        },
+        error: { fallback: true, message: 'Profile creation failed, using fallback' }
+      }
+    }
+
+  } catch (error: any) {
+    console.error('❌ Exception in ensureUserProfile:', error)
+    
+    // Return fallback data
+    return {
+      data: {
+        profile: {
+          id: user.id,
+          email: user.email,
+          full_name: user.user_metadata?.full_name || 'User',
+          created_at: new Date().toISOString()
+        },
+        xp: {
+          id: 'fallback',
+          user_id: user.id,
+          points: 100,
+          badges: ['Welcome']
+        }
+      },
+      error: { fallback: true, message: 'Critical error, using fallback profile' }
+    }
+  }
+}
+
 // Check if Supabase is properly configured
 export const isSupabaseConfigured = !!(supabaseUrl && supabaseAnonKey && 
   supabaseUrl !== 'your_supabase_project_url_here' &&
