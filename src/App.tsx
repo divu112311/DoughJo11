@@ -54,11 +54,6 @@ function App() {
                     src="/doughjo-mascot.png" 
                     alt="DoughJo Mascot" 
                     className="w-8 h-8 object-contain"
-                    onError={(e) => {
-                      // Fallback if image doesn't load
-                      e.currentTarget.style.display = 'none';
-                      e.currentTarget.parentElement!.innerHTML = '🥋';
-                    }}
                   />
                 </div>
                 <h1 className="text-2xl font-serif font-bold text-[#2A6F68]">
