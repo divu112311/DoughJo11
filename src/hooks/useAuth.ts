@@ -27,7 +27,17 @@ export const useAuth = () => {
         } else if (session?.user?.id) {
           console.log('✅ User found in session:', session.user.id);
           setUser(session.user);
-          await ensureUserProfile(session.user);
+          await // In your useAuth.ts file, around line 138
+import { getOrCreateUserProfileFast } from '../lib/supabase'
+
+// Replace the current ensureUserProfile call with:
+const { data: profile, error } = await getOrCreateUserProfileFast(user)
+
+if (error && !error.fallback) {
+  console.warn('Profile creation had issues, but continuing with fallback')
+}
+
+// Continue with your auth flow using the profile data(session.user);
         } else {
           console.log('ℹ️ No active session found');
           setUser(null);
@@ -90,7 +100,17 @@ export const useAuth = () => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const ensureUserProfile = async (user: User) => {
+  const // In your useAuth.ts file, around line 138
+import { getOrCreateUserProfileFast } from '../lib/supabase'
+
+// Replace the current ensureUserProfile call with:
+const { data: profile, error } = await getOrCreateUserProfileFast(user)
+
+if (error && !error.fallback) {
+  console.warn('Profile creation had issues, but continuing with fallback')
+}
+
+// Continue with your auth flow using the profile data = async (user: User) => {
     if (!isSupabaseConfigured || !user?.id) {
       console.warn('⚠️ Cannot ensure user profile - missing user ID or Supabase not configured');
       return;
