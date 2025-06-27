@@ -79,7 +79,7 @@ const FinancialAnalysis: React.FC<FinancialAnalysisProps> = ({ user, compact = f
         <div className="flex items-center space-x-3 mb-2">
           <div className="w-8 h-8 bg-teal-100 rounded-full flex items-center justify-center">
             <img 
-              src="/assets/finapp.png" 
+              src="/asset/finapp.png" 
               alt="Financial AI" 
               className="w-5 h-5 object-contain"
             />
