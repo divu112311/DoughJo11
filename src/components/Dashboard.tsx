@@ -5,7 +5,8 @@ import {
   TrendingUp, 
   Target, 
   Award,
-  Plus
+  Plus,
+  AlertCircle
 } from 'lucide-react';
 import { User } from '@supabase/supabase-js';
 import { useGoals } from '../hooks/useGoals';
@@ -210,6 +211,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user, xp }) => {
               transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
               className="w-6 h-6 border-2 border-[#2A6F68] border-t-transparent rounded-full"
             />
+            <span className="ml-3 text-gray-600">Loading financial quests...</span>
           </div>
         ) : goals.length === 0 ? (
           <div className="text-center py-8">
