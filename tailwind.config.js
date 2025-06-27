@@ -13,12 +13,12 @@ export default {
           teal: '#125B5F',
           rosegold: '#B76E79',
         },
-        // Warm gold/yellow palette for outer elements
+        // Ultra-light warm gold/yellow palette for outer elements
         gold: {
-          50: '#fffbeb',
-          100: '#fef3c7',
-          200: '#fde68a',
-          300: '#fcd34d',
+          50: '#fffef7',   // Almost white with tiny gold hint
+          100: '#fffbeb',  // Barely perceptible warm undertone
+          200: '#fef7e0',  // Very subtle warm cream
+          300: '#fde68a',
           400: '#fbbf24',
           500: '#f59e0b',
           600: '#d97706',
@@ -26,11 +26,11 @@ export default {
           800: '#92400e',
           900: '#78350f',
         },
-        // Warm yellow variations
+        // Ultra-light warm yellow variations
         warmyellow: {
-          50: '#fefce8',
-          100: '#fef9c3',
-          200: '#fef08a',
+          50: '#fffef5',   // Almost pure white with warm hint
+          100: '#fffce8',  // Barely visible warm undertone
+          200: '#fefbf0',  // Very subtle cream
           300: '#fde047',
           400: '#facc15',
           500: '#eab308',

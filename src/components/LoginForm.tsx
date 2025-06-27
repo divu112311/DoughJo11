@@ -159,7 +159,7 @@ const LoginForm: React.FC = () => {
       {/* Email/Password Form */}
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-[#333333] mb-2">
+          <label className="block text-sm font-medium text-charcoal-800 mb-2">
             Email Address
           </label>
           <input
@@ -167,13 +167,13 @@ const LoginForm: React.FC = () => {
             required
             value={formState.email}
             onChange={(e) => handleInputChange('email', e.target.value)}
-            className="w-full px-4 py-3 border border-gray-200/60 rounded-lg focus:ring-2 focus:ring-[#2A6F68] focus:border-transparent transition-all bg-white/40 backdrop-blur-sm placeholder-gray-500"
+            className="w-full px-4 py-3 border border-gold-200 rounded-lg focus:ring-2 focus:ring-brand-teal focus:border-transparent transition-all bg-white/80 backdrop-blur-sm placeholder-charcoal-500"
             placeholder="Enter your email"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-[#333333] mb-2">
+          <label className="block text-sm font-medium text-charcoal-800 mb-2">
             Password
           </label>
           <div className="relative">
@@ -182,13 +182,13 @@ const LoginForm: React.FC = () => {
               required
               value={formState.password}
               onChange={(e) => handleInputChange('password', e.target.value)}
-              className="w-full px-4 py-3 pr-12 border border-gray-200/60 rounded-lg focus:ring-2 focus:ring-[#2A6F68] focus:border-transparent transition-all bg-white/40 backdrop-blur-sm placeholder-gray-500"
+              className="w-full px-4 py-3 pr-12 border border-gold-200 rounded-lg focus:ring-2 focus:ring-brand-teal focus:border-transparent transition-all bg-white/80 backdrop-blur-sm placeholder-charcoal-500"
               placeholder="Enter your password"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-charcoal-500 hover:text-charcoal-700"
             >
               {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
             </button>
@@ -196,7 +196,7 @@ const LoginForm: React.FC = () => {
           <button
             type="button"
             onClick={() => setCurrentView('forgot-password')}
-            className="text-sm text-[#2A6F68] hover:text-[#235A54] mt-2 transition-colors"
+            className="text-sm text-brand-teal hover:text-teal-700 mt-2 transition-colors"
           >
             Forgot password?
           </button>
@@ -207,7 +207,7 @@ const LoginForm: React.FC = () => {
           whileTap={{ scale: 0.98 }}
           type="submit"
           disabled={loading || isBlocked || googleLoading}
-          className="w-full bg-[#2A6F68] text-white py-3 px-4 rounded-lg font-medium hover:bg-[#235A54] transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+          className="w-full bg-brand-teal text-white py-3 px-4 rounded-lg font-medium hover:bg-teal-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
         >
           {loading ? (
             <motion.div
@@ -228,7 +228,7 @@ const LoginForm: React.FC = () => {
           whileTap={{ scale: 0.9 }}
           onClick={handleGoogleSignIn}
           disabled={loading || googleLoading}
-          className="w-12 h-12 bg-white/80 backdrop-blur-sm border-2 border-gray-200/50 rounded-full flex items-center justify-center hover:bg-white/90 hover:border-gray-300/60 transition-all disabled:opacity-50 shadow-sm"
+          className="w-12 h-12 bg-white/90 backdrop-blur-sm border-2 border-gold-200 rounded-full flex items-center justify-center hover:bg-white hover:border-gold-300 transition-all disabled:opacity-50 shadow-md"
         >
           {googleLoading ? (
             <motion.div
@@ -248,10 +248,10 @@ const LoginForm: React.FC = () => {
       </div>
 
       <div className="mt-6 text-center">
-        <span className="text-gray-600">Don't have an account? </span>
+        <span className="text-charcoal-600">Don't have an account? </span>
         <button
           onClick={() => setCurrentView('signup')}
-          className="text-[#2A6F68] hover:text-[#235A54] font-medium transition-colors"
+          className="text-brand-teal hover:text-teal-700 font-medium transition-colors"
         >
           Sign up
         </button>
@@ -267,7 +267,7 @@ const LoginForm: React.FC = () => {
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-[#333333] mb-2">
+          <label className="block text-sm font-medium text-charcoal-800 mb-2">
             Full Name
           </label>
           <input
@@ -275,13 +275,13 @@ const LoginForm: React.FC = () => {
             required
             value={formState.fullName}
             onChange={(e) => handleInputChange('fullName', e.target.value)}
-            className="w-full px-4 py-3 border border-gray-200/60 rounded-lg focus:ring-2 focus:ring-[#2A6F68] focus:border-transparent transition-all bg-white/40 backdrop-blur-sm placeholder-gray-500"
+            className="w-full px-4 py-3 border border-gold-200 rounded-lg focus:ring-2 focus:ring-brand-teal focus:border-transparent transition-all bg-white/80 backdrop-blur-sm placeholder-charcoal-500"
             placeholder="Enter your full name"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-[#333333] mb-2">
+          <label className="block text-sm font-medium text-charcoal-800 mb-2">
             Email Address
           </label>
           <input
@@ -289,13 +289,13 @@ const LoginForm: React.FC = () => {
             required
             value={formState.email}
             onChange={(e) => handleInputChange('email', e.target.value)}
-            className="w-full px-4 py-3 border border-gray-200/60 rounded-lg focus:ring-2 focus:ring-[#2A6F68] focus:border-transparent transition-all bg-white/40 backdrop-blur-sm placeholder-gray-500"
+            className="w-full px-4 py-3 border border-gold-200 rounded-lg focus:ring-2 focus:ring-brand-teal focus:border-transparent transition-all bg-white/80 backdrop-blur-sm placeholder-charcoal-500"
             placeholder="Enter your email"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-[#333333] mb-2">
+          <label className="block text-sm font-medium text-charcoal-800 mb-2">
             Password
           </label>
           <div className="relative">
@@ -304,24 +304,24 @@ const LoginForm: React.FC = () => {
               required
               value={formState.password}
               onChange={(e) => handleInputChange('password', e.target.value)}
-              className="w-full px-4 py-3 pr-12 border border-gray-200/60 rounded-lg focus:ring-2 focus:ring-[#2A6F68] focus:border-transparent transition-all bg-white/40 backdrop-blur-sm placeholder-gray-500"
+              className="w-full px-4 py-3 pr-12 border border-gold-200 rounded-lg focus:ring-2 focus:ring-brand-teal focus:border-transparent transition-all bg-white/80 backdrop-blur-sm placeholder-charcoal-500"
               placeholder="Create a password"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-charcoal-500 hover:text-charcoal-700"
             >
               {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
             </button>
           </div>
-          <p className="text-xs text-gray-500 mt-1">
+          <p className="text-xs text-charcoal-500 mt-1">
             At least 8 characters with 1 number or symbol
           </p>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-[#333333] mb-2">
+          <label className="block text-sm font-medium text-charcoal-800 mb-2">
             Confirm Password
           </label>
           <div className="relative">
@@ -330,13 +330,13 @@ const LoginForm: React.FC = () => {
               required
               value={formState.confirmPassword}
               onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
-              className="w-full px-4 py-3 pr-12 border border-gray-200/60 rounded-lg focus:ring-2 focus:ring-[#2A6F68] focus:border-transparent transition-all bg-white/40 backdrop-blur-sm placeholder-gray-500"
+              className="w-full px-4 py-3 pr-12 border border-gold-200 rounded-lg focus:ring-2 focus:ring-brand-teal focus:border-transparent transition-all bg-white/80 backdrop-blur-sm placeholder-charcoal-500"
               placeholder="Confirm your password"
             />
             <button
               type="button"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-charcoal-500 hover:text-charcoal-700"
             >
               {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
             </button>
@@ -348,7 +348,7 @@ const LoginForm: React.FC = () => {
           whileTap={{ scale: 0.98 }}
           type="submit"
           disabled={loading}
-          className="w-full bg-[#2A6F68] text-white py-3 px-4 rounded-lg font-medium hover:bg-[#235A54] transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+          className="w-full bg-brand-teal text-white py-3 px-4 rounded-lg font-medium hover:bg-teal-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
         >
           {loading ? (
             <motion.div
@@ -363,10 +363,10 @@ const LoginForm: React.FC = () => {
       </form>
 
       <div className="mt-6 text-center">
-        <span className="text-gray-600">Already have an account? </span>
+        <span className="text-charcoal-600">Already have an account? </span>
         <button
           onClick={() => setCurrentView('login')}
-          className="text-[#2A6F68] hover:text-[#235A54] font-medium transition-colors"
+          className="text-brand-teal hover:text-teal-700 font-medium transition-colors"
         >
           Sign in
         </button>
@@ -381,18 +381,18 @@ const LoginForm: React.FC = () => {
       exit={{ opacity: 0, y: -20 }}
     >
       <div className="text-center mb-6">
-        <div className="w-16 h-16 bg-[#2A6F68]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-          <Mail className="h-8 w-8 text-[#2A6F68]" />
+        <div className="w-16 h-16 bg-brand-teal/10 rounded-full flex items-center justify-center mx-auto mb-4">
+          <Mail className="h-8 w-8 text-brand-teal" />
         </div>
-        <h3 className="text-xl font-bold text-[#333333] mb-2">Reset Password</h3>
-        <p className="text-gray-600">
+        <h3 className="text-xl font-bold text-charcoal-800 mb-2">Reset Password</h3>
+        <p className="text-charcoal-600">
           Enter your email address and we'll send you a link to reset your password
         </p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-[#333333] mb-2">
+          <label className="block text-sm font-medium text-charcoal-800 mb-2">
             Email Address
           </label>
           <input
@@ -400,7 +400,7 @@ const LoginForm: React.FC = () => {
             required
             value={formState.email}
             onChange={(e) => handleInputChange('email', e.target.value)}
-            className="w-full px-4 py-3 border border-gray-200/60 rounded-lg focus:ring-2 focus:ring-[#2A6F68] focus:border-transparent transition-all bg-white/40 backdrop-blur-sm placeholder-gray-500"
+            className="w-full px-4 py-3 border border-gold-200 rounded-lg focus:ring-2 focus:ring-brand-teal focus:border-transparent transition-all bg-white/80 backdrop-blur-sm placeholder-charcoal-500"
             placeholder="Enter your email"
           />
         </div>
@@ -410,7 +410,7 @@ const LoginForm: React.FC = () => {
           whileTap={{ scale: 0.98 }}
           type="submit"
           disabled={loading}
-          className="w-full bg-[#2A6F68] text-white py-3 px-4 rounded-lg font-medium hover:bg-[#235A54] transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+          className="w-full bg-brand-teal text-white py-3 px-4 rounded-lg font-medium hover:bg-teal-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
         >
           {loading ? (
             <motion.div
@@ -427,7 +427,7 @@ const LoginForm: React.FC = () => {
       <div className="mt-6 text-center">
         <button
           onClick={() => setCurrentView('login')}
-          className="flex items-center space-x-2 text-[#2A6F68] hover:text-[#235A54] transition-colors mx-auto"
+          className="flex items-center space-x-2 text-brand-teal hover:text-teal-700 transition-colors mx-auto"
         >
           <ArrowLeft className="h-4 w-4" />
           <span>Back to Sign In</span>
@@ -446,17 +446,17 @@ const LoginForm: React.FC = () => {
       <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
         <Mail className="h-8 w-8 text-green-600" />
       </div>
-      <h3 className="text-xl font-bold text-[#333333] mb-2">Check Your Email</h3>
-      <p className="text-gray-600 mb-4">
+      <h3 className="text-xl font-bold text-charcoal-800 mb-2">Check Your Email</h3>
+      <p className="text-charcoal-600 mb-4">
         We've sent a password reset link to <strong>{formState.email}</strong>
       </p>
-      <p className="text-sm text-gray-500 mb-6">
+      <p className="text-sm text-charcoal-500 mb-6">
         The link will expire in 10 minutes. Check your spam folder if you don't see it.
       </p>
       
       <button
         onClick={() => setCurrentView('login')}
-        className="flex items-center space-x-2 text-[#2A6F68] hover:text-[#235A54] transition-colors mx-auto"
+        className="flex items-center space-x-2 text-brand-teal hover:text-teal-700 transition-colors mx-auto"
       >
         <ArrowLeft className="h-4 w-4" />
         <span>Back to Sign In</span>
@@ -474,17 +474,17 @@ const LoginForm: React.FC = () => {
       <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
         <Mail className="h-8 w-8 text-blue-600" />
       </div>
-      <h3 className="text-xl font-bold text-[#333333] mb-2">Verify Your Email</h3>
-      <p className="text-gray-600 mb-4">
+      <h3 className="text-xl font-bold text-charcoal-800 mb-2">Verify Your Email</h3>
+      <p className="text-charcoal-600 mb-4">
         We've sent a verification link to <strong>{formState.email}</strong>
       </p>
-      <p className="text-sm text-gray-500 mb-6">
+      <p className="text-sm text-charcoal-500 mb-6">
         Please check your email and click the verification link to activate your account.
       </p>
       
       <button
         onClick={() => setCurrentView('login')}
-        className="flex items-center space-x-2 text-[#2A6F68] hover:text-[#235A54] transition-colors mx-auto"
+        className="flex items-center space-x-2 text-brand-teal hover:text-teal-700 transition-colors mx-auto"
       >
         <ArrowLeft className="h-4 w-4" />
         <span>Back to Sign In</span>
@@ -503,7 +503,7 @@ const LoginForm: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#FAF9F6] via-[#F5F4F0] to-[#EBE9E4] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-gold-50 via-warmyellow-50 to-white flex items-center justify-center p-4">
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
@@ -535,20 +535,20 @@ const LoginForm: React.FC = () => {
                 className="w-full h-full object-contain"
               />
             </motion.div>
-            <h1 className="text-4xl font-serif font-bold text-[#2A6F68]">DoughJo</h1>
+            <h1 className="text-4xl font-serif font-bold text-brand-teal">DoughJo</h1>
           </div>
-          <p className="text-[#666666] text-lg">Your AI Financial Sensei</p>
-          <p className="text-[#888888] text-sm mt-2">Master your money with ancient wisdom and modern AI</p>
+          <p className="text-charcoal-600 text-lg">Your AI Financial Sensei</p>
+          <p className="text-charcoal-500 text-sm mt-2">Master your money with ancient wisdom and modern AI</p>
         </motion.div>
 
-        {/* Form Card - More transparent and blended */}
+        {/* Form Card - Ultra-light warm background */}
         <motion.div
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.2 }}
-          className="bg-white/30 backdrop-blur-md rounded-2xl shadow-lg p-8 border border-white/40"
+          className="bg-white/60 backdrop-blur-md rounded-2xl shadow-lg p-8 border border-gold-200"
         >
-          <h2 className="text-2xl font-bold text-[#333333] mb-6 text-center">
+          <h2 className="text-2xl font-bold text-charcoal-800 mb-6 text-center">
             {getViewTitle()}
           </h2>
 
@@ -598,8 +598,8 @@ const LoginForm: React.FC = () => {
           </AnimatePresence>
 
           <div className="mt-6 text-center">
-            <p className="text-xs text-gray-600">
-              "The way of the warrior is to stop trouble before it starts" - <span className="text-[#2A6F68] font-medium">DoughJo</span> Wisdom
+            <p className="text-xs text-charcoal-600">
+              "The way of the warrior is to stop trouble before it starts" - <span className="text-brand-teal font-medium">DoughJo</span> Wisdom
             </p>
           </div>
         </motion.div>

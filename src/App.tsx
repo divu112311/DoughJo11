@@ -34,7 +34,7 @@ function App() {
     return (
       <>
         <ConnectionStatus />
-        <div className="min-h-screen bg-gradient-to-br from-gold-50 via-warmyellow-50 to-gold-100 flex items-center justify-center">
+        <div className="min-h-screen bg-gradient-to-br from-gold-50 via-warmyellow-50 to-white flex items-center justify-center">
           <motion.div
             animate={{ rotate: 360 }}
             transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
@@ -59,7 +59,7 @@ function App() {
     return (
       <>
         <ConnectionStatus />
-        <div className="min-h-screen bg-gradient-to-br from-gold-50 via-warmyellow-50 to-gold-100 flex items-center justify-center p-4">
+        <div className="min-h-screen bg-gradient-to-br from-gold-50 via-warmyellow-50 to-white flex items-center justify-center p-4">
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
@@ -95,14 +95,14 @@ function App() {
   const level = Math.floor((xp?.points || 0) / 100) + 1;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gold-50 via-warmyellow-50 to-gold-100">
+    <div className="min-h-screen bg-gradient-to-br from-gold-50 via-warmyellow-50 to-white">
       <ConnectionStatus />
       
-      {/* Header with warm gold background */}
+      {/* Header with ultra-light warm gold background */}
       <motion.header 
         initial={{ y: -100 }}
         animate={{ y: 0 }}
-        className="bg-gradient-to-r from-gold-400 via-warmyellow-400 to-gold-500 backdrop-blur-md border-b border-gold-300 sticky top-0 z-40 shadow-lg"
+        className="bg-gradient-to-r from-gold-100 via-warmyellow-100 to-gold-50 backdrop-blur-md border-b border-gold-200 sticky top-0 z-40 shadow-sm"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
@@ -118,13 +118,13 @@ function App() {
                     className="w-8 h-8 object-contain"
                   />
                 </div>
-                <h1 className="text-2xl font-serif font-bold text-white drop-shadow-md">
+                <h1 className="text-2xl font-serif font-bold text-charcoal-800">
                   DoughJo
                 </h1>
               </motion.div>
-              <div className="flex items-center space-x-2 bg-white/20 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm shadow-md">
+              <div className="flex items-center space-x-2 bg-brand-teal/10 backdrop-blur-sm text-brand-teal px-3 py-1 rounded-full text-sm shadow-sm border border-brand-teal/20">
                 <span>Level {level}</span>
-                <span className="text-gold-200">•</span>
+                <span className="text-brand-rosegold">•</span>
                 <span>{xp?.points || 0} XP</span>
               </div>
             </div>
@@ -135,8 +135,8 @@ function App() {
                   onClick={() => setActiveView('chat')}
                   className={`px-4 py-2 rounded-lg transition-all font-medium ${
                     activeView === 'chat'
-                      ? 'bg-white/30 backdrop-blur-sm text-white shadow-md'
-                      : 'text-white/80 hover:bg-white/20 hover:text-white'
+                      ? 'bg-brand-teal/10 backdrop-blur-sm text-brand-teal shadow-sm border border-brand-teal/20'
+                      : 'text-charcoal-600 hover:bg-white/50 hover:text-brand-teal'
                   }`}
                 >
                   Chat
@@ -145,8 +145,8 @@ function App() {
                   onClick={() => setActiveView('dashboard')}
                   className={`px-4 py-2 rounded-lg transition-all font-medium ${
                     activeView === 'dashboard'
-                      ? 'bg-white/30 backdrop-blur-sm text-white shadow-md'
-                      : 'text-white/80 hover:bg-white/20 hover:text-white'
+                      ? 'bg-brand-teal/10 backdrop-blur-sm text-brand-teal shadow-sm border border-brand-teal/20'
+                      : 'text-charcoal-600 hover:bg-white/50 hover:text-brand-teal'
                   }`}
                 >
                   Dashboard
@@ -155,8 +155,8 @@ function App() {
                   onClick={() => setActiveView('learning')}
                   className={`px-4 py-2 rounded-lg transition-all font-medium ${
                     activeView === 'learning'
-                      ? 'bg-white/30 backdrop-blur-sm text-white shadow-md'
-                      : 'text-white/80 hover:bg-white/20 hover:text-white'
+                      ? 'bg-brand-teal/10 backdrop-blur-sm text-brand-teal shadow-sm border border-brand-teal/20'
+                      : 'text-charcoal-600 hover:bg-white/50 hover:text-brand-teal'
                   }`}
                 >
                   Learning
@@ -165,7 +165,7 @@ function App() {
               
               <button
                 onClick={signOut}
-                className="text-white/80 hover:text-white transition-colors font-medium"
+                className="text-charcoal-600 hover:text-brand-teal transition-colors font-medium"
               >
                 Sign Out
               </button>
