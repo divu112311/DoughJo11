@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { User } from '@supabase/supabase-js';
-import { supabase, isSupabaseConfigured, createTimeoutQuery } from '../lib/supabase';
+import { supabase, isSupabaseConfigured, createTimeoutQuery, retryQuery } from '../lib/supabase';
 
 export const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -99,78 +99,82 @@ export const useAuth = () => {
     try {
       console.log('🔍 Ensuring user profile exists for:', user.id);
 
-      // Check if user profile exists with timeout - use maybeSingle for better error handling
-      const profilePromise = supabase
-        .from('users')
-        .select('id')
-        .eq('id', user.id)
-        .limit(1)
-        .maybeSingle();
-
-      const { data: existingProfile, error: profileError } = await createTimeoutQuery(
-        profilePromise,
-        20000, // Increased timeout
-        'Profile check timeout'
-      );
-
-      if (profileError) {
-        console.error('❌ Error checking user profile:', profileError);
-        return;
-      }
-
-      if (!existingProfile) {
-        console.log('➕ Creating new user profile for:', user.id);
-        
-        // Create user profile with timeout
-        const insertProfilePromise = supabase
+      // Check if user profile exists with timeout and retry logic
+      const profileResult = await retryQuery(async () => {
+        const profilePromise = supabase
           .from('users')
-          .insert({
-            id: user.id,
-            email: user.email,
-            full_name: user.user_metadata?.full_name || user.user_metadata?.name || 'User',
-          });
-
-        await createTimeoutQuery(
-          insertProfilePromise,
-          20000, // Increased timeout
-          'Profile creation timeout'
-        );
-
-        // Check if XP record already exists before creating
-        const xpCheckPromise = supabase
-          .from('xp')
           .select('id')
-          .eq('user_id', user.id)
+          .eq('id', user.id)
           .limit(1)
           .maybeSingle();
 
-        const { data: existingXP, error: xpCheckError } = await createTimeoutQuery(
-          xpCheckPromise,
-          15000,
-          'XP check timeout'
+        return await createTimeoutQuery(
+          profilePromise,
+          8000, // Reduced timeout
+          'Profile check timeout'
         );
+      }, 2, 1000);
 
-        if (xpCheckError) {
-          console.error('❌ Error checking existing XP:', xpCheckError);
+      if (profileResult.error) {
+        console.error('❌ Error checking user profile:', profileResult.error);
+        return;
+      }
+
+      if (!profileResult.data) {
+        console.log('➕ Creating new user profile for:', user.id);
+        
+        // Create user profile with timeout and retry
+        await retryQuery(async () => {
+          const insertProfilePromise = supabase
+            .from('users')
+            .insert({
+              id: user.id,
+              email: user.email,
+              full_name: user.user_metadata?.full_name || user.user_metadata?.name || 'User',
+            });
+
+          return await createTimeoutQuery(
+            insertProfilePromise,
+            8000, // Reduced timeout
+            'Profile creation timeout'
+          );
+        }, 2, 1000);
+
+        // Check if XP record already exists before creating
+        const xpResult = await retryQuery(async () => {
+          const xpCheckPromise = supabase
+            .from('xp')
+            .select('id')
+            .eq('user_id', user.id)
+            .limit(1)
+            .maybeSingle();
+
+          return await createTimeoutQuery(xpCheckPromise, 8000, 'XP check timeout');
+        }, 2, 1000);
+
+        if (xpResult.error) {
+          console.error('❌ Error checking existing XP:', xpResult.error);
         }
 
         // Only create XP record if it doesn't exist
-        if (!existingXP) {
+        if (!xpResult.data) {
           console.log('➕ Creating initial XP record for:', user.id);
           
-          const insertXPPromise = supabase
-            .from('xp')
-            .insert({
-              user_id: user.id,
-              points: 100, // Welcome bonus
-              badges: ['Welcome'],
-            });
+          await retryQuery(async () => {
+            const insertXPPromise = supabase
+              .from('xp')
+              .insert({
+                user_id: user.id,
+                points: 100, // Welcome bonus
+                badges: ['Welcome'],
+              });
 
-          await createTimeoutQuery(
-            insertXPPromise,
-            20000, // Increased timeout
-            'XP creation timeout'
-          );
+            return await createTimeoutQuery(
+              insertXPPromise,
+              8000, // Reduced timeout
+              'XP creation timeout'
+            );
+          }, 2, 1000);
 
           console.log('✅ User profile and XP created successfully');
         } else {

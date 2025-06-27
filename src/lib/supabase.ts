@@ -25,7 +25,7 @@ const finalKey = (supabaseAnonKey && supabaseAnonKey.length > 20)
   ? supabaseAnonKey 
   : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBsYWNlaG9sZGVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NDUxOTI4MDAsImV4cCI6MTk2MDc2ODgwMH0.placeholder'
 
-// Create Supabase client with optimized settings
+// Create Supabase client with optimized settings for better connection handling
 export const supabase = createClient(finalUrl, finalKey, {
   auth: {
     autoRefreshToken: true,
@@ -48,44 +48,55 @@ export const supabase = createClient(finalUrl, finalKey, {
   }
 })
 
-// Enhanced connection test with detailed logging
-export const testConnection = async () => {
-  try {
-    console.log('🔄 Testing Supabase connection...')
-    
-    // First, test a simple query
-    const startTime = Date.now()
-    const { data, error, status, statusText } = await supabase
-      .from('users')
-      .select('count')
-      .limit(1)
-    
-    const duration = Date.now() - startTime
-    
-    console.log('📊 Connection test results:')
-    console.log('- Duration:', duration + 'ms')
-    console.log('- Status:', status)
-    console.log('- Status Text:', statusText)
-    console.log('- Error:', error)
-    console.log('- Data:', data)
-    
-    if (error) {
-      console.error('❌ Supabase connection test failed:', error)
-      return false
+// Enhanced connection test with detailed logging and retry logic
+export const testConnection = async (retries: number = 3) => {
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      console.log(`🔄 Testing Supabase connection (attempt ${attempt}/${retries})...`)
+      
+      const startTime = Date.now()
+      const { data, error, status, statusText } = await supabase
+        .from('users')
+        .select('count')
+        .limit(1)
+      
+      const duration = Date.now() - startTime
+      
+      console.log('📊 Connection test results:')
+      console.log('- Duration:', duration + 'ms')
+      console.log('- Status:', status)
+      console.log('- Status Text:', statusText)
+      console.log('- Error:', error)
+      console.log('- Data:', data)
+      
+      if (error) {
+        console.error(`❌ Supabase connection test failed (attempt ${attempt}):`, error)
+        if (attempt === retries) {
+          return false
+        }
+        // Wait before retry
+        await new Promise(resolve => setTimeout(resolve, 1000 * attempt))
+        continue
+      }
+      
+      console.log('✅ Supabase connection successful')
+      return true
+    } catch (err: any) {
+      console.error(`❌ Supabase connection error (attempt ${attempt}):`, err)
+      if (attempt === retries) {
+        return false
+      }
+      // Wait before retry
+      await new Promise(resolve => setTimeout(resolve, 1000 * attempt))
     }
-    
-    console.log('✅ Supabase connection successful')
-    return true
-  } catch (err: any) {
-    console.error('❌ Supabase connection error:', err)
-    return false
   }
+  return false
 }
 
 // Helper function to create queries with timeout and better error handling
 export const createTimeoutQuery = <T>(
   queryPromise: Promise<T> | any, 
-  timeoutMs: number = 15000,
+  timeoutMs: number = 10000, // Reduced from 15000 to 10000
   errorMessage: string = 'Query timeout'
 ): Promise<T> => {
   // Convert Supabase query builder to native Promise
@@ -104,6 +115,32 @@ export const createTimeoutQuery = <T>(
   return Promise.race([nativePromise, timeoutPromise])
 }
 
+// Helper function for retrying failed queries
+export const retryQuery = async <T>(
+  queryFn: () => Promise<T>,
+  maxRetries: number = 2,
+  delayMs: number = 1000
+): Promise<T> => {
+  let lastError: Error
+  
+  for (let attempt = 1; attempt <= maxRetries + 1; attempt++) {
+    try {
+      return await queryFn()
+    } catch (error: any) {
+      lastError = error
+      console.warn(`Query attempt ${attempt} failed:`, error.message)
+      
+      if (attempt <= maxRetries) {
+        console.log(`Retrying in ${delayMs}ms...`)
+        await new Promise(resolve => setTimeout(resolve, delayMs))
+        delayMs *= 1.5 // Exponential backoff
+      }
+    }
+  }
+  
+  throw lastError
+}
+
 // Check if Supabase is properly configured
 export const isSupabaseConfigured = !!(supabaseUrl && supabaseAnonKey && 
   supabaseUrl !== 'your_supabase_project_url_here' &&
@@ -113,9 +150,9 @@ export const isSupabaseConfigured = !!(supabaseUrl && supabaseAnonKey &&
 
 console.log('✅ Supabase configured:', isSupabaseConfigured)
 
-// Auto-test connection on load
+// Auto-test connection on load with retry logic
 if (isSupabaseConfigured) {
-  testConnection().then(success => {
+  testConnection(2).then(success => {
     if (success) {
       console.log('🎉 Initial connection test passed')
     } else {
