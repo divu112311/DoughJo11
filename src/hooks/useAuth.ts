@@ -58,7 +58,7 @@ export const useAuth = () => {
         .from('users')
         .select('id')
         .eq('id', user.id)
-        .maybesingle();
+        .maybeSingle();
 
       const { data: existingProfile } = await createTimeoutQuery(
         profilePromise,
