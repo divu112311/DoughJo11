@@ -20,7 +20,7 @@ import AILearningInsights from './AILearningInsights';
 
 interface ChatInterfaceProps {
   user: User;
-  xp: { points: number | null; badges: string[] | null } | null;
+  xp?: { points: number | null; badges: string[] | null } | null;
   onXPUpdate: (points: number) => void;
 }
 
@@ -28,9 +28,10 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, xp, onXPUpdate }) =
   const [inputMessage, setInputMessage] = useState('');
   const [xpGained, setXpGained] = useState<number | null>(null);
   const [aiStatus, setAiStatus] = useState<'idle' | 'analyzing' | 'calculating'>('idle');
-  const [showSidebar, setShowSidebar] = useState(true);
+  const [showLeftSidebar, setShowLeftSidebar] = useState(true);
+  const [showRightSidebar, setShowRightSidebar] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const { messages, loading, sendMessage } = useChat(user);
+  const { messages, loading, error, sendMessage, clearError } = useChat(user);
 
   useEffect(() => {
     scrollToBottom();
@@ -46,6 +47,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, xp, onXPUpdate }) =
     const message = inputMessage.trim();
     setInputMessage('');
     setAiStatus('analyzing');
+    clearError();
 
     await sendMessage(message, (points) => {
       setXpGained(points);
@@ -58,6 +60,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, xp, onXPUpdate }) =
 
   const handleQuickAction = async (actionMessage: string) => {
     setAiStatus('calculating');
+    clearError();
     await sendMessage(actionMessage, (points) => {
       setXpGained(points);
       onXPUpdate(points);
@@ -102,13 +105,20 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, xp, onXPUpdate }) =
         </AnimatePresence>
 
         {/* Left Sidebar - Quick Actions & Financial Analysis */}
-        {showSidebar && (
-          <div className="w-[320px] shrink-0 hidden lg:block space-y-4">
-            <QuickActions onQuickAction={handleQuickAction} />
-            <FinancialAnalysis user={user} />
-            <AILearningInsights compact={true} />
-          </div>
-        )}
+        <AnimatePresence>
+          {showLeftSidebar && (
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              className="w-[320px] shrink-0 hidden lg:block space-y-4"
+            >
+              <QuickActions onQuickAction={handleQuickAction} />
+              <FinancialAnalysis user={user} />
+              <AILearningInsights compact={true} />
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Main Chat Area */}
         <div className="flex-1 flex flex-col bg-cream-50 rounded-2xl shadow-sm border border-cream-200 min-w-0">
@@ -154,18 +164,45 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, xp, onXPUpdate }) =
               
               <div className="flex items-center space-x-2">
                 <button
-                  onClick={() => setShowSidebar(!showSidebar)}
-                  className="p-2 text-charcoal-500 hover:text-brand-teal transition-colors rounded-lg hover:bg-cream-100 flex items-center space-x-1 lg:hidden"
-                  title="Toggle Financial AI Panel"
+                  onClick={() => setShowLeftSidebar(!showLeftSidebar)}
+                  className="p-2 text-charcoal-500 hover:text-brand-teal transition-colors rounded-lg hover:bg-cream-100 flex items-center space-x-1 lg:flex hidden"
+                  title="Toggle Quick Actions Panel"
                 >
-                  {showSidebar ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-                  <span className="text-sm hidden sm:block">
-                    {showSidebar ? 'Hide' : 'Show'} AI Panel
+                  {showLeftSidebar ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                  <span className="text-sm hidden xl:block">
+                    {showLeftSidebar ? 'Hide' : 'Show'} Actions
                   </span>
+                </button>
+                <button
+                  onClick={() => setShowRightSidebar(!showRightSidebar)}
+                  className="p-2 text-charcoal-500 hover:text-brand-teal transition-colors rounded-lg hover:bg-cream-100 flex items-center space-x-1 lg:flex hidden"
+                  title="Toggle Financial Health Panel"
+                >
+                  <span className="text-sm hidden xl:block">
+                    {showRightSidebar ? 'Hide' : 'Show'} Health
+                  </span>
+                  {showRightSidebar ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
                 </button>
               </div>
             </div>
           </motion.div>
+
+          {/* Error Message */}
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mx-4 mt-4 flex items-center space-x-2 text-red-600 text-sm bg-red-50 p-3 rounded-lg border border-red-200"
+            >
+              <span>{error}</span>
+              <button
+                onClick={clearError}
+                className="ml-auto text-red-400 hover:text-red-600 transition-colors"
+              >
+                ×
+              </button>
+            </motion.div>
+          )}
 
           {/* Messages Container */}
           <div className="flex-1 overflow-y-auto p-6 space-y-4">
@@ -344,11 +381,18 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, xp, onXPUpdate }) =
         </div>
 
         {/* Right Sidebar - Financial Health Dashboard */}
-        {showSidebar && (
-          <div className="w-[320px] shrink-0 hidden lg:block">
-            <FinancialHealthDashboard compact={true} />
-          </div>
-        )}
+        <AnimatePresence>
+          {showRightSidebar && (
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+              className="w-[320px] shrink-0 hidden lg:block"
+            >
+              <FinancialHealthDashboard compact={true} />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
