@@ -19,25 +19,50 @@ export const useGoals = (user: User | null) => {
   useEffect(() => {
     if (user) {
       fetchGoals();
+    } else {
+      setLoading(false);
+      setGoals([]);
     }
   }, [user]);
 
   const fetchGoals = async () => {
-    if (!user) return;
+    if (!user) {
+      setLoading(false);
+      return;
+    }
 
     setLoading(true);
-    const { data, error } = await supabase
-      .from('goals')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false });
+    
+    try {
+      console.log('Fetching goals for user:', user.id);
+      
+      // Add timeout to prevent infinite loading
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Request timeout')), 8000)
+      );
 
-    if (error) {
-      console.error('Error fetching goals:', error);
-    } else {
+      const fetchPromise = supabase
+        .from('goals')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+
+      const { data, error } = await Promise.race([fetchPromise, timeoutPromise]) as any;
+
+      if (error) {
+        console.error('Error fetching goals:', error);
+        throw error;
+      }
+
+      console.log('Goals fetched successfully:', data?.length || 0);
       setGoals(data || []);
+    } catch (error: any) {
+      console.error('Error fetching goals:', error);
+      // Set empty goals on error so UI doesn't stay in loading state
+      setGoals([]);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const createGoal = async (goal: Omit<Goal, 'id' | 'user_id' | 'created_at'>) => {

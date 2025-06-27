@@ -45,23 +45,48 @@ const BankAccounts: React.FC<BankAccountsProps> = ({ user }) => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchAccounts();
+    if (user) {
+      fetchAccounts();
+    } else {
+      setLoading(false);
+    }
   }, [user]);
 
   const fetchAccounts = async () => {
+    if (!user) {
+      setLoading(false);
+      return;
+    }
+
     try {
       setError(null);
-      const { data, error } = await supabase
+      console.log('Fetching accounts for user:', user.id);
+      
+      // Add a timeout to prevent infinite loading
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Request timeout')), 10000)
+      );
+
+      const fetchPromise = supabase
         .from('bank_accounts')
         .select('*')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      const { data, error: fetchError } = await Promise.race([fetchPromise, timeoutPromise]) as any;
+
+      if (fetchError) {
+        console.error('Database error:', fetchError);
+        throw new Error('Failed to load accounts from database');
+      }
+
+      console.log('Accounts fetched successfully:', data?.length || 0);
       setAccounts(data || []);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching accounts:', error);
-      setError('Failed to load bank accounts');
+      setError(error.message || 'Failed to load bank accounts');
+      // Set empty accounts on error so UI doesn't stay in loading state
+      setAccounts([]);
     } finally {
       setLoading(false);
     }
@@ -80,7 +105,7 @@ const BankAccounts: React.FC<BankAccountsProps> = ({ user }) => {
       await fetchAccounts();
       setShowPlaidLink(false);
       
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error handling bank connection:', error);
       setError('Failed to connect bank accounts');
     } finally {
@@ -139,7 +164,7 @@ const BankAccounts: React.FC<BankAccountsProps> = ({ user }) => {
       }
 
       await fetchAccounts();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error refreshing accounts:', error);
       setError('Failed to refresh account balances');
     } finally {
@@ -159,7 +184,7 @@ const BankAccounts: React.FC<BankAccountsProps> = ({ user }) => {
       if (error) throw error;
       
       setAccounts(prev => prev.filter(acc => acc.id !== accountId));
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error removing account:', error);
       setError('Failed to remove account');
     }
@@ -205,6 +230,7 @@ const BankAccounts: React.FC<BankAccountsProps> = ({ user }) => {
     return account.plaid_account_id.startsWith('demo_');
   };
 
+  // Show loading only for initial load
   if (loading && accounts.length === 0) {
     return (
       <div className="bg-gray-50 rounded-xl p-6">
