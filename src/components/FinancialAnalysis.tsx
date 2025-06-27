@@ -4,10 +4,6 @@ import {
   Activity, 
   TrendingUp, 
   TrendingDown, 
-  DollarSign, 
-  PieChart,
-  BarChart3,
-  Target,
   AlertTriangle
 } from 'lucide-react';
 
@@ -79,7 +75,7 @@ const FinancialAnalysis: React.FC<FinancialAnalysisProps> = ({ userName, compact
   return (
     <div className={`bg-white rounded-2xl shadow-sm border border-gray-200 ${compact ? 'p-4' : 'p-6'}`}>
       {/* Header */}
-      <div className="mb-6">
+      <div className="mb-4">
         <div className="flex items-center space-x-3 mb-2">
           <div className="w-8 h-8 bg-[#2A6F68]/10 rounded-full flex items-center justify-center">
             <img 
@@ -89,13 +85,12 @@ const FinancialAnalysis: React.FC<FinancialAnalysisProps> = ({ userName, compact
             />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-[#333333]">
-              {userName}'s Financial Analysis
+            <h3 className="text-base font-bold text-[#333333]">
+              Financial Analysis
             </h3>
-            <div className="text-sm text-gray-600 space-y-1">
+            <div className="text-xs text-gray-600">
               <div>Net Worth: $22,000 • Monthly Savings: $1,883</div>
-              <div>Goals: 3 active</div>
-              <div className="flex items-center space-x-2 mt-2">
+              <div className="flex items-center space-x-2 mt-1">
                 <div className="w-2 h-2 bg-green-500 rounded-full" />
                 <span className="text-xs">AI analyzing in real-time</span>
               </div>
@@ -105,7 +100,7 @@ const FinancialAnalysis: React.FC<FinancialAnalysisProps> = ({ userName, compact
       </div>
 
       {/* Analysis Metrics */}
-      <div className="space-y-3">
+      <div className="space-y-2">
         {analysisMetrics.map((metric, index) => {
           const IconComponent = metric.icon;
           return (
@@ -114,35 +109,20 @@ const FinancialAnalysis: React.FC<FinancialAnalysisProps> = ({ userName, compact
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: index * 0.1 }}
-              className={`${getStatusBg(metric.status)} rounded-lg p-4 border border-gray-200`}
+              className={`${getStatusBg(metric.status)} rounded-lg p-3 border border-gray-200`}
             >
-              <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center justify-between mb-1">
                 <div className="flex items-center space-x-2">
-                  <IconComponent className={`h-4 w-4 ${getStatusColor(metric.status)}`} />
-                  <span className="text-sm font-medium text-[#333333]">{metric.label}</span>
+                  <IconComponent className={`h-3 w-3 ${getStatusColor(metric.status)}`} />
+                  <span className="text-xs font-medium text-[#333333]">{metric.label}</span>
                 </div>
-                <span className={`text-lg font-bold ${getStatusColor(metric.status)}`}>
+                <span className={`text-sm font-bold ${getStatusColor(metric.status)}`}>
                   {metric.value}
                 </span>
               </div>
               {metric.target && (
                 <div className="text-xs text-gray-600">
                   Target: {metric.target}
-                </div>
-              )}
-              {metric.label === 'Overall Score' && (
-                <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-                  <div className="bg-[#2A6F68] h-2 rounded-full" style={{ width: '72%' }} />
-                </div>
-              )}
-              {metric.label === 'Debt Ratio' && (
-                <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-                  <div className="bg-[#B76E79] h-2 rounded-full" style={{ width: '33%' }} />
-                </div>
-              )}
-              {metric.label === 'Emergency Fund' && (
-                <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-                  <div className="bg-red-500 h-2 rounded-full" style={{ width: '25%' }} />
                 </div>
               )}
             </motion.div>

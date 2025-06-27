@@ -28,7 +28,7 @@ const WelcomeHeader: React.FC<WelcomeHeaderProps> = ({ user, xp }) => {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-gradient-to-r from-[#2A6F68] to-[#B76E79] rounded-2xl p-6 text-white relative overflow-hidden mb-8"
+      className="bg-gradient-to-r from-[#2A6F68]/80 to-[#B76E79]/80 backdrop-blur-sm rounded-2xl p-6 text-white relative overflow-hidden mb-8 border border-white/20"
     >
       <div className="absolute top-4 right-4">
         <motion.div
@@ -41,7 +41,7 @@ const WelcomeHeader: React.FC<WelcomeHeaderProps> = ({ user, xp }) => {
             repeat: Infinity,
             repeatType: "reverse"
           }}
-          className="w-16 h-16 opacity-20"
+          className="w-12 h-12 opacity-30"
         >
           <img 
             src="/finapp.png" 
@@ -51,23 +51,23 @@ const WelcomeHeader: React.FC<WelcomeHeaderProps> = ({ user, xp }) => {
         </motion.div>
       </div>
       
-      <h1 className="text-2xl font-serif font-bold mb-2">
+      <h1 className="text-xl font-serif font-bold mb-2">
         Welcome back, {user.user_metadata?.full_name || 'Financial Warrior'}! 🥋
       </h1>
-      <p className="text-white/90 mb-4">
+      <p className="text-white/80 mb-4 text-sm">
         Continue your training in the <span className="text-white font-medium">DoughJo</span> dojo
       </p>
-      <div className="flex items-center space-x-4">
+      <div className="flex items-center space-x-3">
         <div className={`flex items-center space-x-2 bg-gradient-to-r ${beltRank.color} text-white rounded-lg px-3 py-1`}>
-          <span className="text-sm">{beltRank.emoji}</span>
-          <span className="text-sm font-medium">{beltRank.name}</span>
+          <span className="text-xs">{beltRank.emoji}</span>
+          <span className="text-xs font-medium">{beltRank.name}</span>
         </div>
         <div className="flex items-center space-x-2 bg-white/20 rounded-lg px-3 py-1">
-          <Award className="h-4 w-4" />
-          <span className="text-sm">Level {level}</span>
+          <Award className="h-3 w-3" />
+          <span className="text-xs">Level {level}</span>
         </div>
         <div className="flex items-center space-x-2 bg-white/20 rounded-lg px-3 py-1">
-          <span className="text-sm">{xp?.points || 0} XP</span>
+          <span className="text-xs">{xp?.points || 0} XP</span>
         </div>
       </div>
     </motion.div>

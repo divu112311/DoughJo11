@@ -49,8 +49,8 @@ const FinancialHealthDashboard: React.FC<FinancialHealthDashboardProps> = ({
       percentage: 72,
       status: 'good',
       icon: CreditCard,
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-100'
+      color: 'text-[#2A6F68]',
+      bgColor: 'bg-[#2A6F68]/10'
     },
     {
       id: 'savings-rate',
@@ -69,8 +69,8 @@ const FinancialHealthDashboard: React.FC<FinancialHealthDashboardProps> = ({
       percentage: 45,
       status: 'warning',
       icon: TrendingUp,
-      color: 'text-orange-600',
-      bgColor: 'bg-orange-100'
+      color: 'text-[#B76E79]',
+      bgColor: 'bg-[#B76E79]/10'
     }
   ];
 
@@ -90,28 +90,28 @@ const FinancialHealthDashboard: React.FC<FinancialHealthDashboardProps> = ({
       )}
 
       {/* Health Score Circle */}
-      <div className={`flex items-center justify-center ${compact ? 'mb-4' : 'mb-8'}`}>
-        <div className={`relative ${compact ? 'w-24 h-24' : 'w-32 h-32'}`}>
-          <svg className={`${compact ? 'w-24 h-24' : 'w-32 h-32'} transform -rotate-90`} viewBox="0 0 120 120">
+      <div className={`flex items-center justify-center ${compact ? 'mb-4' : 'mb-6'}`}>
+        <div className={`relative ${compact ? 'w-20 h-20' : 'w-24 h-24'}`}>
+          <svg className={`${compact ? 'w-20 h-20' : 'w-24 h-24'} transform -rotate-90`} viewBox="0 0 120 120">
             <circle
               cx="60"
               cy="60"
-              r="50"
+              r="45"
               stroke="#e5e7eb"
-              strokeWidth="8"
+              strokeWidth="6"
               fill="none"
             />
             <motion.circle
               cx="60"
               cy="60"
-              r="50"
+              r="45"
               stroke="url(#healthGradient)"
-              strokeWidth="8"
+              strokeWidth="6"
               fill="none"
               strokeLinecap="round"
-              strokeDasharray={314}
-              initial={{ strokeDashoffset: 314 }}
-              animate={{ strokeDashoffset: 314 - (314 * healthScore) / 100 }}
+              strokeDasharray={283}
+              initial={{ strokeDashoffset: 283 }}
+              animate={{ strokeDashoffset: 283 - (283 * healthScore) / 100 }}
               transition={{ duration: 2, delay: 0.5 }}
             />
             <defs>
@@ -123,7 +123,7 @@ const FinancialHealthDashboard: React.FC<FinancialHealthDashboardProps> = ({
           </svg>
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center">
-              <div className={`${compact ? 'text-xl' : 'text-2xl'} font-bold text-[#2A6F68]`}>
+              <div className={`${compact ? 'text-lg' : 'text-xl'} font-bold text-[#2A6F68]`}>
                 {healthScore}%
               </div>
               <div className={`${compact ? 'text-xs' : 'text-sm'} text-gray-600`}>
@@ -135,7 +135,7 @@ const FinancialHealthDashboard: React.FC<FinancialHealthDashboardProps> = ({
       </div>
 
       {/* Health Metrics */}
-      <div className={`grid grid-cols-2 ${compact ? 'gap-2' : 'gap-4'}`}>
+      <div className={`grid grid-cols-2 ${compact ? 'gap-2' : 'gap-3'}`}>
         {metrics.map((metric, index) => {
           const IconComponent = metric.icon;
           return (
@@ -144,25 +144,25 @@ const FinancialHealthDashboard: React.FC<FinancialHealthDashboardProps> = ({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.8 + index * 0.1 }}
-              className={`${metric.bgColor} rounded-lg ${compact ? 'p-3' : 'p-4'}`}
+              className={`${metric.bgColor} rounded-lg ${compact ? 'p-2' : 'p-3'} border border-gray-200`}
             >
               <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-1">
                   <IconComponent className={`${compact ? 'h-3 w-3' : 'h-4 w-4'} ${metric.color}`} />
                   <span className={`${compact ? 'text-xs' : 'text-sm'} font-medium text-gray-700`}>
-                    {metric.label}
+                    {compact ? metric.label.split(' ')[0] : metric.label}
                   </span>
                 </div>
-                <span className={`${compact ? 'text-sm' : 'text-lg'} font-bold ${metric.color}`}>
+                <span className={`${compact ? 'text-sm' : 'text-base'} font-bold ${metric.color}`}>
                   {metric.value}
                 </span>
               </div>
-              <div className="w-full bg-white/60 rounded-full h-2">
+              <div className="w-full bg-white/60 rounded-full h-1.5">
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: `${metric.percentage}%` }}
                   transition={{ delay: 1 + index * 0.1, duration: 1 }}
-                  className={`h-2 rounded-full ${metric.color.replace('text-', 'bg-')}`}
+                  className={`h-1.5 rounded-full ${metric.color.replace('text-', 'bg-')}`}
                 />
               </div>
             </motion.div>
