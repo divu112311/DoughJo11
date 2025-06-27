@@ -7,6 +7,7 @@ if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error('Missing Supabase environment variables. Please check your .env file.')
 }
 
+// Create Supabase client with optimized settings
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     autoRefreshToken: true,
@@ -28,14 +29,40 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   }
 })
 
+// Helper function to create queries with timeout
+export const createTimeoutQuery = <T>(
+  queryPromise: Promise<T>, 
+  timeoutMs: number = 5000,
+  errorMessage: string = 'Query timeout'
+): Promise<T> => {
+  const timeoutPromise = new Promise<never>((_, reject) => 
+    setTimeout(() => reject(new Error(errorMessage)), timeoutMs)
+  )
+  
+  return Promise.race([queryPromise, timeoutPromise])
+}
+
 // Test connection function
 export const testConnection = async () => {
   try {
-    const { data, error } = await supabase.from('users').select('count').limit(1)
+    console.log('Testing Supabase connection...')
+    
+    const testQuery = supabase
+      .from('users')
+      .select('count')
+      .limit(1)
+    
+    const { data, error } = await createTimeoutQuery(
+      testQuery,
+      3000,
+      'Connection test timeout'
+    )
+    
     if (error) {
       console.error('Supabase connection test failed:', error)
       return false
     }
+    
     console.log('Supabase connection successful')
     return true
   } catch (err) {
@@ -43,3 +70,10 @@ export const testConnection = async () => {
     return false
   }
 }
+
+// Check if Supabase is properly configured
+export const isSupabaseConfigured = !!(supabaseUrl && supabaseAnonKey && 
+  supabaseUrl !== 'your_supabase_project_url_here' &&
+  supabaseAnonKey !== 'your_supabase_anon_key_here' &&
+  supabaseUrl.startsWith('https://') &&
+  supabaseUrl.includes('.supabase.co'))

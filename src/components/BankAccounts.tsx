@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 import { User } from '@supabase/supabase-js';
 import PlaidLink from './PlaidLink';
-import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { supabase, createTimeoutQuery, isSupabaseConfigured } from '../lib/supabase';
 
 interface Account {
   id: string;
@@ -38,7 +38,7 @@ interface BankAccountsProps {
 
 const BankAccounts: React.FC<BankAccountsProps> = ({ user }) => {
   const [accounts, setAccounts] = useState<Account[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [showBalances, setShowBalances] = useState(true);
   const [showPlaidLink, setShowPlaidLink] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -49,6 +49,8 @@ const BankAccounts: React.FC<BankAccountsProps> = ({ user }) => {
       fetchAccounts();
     } else {
       setLoading(false);
+      setAccounts([]);
+      setError(null);
     }
   }, [user]);
 
@@ -58,8 +60,10 @@ const BankAccounts: React.FC<BankAccountsProps> = ({ user }) => {
       return;
     }
 
+    setLoading(true);
+    setError(null);
+
     try {
-      setError(null);
       console.log('Fetching accounts for user:', user.id);
       
       // Check if Supabase is properly configured
@@ -67,22 +71,17 @@ const BankAccounts: React.FC<BankAccountsProps> = ({ user }) => {
         throw new Error('Supabase is not properly configured. Please check your environment variables.');
       }
 
-      // Create a proper timeout wrapper for the Supabase query
-      const timeoutPromise = new Promise<never>((_, reject) => 
-        setTimeout(() => reject(new Error('Request timeout - please check your Supabase connection')), 10000)
-      );
-
-      const fetchPromise = supabase
+      const queryPromise = supabase
         .from('bank_accounts')
         .select('*')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
-      // Race the actual query promise with the timeout
-      const { data, error: fetchError } = await Promise.race([
-        fetchPromise,
-        timeoutPromise
-      ]);
+      const { data, error: fetchError } = await createTimeoutQuery(
+        queryPromise,
+        10000,
+        'Bank accounts query timeout - please check your connection'
+      );
 
       if (fetchError) {
         console.error('Database error:', fetchError);
@@ -175,13 +174,19 @@ const BankAccounts: React.FC<BankAccountsProps> = ({ user }) => {
 
       // Update balances in database
       for (const account of updatedAccounts) {
-        await supabase
+        const updatePromise = supabase
           .from('bank_accounts')
           .update({
             balance: account.balance,
             last_updated: account.last_updated
           })
           .eq('id', account.id);
+
+        await createTimeoutQuery(
+          updatePromise,
+          5000,
+          'Update account timeout'
+        );
       }
 
       await fetchAccounts();
@@ -196,11 +201,18 @@ const BankAccounts: React.FC<BankAccountsProps> = ({ user }) => {
   const removeAccount = async (accountId: string) => {
     try {
       setError(null);
-      const { error } = await supabase
+      
+      const deletePromise = supabase
         .from('bank_accounts')
         .delete()
         .eq('id', accountId)
         .eq('user_id', user.id);
+
+      const { error } = await createTimeoutQuery(
+        deletePromise,
+        5000,
+        'Delete account timeout'
+      );
 
       if (error) throw error;
       
@@ -280,7 +292,7 @@ const BankAccounts: React.FC<BankAccountsProps> = ({ user }) => {
           <span>{error}</span>
           <button
             onClick={() => setError(null)}
-            className="ml-auto text-red-400 hover:text-red-600"
+            className="ml-auto text-red-400 hover:text-red-600 transition-colors"
           >
             ×
           </button>
