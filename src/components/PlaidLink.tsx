@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { usePlaidLink } from 'react-plaid-link';
 import { motion } from 'framer-motion';
-import { CreditCard, AlertCircle, CheckCircle, Loader, Info, ExternalLink, Settings } from 'lucide-react';
+import { CreditCard, AlertCircle, Loader, Settings, ExternalLink } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 interface PlaidLinkProps {
@@ -14,10 +14,9 @@ const PlaidLink: React.FC<PlaidLinkProps> = ({ onSuccess, onError, userId }) => 
   const [linkToken, setLinkToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [mode, setMode] = useState<'demo' | 'sandbox'>('demo');
   const [setupInstructions, setSetupInstructions] = useState(false);
 
-  // Generate link token for real Plaid sandbox
+  // Generate link token for Plaid sandbox
   const generateLinkToken = async () => {
     setLoading(true);
     setError(null);
@@ -57,7 +56,7 @@ const PlaidLink: React.FC<PlaidLinkProps> = ({ onSuccess, onError, userId }) => 
     }
   };
 
-  // Plaid Link configuration for sandbox
+  // Plaid Link configuration
   const config = {
     token: linkToken,
     onSuccess: async (publicToken: string, metadata: any) => {
@@ -108,7 +107,7 @@ const PlaidLink: React.FC<PlaidLinkProps> = ({ onSuccess, onError, userId }) => 
 
   const { open, ready } = usePlaidLink(config);
 
-  // Handle real Plaid sandbox connection
+  // Handle Plaid connection
   const handlePlaidConnect = useCallback(() => {
     if (!linkToken) {
       generateLinkToken();
@@ -116,109 +115,6 @@ const PlaidLink: React.FC<PlaidLinkProps> = ({ onSuccess, onError, userId }) => 
       open();
     }
   }, [linkToken, ready, open]);
-
-  // Demo connection (existing functionality)
-  const handleDemoConnection = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      // Simulate Plaid connection delay
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
-      // Create test bank accounts directly in Supabase
-      const testAccounts = [
-        {
-          user_id: userId,
-          plaid_account_id: 'demo_checking_001',
-          plaid_access_token: 'access-demo-test-token',
-          name: 'Chase Checking',
-          type: 'depository',
-          subtype: 'checking',
-          balance: 2500.75,
-          institution_name: 'Chase Bank',
-          institution_id: 'ins_56',
-          mask: '0000',
-          last_updated: new Date().toISOString(),
-        },
-        {
-          user_id: userId,
-          plaid_account_id: 'demo_savings_001',
-          plaid_access_token: 'access-demo-test-token',
-          name: 'Chase Savings',
-          type: 'depository',
-          subtype: 'savings',
-          balance: 15000.00,
-          institution_name: 'Chase Bank',
-          institution_id: 'ins_56',
-          mask: '1111',
-          last_updated: new Date().toISOString(),
-        },
-        {
-          user_id: userId,
-          plaid_account_id: 'demo_credit_001',
-          plaid_access_token: 'access-demo-test-token',
-          name: 'Chase Freedom Credit Card',
-          type: 'credit',
-          subtype: 'credit card',
-          balance: -850.25,
-          institution_name: 'Chase Bank',
-          institution_id: 'ins_56',
-          mask: '2222',
-          last_updated: new Date().toISOString(),
-        }
-      ];
-
-      // Insert test accounts into database
-      const { data, error: dbError } = await supabase
-        .from('bank_accounts')
-        .insert(testAccounts)
-        .select();
-
-      if (dbError) {
-        if (dbError.code === '23505') {
-          console.log('Demo accounts already exist, updating balances...');
-          
-          for (const account of testAccounts) {
-            await supabase
-              .from('bank_accounts')
-              .update({
-                balance: account.balance,
-                last_updated: account.last_updated
-              })
-              .eq('user_id', userId)
-              .eq('plaid_account_id', account.plaid_account_id);
-          }
-        } else {
-          throw dbError;
-        }
-      }
-
-      // Simulate successful Plaid response
-      const mockMetadata = {
-        institution: {
-          name: 'Chase Bank',
-          institution_id: 'ins_56'
-        },
-        accounts: testAccounts.map(acc => ({
-          id: acc.plaid_account_id,
-          name: acc.name,
-          type: acc.type,
-          subtype: acc.subtype,
-          mask: acc.mask
-        }))
-      };
-
-      onSuccess('public-demo-test-token', mockMetadata);
-      
-    } catch (err: any) {
-      console.error('Demo connection error:', err);
-      setError(err.message || 'Failed to connect demo accounts');
-      if (onError) onError(err);
-    } finally {
-      setLoading(false);
-    }
-  }, [userId, onSuccess, onError]);
 
   return (
     <div className="space-y-4">
@@ -243,88 +139,46 @@ const PlaidLink: React.FC<PlaidLinkProps> = ({ onSuccess, onError, userId }) => 
           <div className="flex items-start space-x-2 mb-3">
             <Settings className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
             <div className="text-sm text-blue-800">
-              <p className="font-medium mb-2">🔧 Plaid Sandbox Setup Required</p>
-              <p className="mb-3">Since you have Plaid sandbox credentials, here's how to connect them:</p>
+              <p className="font-medium mb-2">🔧 Plaid Setup Required</p>
+              <p className="mb-3">To connect real bank accounts, you need to:</p>
               
               <div className="bg-blue-100 rounded-lg p-3 mb-3">
                 <p className="font-medium mb-2">Quick Setup Steps:</p>
                 <ol className="list-decimal list-inside space-y-1 text-xs">
-                  <li>Add your Plaid credentials to <strong>Supabase → Settings → Secrets</strong></li>
+                  <li>Get Plaid credentials from <a href="https://dashboard.plaid.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">dashboard.plaid.com</a></li>
+                  <li>Add credentials to <strong>Supabase → Settings → Secrets</strong></li>
                   <li>Deploy the 3 Edge Functions via <strong>Supabase Dashboard</strong></li>
                   <li>Test with real Plaid sandbox banks</li>
                 </ol>
               </div>
               
-              <div className="flex items-center space-x-2">
-                <a 
-                  href="https://dashboard.plaid.com" 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  className="text-blue-600 hover:underline inline-flex items-center text-xs"
-                >
-                  Plaid Dashboard <ExternalLink className="h-3 w-3 ml-1" />
-                </a>
-                <span className="text-blue-400">•</span>
-                <span className="text-xs">For now, use Demo Mode below!</span>
+              <div className="text-xs text-blue-700">
+                <p className="mb-2"><strong>Required Supabase Secrets:</strong></p>
+                <ul className="list-disc list-inside space-y-1">
+                  <li><code>PLAID_CLIENT_ID</code> - Your Plaid client ID</li>
+                  <li><code>PLAID_SECRET</code> - Your Plaid sandbox secret</li>
+                  <li><code>PLAID_ENV</code> - Set to "sandbox"</li>
+                </ul>
               </div>
             </div>
           </div>
         </motion.div>
       )}
 
-      {/* Mode Selection */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-        <div className="flex items-start space-x-2 mb-3">
-          <Info className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
-          <div className="text-sm text-blue-800">
-            <p className="font-medium mb-1">Connection Options</p>
-            <p>Choose how you want to connect bank accounts:</p>
-          </div>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <button
-            onClick={() => setMode('demo')}
-            className={`p-3 rounded-lg border-2 transition-all text-left ${
-              mode === 'demo' 
-                ? 'border-blue-500 bg-blue-50' 
-                : 'border-gray-200 hover:border-gray-300'
-            }`}
-          >
-            <div className="font-medium text-sm">✅ Demo Mode (Recommended)</div>
-            <div className="text-xs text-gray-600">Realistic test accounts - works immediately!</div>
-          </button>
-          
-          <button
-            onClick={() => setMode('sandbox')}
-            className={`p-3 rounded-lg border-2 transition-all text-left ${
-              mode === 'sandbox' 
-                ? 'border-blue-500 bg-blue-50' 
-                : 'border-gray-200 hover:border-gray-300'
-            }`}
-          >
-            <div className="font-medium text-sm">🔧 Real Plaid Sandbox</div>
-            <div className="text-xs text-gray-600">Requires setup - connect to actual Plaid test banks</div>
-          </button>
-        </div>
-      </div>
-
       {/* Connection Button */}
       <motion.button
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
-        onClick={mode === 'sandbox' ? handlePlaidConnect : handleDemoConnection}
-        disabled={loading || (mode === 'sandbox' && linkToken && !ready)}
+        onClick={handlePlaidConnect}
+        disabled={loading || (linkToken && !ready)}
         className="w-full flex items-center justify-center space-x-3 bg-gradient-to-r from-[#2A6F68] to-[#B76E79] text-white py-3 px-6 rounded-lg font-medium hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {loading ? (
           <>
             <Loader className="h-5 w-5 animate-spin" />
-            <span>
-              {mode === 'sandbox' ? 'Connecting to Plaid...' : 'Connecting Demo Accounts...'}
-            </span>
+            <span>Connecting to Plaid...</span>
           </>
-        ) : mode === 'sandbox' && linkToken && !ready ? (
+        ) : linkToken && !ready ? (
           <>
             <Loader className="h-5 w-5 animate-spin" />
             <span>Loading Plaid...</span>
@@ -332,65 +186,37 @@ const PlaidLink: React.FC<PlaidLinkProps> = ({ onSuccess, onError, userId }) => 
         ) : (
           <>
             <CreditCard className="h-5 w-5" />
-            <span>
-              {mode === 'sandbox' ? 'Connect via Plaid Sandbox' : 'Connect Demo Accounts'}
-            </span>
+            <span>Connect Bank Account</span>
           </>
         )}
       </motion.button>
 
       {/* Instructions */}
       <div className="text-center">
-        {mode === 'sandbox' ? (
-          <div>
-            <p className="text-xs text-gray-500 mb-2">
-              🔧 Real Plaid sandbox with test institutions
-            </p>
-            <div className="text-xs text-gray-400 space-y-1">
-              <div>Use credentials: <strong>user_good</strong> / <strong>pass_good</strong></div>
-              <div>Or select "First Platypus Bank" for instant connection</div>
-            </div>
-          </div>
-        ) : (
-          <div>
-            <p className="text-xs text-gray-500 mb-2">
-              🎭 Demo accounts with realistic test data - works immediately!
-            </p>
-            <div className="flex items-center justify-center space-x-4 text-xs text-gray-400">
-              <div className="flex items-center space-x-1">
-                <CheckCircle className="h-3 w-3 text-green-500" />
-                <span>Chase Checking ($2,500)</span>
-              </div>
-              <div className="flex items-center space-x-1">
-                <CheckCircle className="h-3 w-3 text-green-500" />
-                <span>Chase Savings ($15,000)</span>
-              </div>
-              <div className="flex items-center space-x-1">
-                <CheckCircle className="h-3 w-3 text-orange-500" />
-                <span>Credit Card (-$850)</span>
-              </div>
-            </div>
-          </div>
-        )}
+        <p className="text-xs text-gray-500 mb-2">
+          🔧 Connect to real Plaid sandbox with test institutions
+        </p>
+        <div className="text-xs text-gray-400 space-y-1">
+          <div>Use credentials: <strong>user_good</strong> / <strong>pass_good</strong></div>
+          <div>Or select "First Platypus Bank" for instant connection</div>
+        </div>
       </div>
 
-      {/* Quick Setup Guide for Sandbox Mode */}
-      {mode === 'sandbox' && (
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-          <div className="text-xs text-yellow-800">
-            <p className="font-medium mb-1">🚀 Quick Plaid Setup (since you have sandbox access):</p>
-            <ol className="list-decimal list-inside space-y-1">
-              <li>Go to <strong>Supabase → Settings → Secrets</strong></li>
-              <li>Add: <code>PLAID_CLIENT_ID</code>, <code>PLAID_SECRET</code>, <code>PLAID_ENV=sandbox</code></li>
-              <li>Deploy Edge Functions via <strong>Supabase → Edge Functions</strong></li>
-              <li>Copy function code from project files</li>
-            </ol>
-            <p className="mt-2 text-yellow-700">
-              <strong>For now:</strong> Use Demo Mode - it works perfectly and shows the full experience!
-            </p>
-          </div>
+      {/* Setup Guide */}
+      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+        <div className="text-xs text-yellow-800">
+          <p className="font-medium mb-1">🚀 Quick Plaid Setup:</p>
+          <ol className="list-decimal list-inside space-y-1">
+            <li>Go to <strong>Supabase → Settings → Secrets</strong></li>
+            <li>Add: <code>PLAID_CLIENT_ID</code>, <code>PLAID_SECRET</code>, <code>PLAID_ENV=sandbox</code></li>
+            <li>Deploy Edge Functions via <strong>Supabase → Edge Functions</strong></li>
+            <li>Copy function code from project files</li>
+          </ol>
+          <p className="mt-2 text-yellow-700">
+            <strong>Need help?</strong> Check the detailed setup guide in your project files.
+          </p>
         </div>
-      )}
+      </div>
     </div>
   );
 };
