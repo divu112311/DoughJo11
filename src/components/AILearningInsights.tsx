@@ -66,7 +66,7 @@ const AILearningInsights: React.FC<AILearningInsightsProps> = ({ compact = false
   ];
 
   return (
-    <div className={`bg-cream-50 rounded-2xl shadow-sm border border-cream-200 ${compact ? 'p-4' : 'p-6'}`}>
+    <div className={`bg-white rounded-2xl shadow-sm border border-grey-200 ${compact ? 'p-4' : 'p-6'}`}>
       <div className="flex items-center justify-between mb-4">
         <h3 className={`${compact ? 'text-base' : 'text-lg'} font-serif font-bold text-charcoal-800 flex items-center space-x-2`}>
           <Brain className="h-4 w-4 text-brand-rosegold" />
@@ -84,10 +84,10 @@ const AILearningInsights: React.FC<AILearningInsightsProps> = ({ compact = false
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
-              className={`${insight.bgColor} rounded-lg ${compact ? 'p-3' : 'p-4'} border border-cream-300`}
+              className={`${insight.bgColor} rounded-lg ${compact ? 'p-3' : 'p-4'} border border-grey-200`}
             >
               <div className="flex items-start space-x-3">
-                <div className={`w-6 h-6 ${insight.bgColor} rounded-lg flex items-center justify-center border border-cream-300`}>
+                <div className={`w-6 h-6 ${insight.bgColor} rounded-lg flex items-center justify-center border border-grey-200`}>
                   <IconComponent className={`h-3 w-3 ${insight.color}`} />
                 </div>
                 <div className="flex-1 min-w-0">

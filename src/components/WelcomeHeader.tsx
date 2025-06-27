@@ -19,7 +19,7 @@ const WelcomeHeader: React.FC<WelcomeHeaderProps> = ({ user, xp }) => {
     if (level >= 15) return { name: "Blue Belt", color: "from-blue-400 to-blue-600", emoji: "💙" };
     if (level >= 10) return { name: "Green Belt", color: "from-green-400 to-green-600", emoji: "💚" };
     if (level >= 5) return { name: "Yellow Belt", color: "from-yellow-300 to-yellow-500", emoji: "💛" };
-    return { name: "White Belt", color: "from-cream-300 to-cream-500", emoji: "🤍" };
+    return { name: "White Belt", color: "from-grey-300 to-grey-500", emoji: "🤍" };
   };
 
   const beltRank = getBeltRank(level);

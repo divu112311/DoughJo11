@@ -75,7 +75,7 @@ const FinancialHealthDashboard: React.FC<FinancialHealthDashboardProps> = ({
   ];
 
   return (
-    <div className={`bg-cream-50 rounded-2xl shadow-sm border border-cream-200 ${compact ? 'p-4' : 'p-6'}`}>
+    <div className={`bg-white rounded-2xl shadow-sm border border-grey-200 ${compact ? 'p-4' : 'p-6'}`}>
       {showTitle && (
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-xl font-serif font-bold text-charcoal-800 flex items-center space-x-2">
@@ -97,7 +97,7 @@ const FinancialHealthDashboard: React.FC<FinancialHealthDashboardProps> = ({
               cx="60"
               cy="60"
               r="45"
-              stroke="#f2e1c3"
+              stroke="#e5e7eb"
               strokeWidth="6"
               fill="none"
             />
@@ -144,7 +144,7 @@ const FinancialHealthDashboard: React.FC<FinancialHealthDashboardProps> = ({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.8 + index * 0.1 }}
-              className={`${metric.bgColor} rounded-lg ${compact ? 'p-2' : 'p-3'} border border-cream-200`}
+              className={`${metric.bgColor} rounded-lg ${compact ? 'p-2' : 'p-3'} border border-grey-200`}
             >
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center space-x-1">

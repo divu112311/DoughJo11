@@ -39,7 +39,7 @@ export default {
           800: '#B76E79', // Main brand color
           900: '#9a5d68',
         },
-        // Clean greys (replacing cream)
+        // Clean greys (main neutral palette)
         grey: {
           50: '#f9fafb',
           100: '#f3f4f6',
@@ -52,7 +52,7 @@ export default {
           800: '#1f2937',
           900: '#111827',
         },
-        // Charcoal colors (keeping these)
+        // Charcoal colors (for text)
         charcoal: {
           50: '#f8f9fa',
           100: '#e9ecef',

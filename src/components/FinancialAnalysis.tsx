@@ -73,7 +73,7 @@ const FinancialAnalysis: React.FC<FinancialAnalysisProps> = ({ user, compact = f
   };
 
   return (
-    <div className={`bg-cream-50 rounded-2xl shadow-sm border border-cream-200 ${compact ? 'p-4' : 'p-6'}`}>
+    <div className={`bg-white rounded-2xl shadow-sm border border-grey-200 ${compact ? 'p-4' : 'p-6'}`}>
       {/* Header */}
       <div className="mb-4">
         <div className="flex items-center space-x-3 mb-2">
@@ -109,7 +109,7 @@ const FinancialAnalysis: React.FC<FinancialAnalysisProps> = ({ user, compact = f
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: index * 0.1 }}
-              className={`${getStatusBg(metric.status)} rounded-lg p-3 border border-cream-200`}
+              className={`${getStatusBg(metric.status)} rounded-lg p-3 border border-grey-200`}
             >
               <div className="flex items-center justify-between mb-1">
                 <div className="flex items-center space-x-2">

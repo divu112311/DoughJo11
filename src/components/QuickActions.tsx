@@ -51,7 +51,7 @@ const QuickActions: React.FC<QuickActionsProps> = ({ onQuickAction, compact = fa
   ];
 
   return (
-    <div className={`bg-cream-50 rounded-2xl shadow-sm border border-cream-200 ${compact ? 'p-4' : 'p-6'}`}>
+    <div className={`bg-white rounded-2xl shadow-sm border border-grey-200 ${compact ? 'p-4' : 'p-6'}`}>
       <h3 className="text-base font-serif font-bold text-charcoal-800 mb-3 flex items-center space-x-2">
         <Target className="h-4 w-4 text-brand-teal" />
         <span>Quick Actions</span>
@@ -69,7 +69,7 @@ const QuickActions: React.FC<QuickActionsProps> = ({ onQuickAction, compact = fa
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={action.action}
-              className="w-full text-left p-3 rounded-lg bg-gradient-to-r from-cream-100 to-cream-200 hover:from-teal-50 hover:to-rosegold-50 transition-all border border-cream-300 hover:border-brand-teal"
+              className="w-full text-left p-3 rounded-lg bg-gradient-to-r from-grey-50 to-grey-100 hover:from-rosegold-50 hover:to-teal-50 transition-all border border-grey-200 hover:border-brand-teal"
             >
               <div className="flex items-start space-x-3">
                 <div className={`w-6 h-6 ${action.color} rounded-lg flex items-center justify-center flex-shrink-0`}>
