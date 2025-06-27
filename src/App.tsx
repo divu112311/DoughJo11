@@ -51,7 +51,7 @@ function App() {
               >
                 <div className="w-10 h-10 bg-gradient-to-br from-[#2A6F68] to-[#B76E79] rounded-full flex items-center justify-center p-1">
                   <img 
-                    src="/doughjo-mascot.png" 
+                    src="/Doughjomascot.png" 
                     alt="DoughJo Mascot" 
                     className="w-8 h-8 object-contain"
                   />

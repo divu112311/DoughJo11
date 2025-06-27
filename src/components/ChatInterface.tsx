@@ -88,7 +88,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, onXPUpdate }) => {
             className="w-12 h-12 bg-gradient-to-br from-[#2A6F68] to-[#B76E79] rounded-full flex items-center justify-center p-1"
           >
             <img 
-              src="/doughjo-mascot.svg" 
+              src="/Doughjomascot.png" 
               alt="DoughJo Sensei" 
               className="w-full h-full object-contain"
             />
@@ -125,7 +125,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, onXPUpdate }) => {
               className="w-20 h-20 mx-auto mb-4"
             >
               <img 
-                src="/doughjo-mascot.svg" 
+                src="/Doughjomascot.png" 
                 alt="DoughJo Sensei" 
                 className="w-full h-full object-contain opacity-70"
               />
@@ -170,7 +170,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, onXPUpdate }) => {
                 {message.sender !== 'user' && (
                   <div className="w-5 h-5 mt-1 flex-shrink-0">
                     <img 
-                      src="/doughjo-mascot.svg" 
+                      src="/Doughjomascot.png" 
                       alt="DoughJo" 
                       className="w-full h-full object-contain"
                     />
@@ -195,7 +195,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, onXPUpdate }) => {
               <div className="flex items-center space-x-2">
                 <div className="w-5 h-5">
                   <img 
-                    src="/doughjo-mascot.svg" 
+                    src="/Doughjomascot.png" 
                     alt="DoughJo" 
                     className="w-full h-full object-contain"
                   />
@@ -250,7 +250,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, onXPUpdate }) => {
             <Send className="h-5 w-5" />
           </motion.button>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 };
