@@ -6,26 +6,13 @@ import ChatInterface from './components/ChatInterface';
 import LearningCenter from './components/LearningCenter';
 import AuthCallback from './components/AuthCallback';
 import ResetPassword from './components/ResetPassword';
-import ConnectionStatus from './components/ConnectionStatus';
-import SessionWarningModal from './components/SessionWarningModal';
-import SessionExpiredModal from './components/SessionExpiredModal';
 import { useAuth } from './hooks/useAuth';
 import { useUserProfile } from './hooks/useUserProfile';
-import { useSessionSecurity } from './hooks/useSessionSecurity';
 
 function App() {
   const { user, loading: authLoading, signOut } = useAuth();
   const { profile, xp, loading: profileLoading, updateXP } = useUserProfile(user);
   const [activeView, setActiveView] = useState<'dashboard' | 'chat' | 'learning'>('chat');
-  
-  // Session security hook
-  const { 
-    showWarning, 
-    timeRemaining, 
-    isSessionExpired, 
-    extendSession, 
-    resetActivity 
-  } = useSessionSecurity(user);
 
   // Handle routing based on URL
   const currentPath = window.location.pathname;
@@ -42,83 +29,55 @@ function App() {
     await updateXP(points);
   };
 
-  const handleExtendSession = () => {
-    extendSession();
-  };
-
-  const handleForceLogout = async () => {
-    try {
-      await signOut();
-    } catch (error) {
-      console.error('Error during forced logout:', error);
-      // Force reload if logout fails
-      window.location.reload();
-    }
-  };
-
-  const handleSessionExpiredReload = () => {
-    window.location.reload();
-  };
-
   if (authLoading || profileLoading) {
     return (
-      <>
-        <ConnectionStatus />
-        <div className="min-h-screen bg-gradient-to-br from-gold-50 via-warmyellow-50 to-white flex items-center justify-center">
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-            className="w-8 h-8 border-2 border-brand-teal border-t-transparent rounded-full"
-          />
-        </div>
-      </>
+      <div className="min-h-screen bg-gradient-to-br from-gold-50 via-warmyellow-50 to-white flex items-center justify-center">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+          className="w-8 h-8 border-2 border-brand-teal border-t-transparent rounded-full"
+        />
+      </div>
     );
   }
 
-  if (!user) {
-    return (
-      <>
-        <ConnectionStatus />
-        <LoginForm />
-      </>
-    );
+  // If no user, show login
+  if (!user?.id) {
+    return <LoginForm />;
   }
 
   // Check if user email is verified
   if (!user.email_confirmed_at) {
     return (
-      <>
-        <ConnectionStatus />
-        <div className="min-h-screen bg-gradient-to-br from-gold-50 via-warmyellow-50 to-white flex items-center justify-center p-4">
-          <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-8 border border-gold-200 text-center max-w-md w-full"
-          >
-            <div className="w-16 h-16 bg-gold-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <motion.div
-                animate={{ scale: [1, 1.1, 1] }}
-                transition={{ duration: 2, repeat: Infinity }}
-              >
-                📧
-              </motion.div>
-            </div>
-            <h2 className="text-2xl font-serif font-bold text-charcoal-800 mb-2">Verify Your Email</h2>
-            <p className="text-charcoal-600 mb-4">
-              Please check your email and click the verification link to activate your account.
-            </p>
-            <p className="text-sm text-charcoal-500 mb-6">
-              Email sent to: <strong>{user.email}</strong>
-            </p>
-            <button
-              onClick={signOut}
-              className="text-brand-teal hover:text-teal-700 transition-colors"
+      <div className="min-h-screen bg-gradient-to-br from-gold-50 via-warmyellow-50 to-white flex items-center justify-center p-4">
+        <motion.div
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-8 border border-gold-200 text-center max-w-md w-full"
+        >
+          <div className="w-16 h-16 bg-gold-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <motion.div
+              animate={{ scale: [1, 1.1, 1] }}
+              transition={{ duration: 2, repeat: Infinity }}
             >
-              Sign out and try again
-            </button>
-          </motion.div>
-        </div>
-      </>
+              📧
+            </motion.div>
+          </div>
+          <h2 className="text-2xl font-serif font-bold text-charcoal-800 mb-2">Verify Your Email</h2>
+          <p className="text-charcoal-600 mb-4">
+            Please check your email and click the verification link to activate your account.
+          </p>
+          <p className="text-sm text-charcoal-500 mb-6">
+            Email sent to: <strong>{user.email}</strong>
+          </p>
+          <button
+            onClick={signOut}
+            className="text-brand-teal hover:text-teal-700 transition-colors"
+          >
+            Sign out and try again
+          </button>
+        </motion.div>
+      </div>
     );
   }
 
@@ -126,22 +85,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gold-50 via-warmyellow-50 to-white">
-      <ConnectionStatus />
-      
-      {/* Session Security Modals */}
-      <SessionWarningModal
-        isVisible={showWarning}
-        timeRemaining={timeRemaining}
-        onExtendSession={handleExtendSession}
-        onLogout={handleForceLogout}
-      />
-      
-      <SessionExpiredModal
-        isVisible={isSessionExpired}
-        onReload={handleSessionExpiredReload}
-      />
-      
-      {/* Header with ultra-light warm gold background */}
+      {/* Header */}
       <motion.header 
         initial={{ y: -100 }}
         animate={{ y: 0 }}
@@ -153,7 +97,6 @@ function App() {
               <motion.div 
                 whileHover={{ scale: 1.05 }}
                 className="flex items-center space-x-3"
-                onClick={resetActivity} // Reset activity on logo click
               >
                 <div className="w-10 h-10 bg-gradient-to-br from-brand-teal to-brand-rosegold rounded-full flex items-center justify-center p-1 shadow-md">
                   <img 
@@ -171,21 +114,12 @@ function App() {
                 <span className="text-brand-rosegold">•</span>
                 <span>{xp?.points || 0} XP</span>
               </div>
-              
-              {/* Security Indicator */}
-              <div className="flex items-center space-x-1 bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                <span>Secure Session</span>
-              </div>
             </div>
 
             <div className="flex items-center space-x-4">
               <nav className="flex space-x-2">
                 <button
-                  onClick={() => {
-                    setActiveView('chat');
-                    resetActivity();
-                  }}
+                  onClick={() => setActiveView('chat')}
                   className={`px-4 py-2 rounded-lg transition-all font-medium ${
                     activeView === 'chat'
                       ? 'bg-brand-teal/10 backdrop-blur-sm text-brand-teal shadow-sm border border-brand-teal/20'
@@ -195,10 +129,7 @@ function App() {
                   Chat
                 </button>
                 <button
-                  onClick={() => {
-                    setActiveView('dashboard');
-                    resetActivity();
-                  }}
+                  onClick={() => setActiveView('dashboard')}
                   className={`px-4 py-2 rounded-lg transition-all font-medium ${
                     activeView === 'dashboard'
                       ? 'bg-brand-teal/10 backdrop-blur-sm text-brand-teal shadow-sm border border-brand-teal/20'
@@ -208,10 +139,7 @@ function App() {
                   Dashboard
                 </button>
                 <button
-                  onClick={() => {
-                    setActiveView('learning');
-                    resetActivity();
-                  }}
+                  onClick={() => setActiveView('learning')}
                   className={`px-4 py-2 rounded-lg transition-all font-medium ${
                     activeView === 'learning'
                       ? 'bg-brand-teal/10 backdrop-blur-sm text-brand-teal shadow-sm border border-brand-teal/20'

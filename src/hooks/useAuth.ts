@@ -17,34 +17,23 @@ export const useAuth = () => {
     // Get initial session with better error handling
     const getInitialSession = async () => {
       try {
+        console.log('🔍 Getting initial session...');
         const { data: { session }, error } = await supabase.auth.getSession();
         
         if (error) {
-          console.error('Error getting session:', error);
+          console.error('❌ Error getting session:', error);
           setError('Failed to get authentication session');
           setUser(null);
+        } else if (session?.user?.id) {
+          console.log('✅ User found in session:', session.user.id);
+          setUser(session.user);
+          await ensureUserProfile(session.user);
         } else {
-          console.log('Initial session:', session?.user?.id ? 'User logged in' : 'No user');
-          
-          // Security check: Validate session age
-          if (session?.user) {
-            const sessionAge = Date.now() - new Date(session.user.created_at || 0).getTime();
-            const maxSessionAge = 30 * 60 * 1000; // 30 minutes
-            
-            if (sessionAge > maxSessionAge) {
-              console.log('Session too old, forcing logout');
-              await supabase.auth.signOut();
-              setUser(null);
-            } else {
-              setUser(session.user);
-              await ensureUserProfile(session.user);
-            }
-          } else {
-            setUser(null);
-          }
+          console.log('ℹ️ No active session found');
+          setUser(null);
         }
       } catch (err: any) {
-        console.error('Session retrieval error:', err);
+        console.error('❌ Session retrieval error:', err);
         setError('Authentication system unavailable');
         setUser(null);
       } finally {
@@ -57,40 +46,40 @@ export const useAuth = () => {
     // Listen for auth changes with better error handling
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log('Auth event:', event, session?.user?.email);
+        console.log('🔄 Auth event:', event, session?.user?.id ? `User: ${session.user.id}` : 'No user');
         
         try {
-          setUser(session?.user ?? null);
           setError(null);
 
           // Handle successful sign-in (including OAuth)
-          if (event === 'SIGNED_IN' && session?.user) {
-            console.log('User signed in:', session.user.id);
-            
-            // Security: Clear any existing session data
-            localStorage.removeItem('currentSessionId');
-            sessionStorage.clear();
-            
+          if (event === 'SIGNED_IN' && session?.user?.id) {
+            console.log('✅ User signed in:', session.user.id);
+            setUser(session.user);
             await ensureUserProfile(session.user);
           }
 
           // Handle sign out
           if (event === 'SIGNED_OUT') {
-            console.log('User signed out');
+            console.log('👋 User signed out');
             setUser(null);
             setError(null);
-            
-            // Security: Clear all session data
-            localStorage.clear();
-            sessionStorage.clear();
           }
 
-          // Handle email confirmation
-          if (event === 'SIGNED_IN' && session?.user?.email_confirmed_at) {
-            console.log('User email confirmed');
+          // Handle token refresh
+          if (event === 'TOKEN_REFRESHED' && session?.user?.id) {
+            console.log('🔄 Token refreshed for user:', session.user.id);
+            setUser(session.user);
           }
+
+          // Handle general session updates
+          if (session?.user?.id) {
+            setUser(session.user);
+          } else if (!session) {
+            setUser(null);
+          }
+
         } catch (err: any) {
-          console.error('Auth state change error:', err);
+          console.error('❌ Auth state change error:', err);
           setError('Authentication error occurred');
         } finally {
           setLoading(false);
@@ -103,12 +92,12 @@ export const useAuth = () => {
 
   const ensureUserProfile = async (user: User) => {
     if (!isSupabaseConfigured || !user?.id) {
-      console.warn('Cannot ensure user profile - missing user ID or Supabase not configured');
+      console.warn('⚠️ Cannot ensure user profile - missing user ID or Supabase not configured');
       return;
     }
 
     try {
-      console.log('Ensuring user profile exists for:', user.id);
+      console.log('🔍 Ensuring user profile exists for:', user.id);
 
       // Check if user profile exists with timeout
       const profilePromise = supabase
@@ -124,12 +113,12 @@ export const useAuth = () => {
       );
 
       if (profileError) {
-        console.error('Error checking user profile:', profileError);
+        console.error('❌ Error checking user profile:', profileError);
         return;
       }
 
       if (!existingProfile) {
-        console.log('Creating new user profile for:', user.id);
+        console.log('➕ Creating new user profile for:', user.id);
         
         // Create user profile with timeout
         const insertProfilePromise = supabase
@@ -161,12 +150,12 @@ export const useAuth = () => {
           'XP creation timeout'
         );
 
-        console.log('User profile and XP created successfully');
+        console.log('✅ User profile and XP created successfully');
       } else {
-        console.log('User profile already exists');
+        console.log('✅ User profile already exists');
       }
     } catch (error: any) {
-      console.error('Error ensuring user profile:', error);
+      console.error('❌ Error ensuring user profile:', error);
       // Don't throw error here as it would break the auth flow
     }
   };
@@ -279,10 +268,6 @@ export const useAuth = () => {
   const signOut = async () => {
     setError(null);
     
-    // Security: Clear all session data immediately
-    localStorage.clear();
-    sessionStorage.clear();
-    
     if (!isSupabaseConfigured) {
       setUser(null);
       return;
@@ -296,11 +281,6 @@ export const useAuth = () => {
     
     // Clear user state immediately
     setUser(null);
-    
-    // Force page reload to ensure clean state
-    setTimeout(() => {
-      window.location.reload();
-    }, 100);
   };
 
   const clearError = () => setError(null);

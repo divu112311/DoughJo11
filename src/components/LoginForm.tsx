@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LogIn, UserPlus, AlertCircle, Eye, EyeOff, Mail, ArrowLeft, CheckCircle, Clock, AlertTriangle, Shield } from 'lucide-react';
+import { LogIn, UserPlus, AlertCircle, Eye, EyeOff, Mail, ArrowLeft, CheckCircle, Clock } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
-import SecurityBanner from './SecurityBanner';
 
 type AuthView = 'login' | 'signup' | 'forgot-password' | 'reset-password' | 'email-verification' | 'check-email';
 
@@ -157,9 +156,6 @@ const LoginForm: React.FC = () => {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
     >
-      {/* Security Banner */}
-      <SecurityBanner />
-
       {/* Email/Password Form */}
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
@@ -269,9 +265,6 @@ const LoginForm: React.FC = () => {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
     >
-      {/* Security Banner */}
-      <SecurityBanner />
-
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="block text-sm font-medium text-charcoal-800 mb-2">
@@ -548,7 +541,7 @@ const LoginForm: React.FC = () => {
           <p className="text-charcoal-500 text-sm mt-2">Master your money with ancient wisdom and modern AI</p>
         </motion.div>
 
-        {/* Form Card - Ultra-light warm background */}
+        {/* Form Card */}
         <motion.div
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
