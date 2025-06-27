@@ -98,7 +98,7 @@ const ResetPassword: React.FC = () => {
           <div className="flex items-center justify-center mb-4">
             <div className="w-16 h-16 mr-3">
               <img 
-                src="/finapp.png" 
+                src="/assets/finapp.png" 
                 alt="DoughJo Mascot" 
                 className="w-full h-full object-contain"
               />

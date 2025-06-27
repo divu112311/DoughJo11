@@ -44,7 +44,7 @@ const WelcomeHeader: React.FC<WelcomeHeaderProps> = ({ user, xp }) => {
           className="w-8 h-8 opacity-30"
         >
           <img 
-            src="/finapp.png" 
+            src="/assets/finapp.png" 
             alt="DoughJo" 
             className="w-full h-full object-contain"
           />

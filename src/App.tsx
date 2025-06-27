@@ -100,7 +100,7 @@ function App() {
               >
                 <div className="w-10 h-10 bg-gradient-to-br from-brand-teal to-brand-rosegold rounded-full flex items-center justify-center p-1 shadow-md">
                   <img 
-                    src="/finapp.png" 
+                    src="/assets/finapp.png" 
                     alt="DoughJo Mascot" 
                     className="w-8 h-8 object-contain"
                   />
