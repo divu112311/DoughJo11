@@ -16,13 +16,17 @@ export const useChat = (user: User | null) => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (user && isSupabaseConfigured) {
+    if (user?.id && isSupabaseConfigured) {
       fetchChatHistory();
+    } else {
+      // Clear messages when no user or Supabase not configured
+      setMessages([]);
+      setError(null);
     }
-  }, [user]);
+  }, [user?.id]); // Only depend on user.id
 
   const fetchChatHistory = async () => {
-    if (!user || !isSupabaseConfigured) return;
+    if (!user?.id || !isSupabaseConfigured) return;
 
     try {
       console.log('Fetching chat history for user:', user.id);
@@ -41,6 +45,7 @@ export const useChat = (user: User | null) => {
 
       if (fetchError) {
         console.error('Error fetching chat history:', fetchError);
+        setError('Failed to load chat history');
         return;
       }
 
@@ -53,7 +58,10 @@ export const useChat = (user: User | null) => {
   };
 
   const sendMessage = async (message: string, onXPUpdate?: (points: number) => void) => {
-    if (!user || !message.trim()) return;
+    if (!user?.id || !message.trim()) {
+      console.warn('Cannot send message - missing user ID or empty message');
+      return;
+    }
 
     setLoading(true);
     setError(null);
@@ -107,7 +115,7 @@ export const useChat = (user: User | null) => {
       // Update local state immediately
       setMessages(prev => [...prev, userMessage]);
 
-      // Call OpenAI API through Supabase Edge Function
+      // Call AI API through Supabase Edge Function
       const { data: aiResponseData, error: aiError } = await supabase.functions.invoke('chat-ai', {
         body: {
           message: message.trim(),

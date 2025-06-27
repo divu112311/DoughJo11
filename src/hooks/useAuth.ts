@@ -14,34 +14,66 @@ export const useAuth = () => {
       return;
     }
 
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session }, error }) => {
-      if (error) {
-        console.error('Error getting session:', error);
-        setError('Failed to get authentication session');
-      } else {
-        setUser(session?.user ?? null);
+    // Get initial session with better error handling
+    const getInitialSession = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.error('Error getting session:', error);
+          setError('Failed to get authentication session');
+          setUser(null);
+        } else {
+          console.log('Initial session:', session?.user?.id ? 'User logged in' : 'No user');
+          setUser(session?.user ?? null);
+          
+          // If we have a user, ensure their profile exists
+          if (session?.user) {
+            await ensureUserProfile(session.user);
+          }
+        }
+      } catch (err: any) {
+        console.error('Session retrieval error:', err);
+        setError('Authentication system unavailable');
+        setUser(null);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
-    });
+    };
 
-    // Listen for auth changes
+    getInitialSession();
+
+    // Listen for auth changes with better error handling
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         console.log('Auth event:', event, session?.user?.email);
-        setUser(session?.user ?? null);
-        setLoading(false);
-        setError(null);
+        
+        try {
+          setUser(session?.user ?? null);
+          setError(null);
 
-        // Handle successful sign-in (including OAuth)
-        if (event === 'SIGNED_IN' && session?.user) {
-          // Check if user profile exists, create if not
-          await ensureUserProfile(session.user);
-        }
+          // Handle successful sign-in (including OAuth)
+          if (event === 'SIGNED_IN' && session?.user) {
+            console.log('User signed in:', session.user.id);
+            await ensureUserProfile(session.user);
+          }
 
-        // Handle email confirmation
-        if (event === 'SIGNED_IN' && session?.user?.email_confirmed_at) {
-          console.log('User email confirmed');
+          // Handle sign out
+          if (event === 'SIGNED_OUT') {
+            console.log('User signed out');
+            setUser(null);
+            setError(null);
+          }
+
+          // Handle email confirmation
+          if (event === 'SIGNED_IN' && session?.user?.email_confirmed_at) {
+            console.log('User email confirmed');
+          }
+        } catch (err: any) {
+          console.error('Auth state change error:', err);
+          setError('Authentication error occurred');
+        } finally {
+          setLoading(false);
         }
       }
     );
@@ -50,24 +82,36 @@ export const useAuth = () => {
   }, []);
 
   const ensureUserProfile = async (user: User) => {
-    if (!isSupabaseConfigured) return;
+    if (!isSupabaseConfigured || !user?.id) {
+      console.warn('Cannot ensure user profile - missing user ID or Supabase not configured');
+      return;
+    }
 
     try {
-      // Check if user profile exists
+      console.log('Ensuring user profile exists for:', user.id);
+
+      // Check if user profile exists with timeout
       const profilePromise = supabase
         .from('users')
         .select('id')
         .eq('id', user.id)
         .maybeSingle();
 
-      const { data: existingProfile } = await createTimeoutQuery(
+      const { data: existingProfile, error: profileError } = await createTimeoutQuery(
         profilePromise,
-        10000,
+        15000,
         'Profile check timeout'
       );
 
+      if (profileError) {
+        console.error('Error checking user profile:', profileError);
+        return;
+      }
+
       if (!existingProfile) {
-        // Create user profile
+        console.log('Creating new user profile for:', user.id);
+        
+        // Create user profile with timeout
         const insertProfilePromise = supabase
           .from('users')
           .insert({
@@ -78,11 +122,11 @@ export const useAuth = () => {
 
         await createTimeoutQuery(
           insertProfilePromise,
-          10000,
+          15000,
           'Profile creation timeout'
         );
 
-        // Create initial XP record
+        // Create initial XP record with timeout
         const insertXPPromise = supabase
           .from('xp')
           .insert({
@@ -93,12 +137,17 @@ export const useAuth = () => {
 
         await createTimeoutQuery(
           insertXPPromise,
-          10000,
+          15000,
           'XP creation timeout'
         );
+
+        console.log('User profile and XP created successfully');
+      } else {
+        console.log('User profile already exists');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error ensuring user profile:', error);
+      // Don't throw error here as it would break the auth flow
     }
   };
 
@@ -107,6 +156,8 @@ export const useAuth = () => {
       throw new Error('Authentication not configured');
     }
 
+    setError(null);
+    
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -129,6 +180,8 @@ export const useAuth = () => {
       throw new Error('Authentication not configured');
     }
 
+    setError(null);
+
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -148,6 +201,8 @@ export const useAuth = () => {
     if (!isSupabaseConfigured) {
       throw new Error('Authentication not configured');
     }
+
+    setError(null);
 
     try {
       const { data, error } = await supabase.auth.signInWithOAuth({
@@ -178,6 +233,8 @@ export const useAuth = () => {
       throw new Error('Authentication not configured');
     }
 
+    setError(null);
+
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/auth/reset-password`,
     });
@@ -190,6 +247,8 @@ export const useAuth = () => {
       throw new Error('Authentication not configured');
     }
 
+    setError(null);
+
     const { error } = await supabase.auth.updateUser({
       password: newPassword
     });
@@ -198,13 +257,21 @@ export const useAuth = () => {
   };
 
   const signOut = async () => {
+    setError(null);
+    
     if (!isSupabaseConfigured) {
       setUser(null);
       return;
     }
 
     const { error } = await supabase.auth.signOut();
-    if (error) throw error;
+    if (error) {
+      console.error('Sign out error:', error);
+      throw error;
+    }
+    
+    // Clear user state immediately
+    setUser(null);
   };
 
   const clearError = () => setError(null);
