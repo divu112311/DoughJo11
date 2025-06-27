@@ -1,117 +1,106 @@
 # Edge Function Deployment Guide
 
-## Prerequisites
-You'll need to do this from your local machine (not in this browser environment) because the Supabase CLI needs to be installed locally.
+## Important: WebContainer Environment Notice
+Since you're working in a browser-based environment (WebContainer), the Supabase CLI cannot be installed or used directly. You'll need to deploy the Edge Functions manually through the Supabase Dashboard.
 
-## Step 1: Install Supabase CLI
+## Manual Deployment via Supabase Dashboard
 
-### On macOS:
-```bash
-brew install supabase/tap/supabase
-```
-
-### On Windows:
-```bash
-# Using Chocolatey
-choco install supabase
-
-# Or using Scoop
-scoop bucket add supabase https://github.com/supabase/scoop-bucket.git
-scoop install supabase
-```
-
-### On Linux:
-```bash
-# Download and install
-curl -fsSL https://supabase.com/install.sh | sh
-```
-
-### Alternative (npm - works on all platforms):
-```bash
-npm install -g supabase
-```
-
-## Step 2: Login to Supabase
-```bash
-supabase login
-```
-This will open your browser to authenticate with Supabase.
-
-## Step 3: Get Your Project Reference
-1. Go to your Supabase dashboard at [supabase.com/dashboard](https://supabase.com/dashboard)
+### Step 1: Access Your Supabase Dashboard
+1. Go to [supabase.com/dashboard](https://supabase.com/dashboard)
 2. Select your project
-3. Go to Settings > General
-4. Copy your "Reference ID" (it looks like: `abcdefghijklmnop`)
+3. Navigate to "Edge Functions" in the left sidebar
 
-## Step 4: Link Your Local Project
+### Step 2: Deploy plaid-create-link-token Function
+1. Click "Create Function" or "New Function"
+2. Name it: `plaid-create-link-token`
+3. Copy the entire code from `supabase/functions/plaid-create-link-token/index.ts`
+4. Paste it into the function editor
+5. Click "Deploy Function"
+
+### Step 3: Deploy plaid-exchange-token Function
+1. Click "Create Function" or "New Function"
+2. Name it: `plaid-exchange-token`
+3. Copy the entire code from `supabase/functions/plaid-exchange-token/index.ts`
+4. Paste it into the function editor
+5. Click "Deploy Function"
+
+### Step 4: Deploy plaid-refresh-accounts Function
+1. Click "Create Function" or "New Function"
+2. Name it: `plaid-refresh-accounts`
+3. Copy the entire code from `supabase/functions/plaid-refresh-accounts/index.ts`
+4. Paste it into the function editor
+5. Click "Deploy Function"
+
+### Step 5: Set Environment Variables
+1. In your Supabase dashboard, go to Settings > Secrets
+2. Add the following secrets:
+   - `PLAID_CLIENT_ID`: Your Plaid client ID
+   - `PLAID_SECRET`: Your Plaid secret key
+   - `PLAID_ENV`: Set to `sandbox` for testing or `production` for live
+
+### Step 6: Verify Deployment
+After deployment, your Edge Functions will be available at:
+- `https://YOUR_PROJECT_REF.supabase.co/functions/v1/plaid-create-link-token`
+- `https://YOUR_PROJECT_REF.supabase.co/functions/v1/plaid-exchange-token`
+- `https://YOUR_PROJECT_REF.supabase.co/functions/v1/plaid-refresh-accounts`
+
+Replace `YOUR_PROJECT_REF` with your actual Supabase project reference ID.
+
+## Testing the Functions
+
+You can test the functions using curl or your application:
+
+### Test plaid-create-link-token:
 ```bash
-# Navigate to your project directory
-cd path/to/your/luxefi-project
-
-# Link to your Supabase project
-supabase link --project-ref YOUR_PROJECT_REFERENCE_ID
+curl -X POST https://YOUR_PROJECT_REF.supabase.co/functions/v1/plaid-create-link-token \
+  -H "Authorization: Bearer YOUR_ANON_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"userId": "test-user-id"}'
 ```
 
-## Step 5: Deploy the Edge Function
+### Test plaid-exchange-token:
 ```bash
-# Deploy the chat-ai function
-supabase functions deploy chat-ai
-```
-
-## Step 6: Set Your OpenAI API Key
-```bash
-# Set the OpenAI API key as a secret
-supabase secrets set OPENAI_API_KEY=your_actual_openai_api_key_here
-```
-
-## Step 7: Test the Function
-You can test the function directly:
-```bash
-# Test the function
-supabase functions invoke chat-ai --data '{"message": "Hello", "userId": "test-user-id"}'
+curl -X POST https://YOUR_PROJECT_REF.supabase.co/functions/v1/plaid-exchange-token \
+  -H "Authorization: Bearer YOUR_ANON_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"publicToken": "public-sandbox-token", "userId": "test-user-id", "institutionName": "Test Bank"}'
 ```
 
 ## Troubleshooting
 
-### If you get permission errors:
-```bash
-# Deploy with no JWT verification for testing
-supabase functions deploy chat-ai --no-verify-jwt
-```
+### If functions fail to deploy:
+1. Check that you copied the entire function code correctly
+2. Verify that all required environment variables are set in Secrets
+3. Check the function logs in the Supabase dashboard
 
-### To check function logs:
-```bash
-# View real-time logs
-supabase functions logs chat-ai --follow
-```
+### If you get CORS errors:
+The functions already include proper CORS headers. If you still encounter CORS issues:
+1. Verify the function is deployed correctly
+2. Check that your frontend is making requests to the correct URL
+3. Ensure the Authorization header includes your Supabase anon key
 
-### To list all functions:
-```bash
-supabase functions list
-```
+### To view function logs:
+1. Go to Edge Functions in your Supabase dashboard
+2. Click on the function name
+3. View the "Logs" tab for debugging information
 
-### If deployment fails:
-1. Make sure you're in the correct directory (where `supabase/functions/chat-ai/index.ts` exists)
-2. Check that your project is properly linked: `supabase status`
-3. Verify your authentication: `supabase auth status`
+## Alternative: Local Development (For Future Reference)
 
-## Alternative: Manual Deployment via Dashboard
+If you want to work locally in the future (outside of WebContainer), you can use the Supabase CLI:
 
-If CLI doesn't work, you can also deploy via the Supabase dashboard:
+### Prerequisites
+- Install Supabase CLI locally
+- Link your project: `supabase link --project-ref YOUR_PROJECT_REF`
+- Deploy functions: `supabase functions deploy function-name`
 
-1. Go to your Supabase project dashboard
-2. Navigate to "Edge Functions" in the sidebar
-3. Click "Create Function"
-4. Name it `chat-ai`
-5. Copy and paste the code from `supabase/functions/chat-ai/index.ts`
-6. Click "Deploy"
-7. Go to Settings > Secrets and add `OPENAI_API_KEY`
+But for now, manual deployment through the dashboard is the recommended approach.
 
 ## Verification
 
-After deployment, your Edge Function will be available at:
-```
-https://YOUR_PROJECT_REF.supabase.co/functions/v1/chat-ai
-```
+After successful deployment:
+1. All three Plaid functions should appear in your Edge Functions list
+2. Each function should show a "Deployed" status
+3. Your application will automatically use these deployed functions
+4. Test the Plaid integration in your app to confirm everything works
 
-The app will automatically start using the deployed function for AI responses!
+The functions are now ready to handle Plaid integration requests from your application!
