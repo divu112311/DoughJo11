@@ -16,8 +16,15 @@ export const useAuth = () => {
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        console.log('Auth event:', event, session?.user?.email);
         setUser(session?.user ?? null);
         setLoading(false);
+
+        // Handle successful sign-in (including OAuth)
+        if (event === 'SIGNED_IN' && session?.user) {
+          // Check if user profile exists, create if not
+          await ensureUserProfile(session.user);
+        }
 
         // Handle email confirmation
         if (event === 'SIGNED_IN' && session?.user?.email_confirmed_at) {
@@ -28,6 +35,47 @@ export const useAuth = () => {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  const ensureUserProfile = async (user: User) => {
+    try {
+      // Check if user profile exists
+      const { data: existingProfile } = await supabase
+        .from('users')
+        .select('id')
+        .eq('id', user.id)
+        .single();
+
+      if (!existingProfile) {
+        // Create user profile
+        const { error: profileError } = await supabase
+          .from('users')
+          .insert({
+            id: user.id,
+            email: user.email,
+            full_name: user.user_metadata?.full_name || user.user_metadata?.name || 'User',
+          });
+
+        if (profileError) {
+          console.error('Error creating user profile:', profileError);
+        }
+
+        // Create initial XP record
+        const { error: xpError } = await supabase
+          .from('xp')
+          .insert({
+            user_id: user.id,
+            points: 100, // Welcome bonus
+            badges: ['Welcome'],
+          });
+
+        if (xpError) {
+          console.error('Error creating XP record:', xpError);
+        }
+      }
+    } catch (error) {
+      console.error('Error ensuring user profile:', error);
+    }
+  };
 
   const signUp = async (email: string, password: string, fullName: string) => {
     const { data, error } = await supabase.auth.signUp({
@@ -43,11 +91,7 @@ export const useAuth = () => {
 
     if (error) throw error;
 
-    // Create user profile (will be created after email confirmation)
-    if (data.user && data.user.email_confirmed_at) {
-      await createUserProfile(data.user, fullName);
-    }
-
+    // Profile will be created after email confirmation via auth state change
     return data;
   };
 
@@ -59,8 +103,8 @@ export const useAuth = () => {
 
     if (error) throw error;
 
-    // Check if email is verified
-    if (data.user && !data.user.email_confirmed_at) {
+    // Check if email is verified (only for email/password signups)
+    if (data.user && !data.user.email_confirmed_at && data.user.app_metadata?.provider === 'email') {
       throw new Error('Please verify your email before signing in');
     }
 
@@ -68,15 +112,28 @@ export const useAuth = () => {
   };
 
   const signInWithGoogle = async () => {
-    const { data, error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback`
-      }
-    });
+    try {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          }
+        }
+      });
 
-    if (error) throw error;
-    return data;
+      if (error) {
+        console.error('Google OAuth error:', error);
+        throw error;
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Google sign-in failed:', error);
+      throw new Error('Google sign-in is not configured. Please contact support or use email/password login.');
+    }
   };
 
   const resetPassword = async (email: string) => {
@@ -98,34 +155,6 @@ export const useAuth = () => {
   const signOut = async () => {
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
-  };
-
-  const createUserProfile = async (user: User, fullName: string) => {
-    try {
-      // Create user profile
-      const { error: profileError } = await supabase
-        .from('users')
-        .insert({
-          id: user.id,
-          email: user.email,
-          full_name: fullName,
-        });
-
-      if (profileError) throw profileError;
-
-      // Create initial XP record
-      const { error: xpError } = await supabase
-        .from('xp')
-        .insert({
-          user_id: user.id,
-          points: 100, // Welcome bonus
-          badges: ['Welcome'],
-        });
-
-      if (xpError) throw xpError;
-    } catch (error) {
-      console.error('Error creating user profile:', error);
-    }
   };
 
   return {
