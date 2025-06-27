@@ -99,10 +99,13 @@ export const testConnection = async () => {
 
 // Helper function to create queries with timeout and better error handling
 export const createTimeoutQuery = <T>(
-  queryPromise: Promise<T>, 
-  timeoutMs: number = 30000, // Increased to 30 seconds
+  queryPromise: Promise<T> | any, 
+  timeoutMs: number = 15000, // Increased to 15 seconds
   errorMessage: string = 'Query timeout'
 ): Promise<T> => {
+  // Convert Supabase query builder to native Promise
+  const nativePromise = Promise.resolve(queryPromise)
+  
   const timeoutPromise = new Promise<never>((_, reject) => {
     const timeoutId = setTimeout(() => {
       console.error(`⏰ Query timeout after ${timeoutMs}ms:`, errorMessage)
@@ -110,10 +113,10 @@ export const createTimeoutQuery = <T>(
     }, timeoutMs)
     
     // Clear timeout if query completes
-    queryPromise.finally(() => clearTimeout(timeoutId))
+    nativePromise.finally(() => clearTimeout(timeoutId))
   })
   
-  return Promise.race([queryPromise, timeoutPromise])
+  return Promise.race([nativePromise, timeoutPromise])
 }
 
 // Check if Supabase is properly configured
