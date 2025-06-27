@@ -29,6 +29,10 @@ import {
 } from 'lucide-react';
 import { User } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
+import FinancialHealthDashboard from './FinancialHealthDashboard';
+import RecentAchievements from './RecentAchievements';
+import AILearningInsights from './AILearningInsights';
+import FinancialGoals from './FinancialGoals';
 
 interface LearningPath {
   id: string;
@@ -189,212 +193,166 @@ const LearningCenter: React.FC<LearningCenterProps> = ({ user, userLevel, onXPUp
         </div>
       </motion.div>
 
-      {/* Learning Paths */}
-      <div className="space-y-4">
-        <h2 className="text-xl font-bold text-[#333333] flex items-center space-x-2">
-          <BookOpen className="h-5 w-5 text-[#2A6F68]" />
-          <span>Learning Paths</span>
-        </h2>
-        
-        <div className="space-y-3">
-          {learningPaths.map((path, index) => {
-            const IconComponent = path.icon;
-            return (
-              <motion.div
-                key={path.id}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className={`bg-gradient-to-r ${path.bgGradient} rounded-xl p-6 border border-gray-200 hover:shadow-md transition-all cursor-pointer group`}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-4">
-                    <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center shadow-sm">
-                      <IconComponent className={`h-6 w-6 ${path.color}`} />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-[#333333] mb-1">{path.title}</h3>
-                      <p className="text-gray-600 text-sm mb-2">{path.description}</p>
-                      <div className="flex items-center space-x-4 text-sm text-gray-500">
-                        <span>{path.lessons} lessons</span>
-                        <span>•</span>
-                        <span>{path.duration}</span>
+      {/* Main Content Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Left Column - Learning Paths and Quick Actions */}
+        <div className="lg:col-span-2 space-y-8">
+          {/* Learning Paths */}
+          <div className="space-y-4">
+            <h2 className="text-xl font-bold text-[#333333] flex items-center space-x-2">
+              <BookOpen className="h-5 w-5 text-[#2A6F68]" />
+              <span>Learning Paths</span>
+            </h2>
+            
+            <div className="space-y-3">
+              {learningPaths.map((path, index) => {
+                const IconComponent = path.icon;
+                return (
+                  <motion.div
+                    key={path.id}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    className={`bg-gradient-to-r ${path.bgGradient} rounded-xl p-6 border border-gray-200 hover:shadow-md transition-all cursor-pointer group`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-4">
+                        <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center shadow-sm">
+                          <IconComponent className={`h-6 w-6 ${path.color}`} />
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="text-lg font-semibold text-[#333333] mb-1">{path.title}</h3>
+                          <p className="text-gray-600 text-sm mb-2">{path.description}</p>
+                          <div className="flex items-center space-x-4 text-sm text-gray-500">
+                            <span>{path.lessons} lessons</span>
+                            <span>•</span>
+                            <span>{path.duration}</span>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center space-x-4">
+                        <div className="text-right">
+                          <div className="text-sm text-gray-600 mb-1">Progress</div>
+                          <div className="text-lg font-bold text-[#333333]">{path.progress}%</div>
+                        </div>
+                        <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-[#2A6F68] transition-colors" />
                       </div>
                     </div>
-                  </div>
-                  
-                  <div className="flex items-center space-x-4">
-                    <div className="text-right">
-                      <div className="text-sm text-gray-600 mb-1">Progress</div>
-                      <div className="text-lg font-bold text-[#333333]">{path.progress}%</div>
+                    
+                    {/* Progress Bar */}
+                    <div className="mt-4">
+                      <div className="w-full bg-white/60 rounded-full h-2">
+                        <motion.div
+                          initial={{ width: 0 }}
+                          animate={{ width: `${path.progress}%` }}
+                          transition={{ delay: 0.5 + index * 0.1, duration: 1 }}
+                          className="bg-gradient-to-r from-[#2A6F68] to-[#B76E79] h-2 rounded-full"
+                        />
+                      </div>
                     </div>
-                    <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-[#2A6F68] transition-colors" />
-                  </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Quick Actions */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl p-6 text-white"
+          >
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                  <Target className="h-5 w-5 text-white" />
                 </div>
-                
-                {/* Progress Bar */}
-                <div className="mt-4">
-                  <div className="w-full bg-white/60 rounded-full h-2">
-                    <motion.div
-                      initial={{ width: 0 }}
-                      animate={{ width: `${path.progress}%` }}
-                      transition={{ delay: 0.5 + index * 0.1, duration: 1 }}
-                      className="bg-gradient-to-r from-[#2A6F68] to-[#B76E79] h-2 rounded-full"
-                    />
-                  </div>
-                </div>
-              </motion.div>
-            );
-          })}
+                <h3 className="text-xl font-bold">Quick Actions</h3>
+              </div>
+              <button className="text-white/80 hover:text-white text-sm transition-colors">
+                Show Tools
+              </button>
+            </div>
+            
+            <div className="space-y-3">
+              {quickActions.slice(0, 2).map((action, index) => {
+                const IconComponent = action.icon;
+                return (
+                  <motion.button
+                    key={action.id}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.5 + index * 0.1 }}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="w-full bg-white/10 backdrop-blur-sm rounded-lg p-4 text-left hover:bg-white/20 transition-all border border-white/20"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
+                          <span className="text-lg font-bold">{index + 1}</span>
+                        </div>
+                        <div>
+                          <div className="font-medium">{action.title}</div>
+                          <div className="text-sm text-white/80">+{action.points} points</div>
+                        </div>
+                      </div>
+                      <ArrowRight className="h-5 w-5 text-white/60" />
+                    </div>
+                  </motion.button>
+                );
+              })}
+            </div>
+          </motion.div>
+
+          {/* Financial Health Dashboard */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+          >
+            <FinancialHealthDashboard />
+          </motion.div>
+        </div>
+
+        {/* Right Column */}
+        <div className="space-y-6">
+          {/* Financial Goals */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7 }}
+          >
+            <FinancialGoals user={user} compact />
+          </motion.div>
+
+          {/* Recent Achievements */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8 }}
+          >
+            <RecentAchievements compact />
+          </motion.div>
+
+          {/* AI Learning Insights */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.9 }}
+          >
+            <AILearningInsights compact />
+          </motion.div>
         </div>
       </div>
-
-      {/* Quick Actions */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
-        className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl p-6 text-white"
-      >
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-              <Target className="h-5 w-5 text-white" />
-            </div>
-            <h3 className="text-xl font-bold">Quick Actions</h3>
-          </div>
-          <button className="text-white/80 hover:text-white text-sm transition-colors">
-            Show Tools
-          </button>
-        </div>
-        
-        <div className="space-y-3">
-          {quickActions.slice(0, 2).map((action, index) => {
-            const IconComponent = action.icon;
-            return (
-              <motion.button
-                key={action.id}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.5 + index * 0.1 }}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="w-full bg-white/10 backdrop-blur-sm rounded-lg p-4 text-left hover:bg-white/20 transition-all border border-white/20"
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
-                      <span className="text-lg font-bold">{index + 1}</span>
-                    </div>
-                    <div>
-                      <div className="font-medium">{action.title}</div>
-                      <div className="text-sm text-white/80">+{action.points} points</div>
-                    </div>
-                  </div>
-                  <ArrowRight className="h-5 w-5 text-white/60" />
-                </div>
-              </motion.button>
-            );
-          })}
-        </div>
-      </motion.div>
-
-      {/* Financial Health Dashboard */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.6 }}
-        className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200"
-      >
-        <div className="flex items-center justify-between mb-6">
-          <h3 className="text-xl font-bold text-[#333333] flex items-center space-x-2">
-            <BarChart3 className="h-5 w-5 text-[#2A6F68]" />
-            <span>Financial Health Dashboard</span>
-          </h3>
-          <button className="text-[#2A6F68] hover:text-[#235A54] text-sm transition-colors flex items-center space-x-1">
-            <RefreshCw className="h-4 w-4" />
-            <span>Refresh</span>
-          </button>
-        </div>
-
-        {/* Health Score Circle */}
-        <div className="flex items-center justify-center mb-8">
-          <div className="relative w-32 h-32">
-            <svg className="w-32 h-32 transform -rotate-90" viewBox="0 0 120 120">
-              <circle
-                cx="60"
-                cy="60"
-                r="50"
-                stroke="#e5e7eb"
-                strokeWidth="8"
-                fill="none"
-              />
-              <motion.circle
-                cx="60"
-                cy="60"
-                r="50"
-                stroke="url(#gradient)"
-                strokeWidth="8"
-                fill="none"
-                strokeLinecap="round"
-                strokeDasharray={314}
-                initial={{ strokeDashoffset: 314 }}
-                animate={{ strokeDashoffset: 314 - (314 * 47) / 100 }}
-                transition={{ duration: 2, delay: 0.8 }}
-              />
-              <defs>
-                <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#2A6F68" />
-                  <stop offset="100%" stopColor="#B76E79" />
-                </linearGradient>
-              </defs>
-            </svg>
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-[#2A6F68]">47%</div>
-                <div className="text-sm text-gray-600">Health Score</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Health Metrics */}
-        <div className="grid grid-cols-2 gap-4">
-          {[
-            { label: 'Emergency Fund', value: '68%', color: 'text-green-600', bgColor: 'bg-green-100' },
-            { label: 'Debt Management', value: '72%', color: 'text-blue-600', bgColor: 'bg-blue-100' },
-            { label: 'Savings Rate', value: '85%', color: 'text-purple-600', bgColor: 'bg-purple-100' },
-            { label: 'Investment Growth', value: '45%', color: 'text-orange-600', bgColor: 'bg-orange-100' }
-          ].map((metric, index) => (
-            <motion.div
-              key={metric.label}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1 + index * 0.1 }}
-              className={`${metric.bgColor} rounded-lg p-4`}
-            >
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-gray-700">{metric.label}</span>
-                <span className={`text-lg font-bold ${metric.color}`}>{metric.value}</span>
-              </div>
-              <div className="w-full bg-white/60 rounded-full h-2">
-                <motion.div
-                  initial={{ width: 0 }}
-                  animate={{ width: metric.value }}
-                  transition={{ delay: 1.2 + index * 0.1, duration: 1 }}
-                  className={`h-2 rounded-full ${metric.color.replace('text-', 'bg-')}`}
-                />
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </motion.div>
 
       {/* Belt Progression */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.8 }}
+        transition={{ delay: 1.0 }}
         className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200"
       >
         <h3 className="text-xl font-bold text-[#333333] mb-6 flex items-center space-x-2">
@@ -430,7 +388,7 @@ const LearningCenter: React.FC<LearningCenterProps> = ({ user, userLevel, onXPUp
           <motion.div
             initial={{ width: 0 }}
             animate={{ width: `${((userLevel % 5) / 5) * 100}%` }}
-            transition={{ delay: 1, duration: 1 }}
+            transition={{ delay: 1.2, duration: 1 }}
             className={`bg-gradient-to-r ${beltRank.color} h-3 rounded-full`}
           />
         </div>
@@ -443,7 +401,7 @@ const LearningCenter: React.FC<LearningCenterProps> = ({ user, userLevel, onXPUp
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 1 }}
+        transition={{ delay: 1.2 }}
         className="bg-gradient-to-r from-[#2A6F68]/5 to-[#B76E79]/5 rounded-xl p-6 border border-gray-200"
       >
         <h3 className="text-lg font-semibold text-[#333333] mb-3 flex items-center space-x-2">

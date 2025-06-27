@@ -11,6 +11,10 @@ import {
 import { User } from '@supabase/supabase-js';
 import { useGoals } from '../hooks/useGoals';
 import BankAccounts from './BankAccounts';
+import FinancialHealthDashboard from './FinancialHealthDashboard';
+import RecentAchievements from './RecentAchievements';
+import AILearningInsights from './AILearningInsights';
+import FinancialGoals from './FinancialGoals';
 
 interface DashboardProps {
   user: User;
@@ -65,10 +69,10 @@ const Dashboard: React.FC<DashboardProps> = ({ user, xp }) => {
         </div>
         
         <h1 className="text-2xl font-serif font-bold mb-2">
-          Welcome back, Financial Warrior! 🥋
+          Welcome back, {user.user_metadata?.full_name || 'Financial Warrior'}! 🥋
         </h1>
         <p className="text-white/90 mb-4">
-          Your training continues in the <span className="text-white font-medium">DoughJo</span> dojo
+          Continue your training in the <span className="text-white font-medium">DoughJo</span> dojo
         </p>
         <div className="flex items-center space-x-4">
           <div className={`flex items-center space-x-2 bg-gradient-to-r ${beltRank.color} text-white rounded-lg px-3 py-1`}>
@@ -100,9 +104,9 @@ const Dashboard: React.FC<DashboardProps> = ({ user, xp }) => {
             <TrendingUp className="h-5 w-5 text-green-500" />
           </div>
           <h3 className="text-2xl font-bold text-[#333333] mb-1">
-            $0
+            $22,000
           </h3>
-          <p className="text-sm text-gray-600">Financial Power</p>
+          <p className="text-sm text-gray-600">Net Worth</p>
         </motion.div>
 
         <motion.div
@@ -119,7 +123,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user, xp }) => {
           <h3 className="text-2xl font-bold text-[#333333] mb-1">
             {goals.length}
           </h3>
-          <p className="text-sm text-gray-600">Active Quests</p>
+          <p className="text-sm text-gray-600">Active Goals</p>
         </motion.div>
 
         <motion.div
@@ -157,129 +161,84 @@ const Dashboard: React.FC<DashboardProps> = ({ user, xp }) => {
         </motion.div>
       </div>
 
-      {/* Bank Accounts Section - This should be prominently visible */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5 }}
-        className="bg-white rounded-xl p-1 shadow-sm border border-gray-200"
-      >
-        <div className="p-5">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h2 className="text-xl font-bold text-[#333333] flex items-center space-x-2">
-                <span>🏦</span>
-                <span>Bank Accounts</span>
-              </h2>
-              <p className="text-gray-600 text-sm mt-1">
-                Connect your accounts to track finances automatically
-              </p>
-            </div>
-            <div className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-medium">
-              Demo Ready!
-            </div>
-          </div>
-          
-          {/* Embedded Bank Accounts Component */}
-          <BankAccounts user={user} />
-        </div>
-      </motion.div>
-
-      {/* Goals Section */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.6 }}
-        className="bg-white rounded-xl p-6 shadow-sm border border-gray-200"
-      >
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-semibold text-[#333333]">Financial Quests</h3>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="flex items-center space-x-2 bg-[#2A6F68] text-white px-4 py-2 rounded-lg hover:bg-[#235A54] transition-colors"
-          >
-            <Plus className="h-4 w-4" />
-            <span>New Quest</span>
-          </motion.button>
-        </div>
-
-        {/* Goals Error Message */}
-        {goalsError && (
+      {/* Main Content Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Left Column */}
+        <div className="lg:col-span-2 space-y-8">
+          {/* Financial Health Dashboard */}
           <motion.div
-            initial={{ opacity: 0, y: -10 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex items-center space-x-2 text-red-600 text-sm bg-red-50 p-3 rounded-lg border border-red-200 mb-4"
+            transition={{ delay: 0.5 }}
           >
-            <AlertCircle className="h-4 w-4 flex-shrink-0" />
-            <span>{goalsError}</span>
-            <button
-              onClick={clearError}
-              className="ml-auto text-red-400 hover:text-red-600 transition-colors"
-            >
-              ×
-            </button>
+            <FinancialHealthDashboard />
           </motion.div>
-        )}
 
-        {goalsLoading ? (
-          <div className="flex items-center justify-center py-8">
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-              className="w-6 h-6 border-2 border-[#2A6F68] border-t-transparent rounded-full"
-            />
-            <span className="ml-3 text-gray-600">Loading financial quests...</span>
-          </div>
-        ) : goals.length === 0 ? (
-          <div className="text-center py-8">
-            <div className="w-16 h-16 mx-auto mb-4">
-              <img 
-                src="/finapp.png" 
-                alt="DoughJo" 
-                className="w-full h-full object-contain opacity-50"
-              />
-            </div>
-            <p className="text-gray-500 mb-4">No quests yet, young warrior</p>
-            <p className="text-sm text-gray-400">Begin your journey by setting your first financial goal!</p>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {goals.map((goal, index) => {
-              const progress = goal.target_amount 
-                ? ((goal.saved_amount || 0) / goal.target_amount) * 100 
-                : 0;
-              
-              return (
-                <div key={goal.id} className="border-b border-gray-100 pb-4 last:border-b-0">
-                  <div className="flex justify-between items-center mb-2">
-                    <h4 className="font-medium text-[#333333]">🎯 {goal.name}</h4>
-                    <span className="text-sm text-gray-600">
-                      ${(goal.saved_amount || 0).toLocaleString()} / ${(goal.target_amount || 0).toLocaleString()}
-                    </span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <motion.div
-                      initial={{ width: 0 }}
-                      animate={{ width: `${progress}%` }}
-                      transition={{ delay: 0.8 + index * 0.1, duration: 1 }}
-                      className="bg-gradient-to-r from-[#2A6F68] to-[#B76E79] h-2 rounded-full"
-                    />
-                  </div>
-                  <p className="text-sm text-gray-600 mt-1">{progress.toFixed(1)}% complete</p>
+          {/* Bank Accounts Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+            className="bg-white rounded-xl p-1 shadow-sm border border-gray-200"
+          >
+            <div className="p-5">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h2 className="text-xl font-bold text-[#333333] flex items-center space-x-2">
+                    <span>🏦</span>
+                    <span>Bank Accounts</span>
+                  </h2>
+                  <p className="text-gray-600 text-sm mt-1">
+                    Connect your accounts to track finances automatically
+                  </p>
                 </div>
-              );
-            })}
-          </div>
-        )}
-      </motion.div>
+                <div className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-medium">
+                  Demo Ready!
+                </div>
+              </div>
+              
+              <BankAccounts user={user} />
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Right Column */}
+        <div className="space-y-6">
+          {/* Financial Goals */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7 }}
+          >
+            <FinancialGoals user={user} compact />
+          </motion.div>
+
+          {/* Recent Achievements */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8 }}
+          >
+            <RecentAchievements compact />
+          </motion.div>
+
+          {/* AI Learning Insights */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.9 }}
+          >
+            <AILearningInsights compact />
+          </motion.div>
+        </div>
+      </div>
 
       {/* Badges Section */}
       {xp?.badges && xp.badges.length > 0 && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7 }}
+          transition={{ delay: 1.0 }}
           className="bg-white rounded-xl p-6 shadow-sm border border-gray-200"
         >
           <h3 className="text-lg font-semibold text-[#333333] mb-4">Earned Achievements</h3>
@@ -289,7 +248,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user, xp }) => {
                 key={index}
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.8 + index * 0.1 }}
+                transition={{ delay: 1.1 + index * 0.1 }}
                 className="flex items-center space-x-2 bg-gradient-to-r from-[#2A6F68] to-[#B76E79] text-white px-3 py-2 rounded-full text-sm"
               >
                 <Award className="h-4 w-4" />
