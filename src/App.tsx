@@ -38,7 +38,7 @@ function App() {
           <motion.div
             animate={{ rotate: 360 }}
             transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-            className="w-8 h-8 border-2 border-sage-600 border-t-transparent rounded-full"
+            className="w-8 h-8 border-2 border-primary-500 border-t-transparent rounded-full"
           />
         </div>
       </>
@@ -63,9 +63,9 @@ function App() {
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="bg-cream-100/90 backdrop-blur-sm rounded-2xl shadow-xl p-8 border border-cream-200 text-center max-w-md w-full"
+            className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-8 border border-cream-200 text-center max-w-md w-full"
           >
-            <div className="w-16 h-16 bg-teal-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <motion.div
                 animate={{ scale: [1, 1.1, 1] }}
                 transition={{ duration: 2, repeat: Infinity }}
@@ -82,7 +82,7 @@ function App() {
             </p>
             <button
               onClick={signOut}
-              className="text-sage-600 hover:text-sage-700 transition-colors"
+              className="text-primary-600 hover:text-primary-700 transition-colors"
             >
               Sign out and try again
             </button>
@@ -102,7 +102,7 @@ function App() {
       <motion.header 
         initial={{ y: -100 }}
         animate={{ y: 0 }}
-        className="bg-cream-100/80 backdrop-blur-md border-b border-cream-200 sticky top-0 z-40"
+        className="bg-white/80 backdrop-blur-md border-b border-cream-200 sticky top-0 z-40"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
@@ -111,18 +111,18 @@ function App() {
                 whileHover={{ scale: 1.05 }}
                 className="flex items-center space-x-3"
               >
-                <div className="w-10 h-10 bg-gradient-to-br from-sage-600 to-bronze-500 rounded-full flex items-center justify-center p-1">
+                <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-full flex items-center justify-center p-1">
                   <img 
                     src="/finapp.png" 
                     alt="DoughJo Mascot" 
                     className="w-8 h-8 object-contain"
                   />
                 </div>
-                <h1 className="text-2xl font-serif font-bold text-sage-700">
+                <h1 className="text-2xl font-serif font-bold text-primary-700">
                   DoughJo
                 </h1>
               </motion.div>
-              <div className="flex items-center space-x-2 bg-sage-600 text-white px-3 py-1 rounded-full text-sm">
+              <div className="flex items-center space-x-2 bg-primary-500 text-white px-3 py-1 rounded-full text-sm">
                 <span>Level {level}</span>
                 <span className="text-bronze-300">•</span>
                 <span>{xp?.points || 0} XP</span>
@@ -135,7 +135,7 @@ function App() {
                   onClick={() => setActiveView('chat')}
                   className={`px-4 py-2 rounded-lg transition-all ${
                     activeView === 'chat'
-                      ? 'bg-sage-600 text-white'
+                      ? 'bg-primary-500 text-white'
                       : 'text-charcoal-700 hover:bg-cream-200'
                   }`}
                 >
@@ -145,7 +145,7 @@ function App() {
                   onClick={() => setActiveView('dashboard')}
                   className={`px-4 py-2 rounded-lg transition-all ${
                     activeView === 'dashboard'
-                      ? 'bg-sage-600 text-white'
+                      ? 'bg-primary-500 text-white'
                       : 'text-charcoal-700 hover:bg-cream-200'
                   }`}
                 >
@@ -155,7 +155,7 @@ function App() {
                   onClick={() => setActiveView('learning')}
                   className={`px-4 py-2 rounded-lg transition-all ${
                     activeView === 'learning'
-                      ? 'bg-sage-600 text-white'
+                      ? 'bg-primary-500 text-white'
                       : 'text-charcoal-700 hover:bg-cream-200'
                   }`}
                 >

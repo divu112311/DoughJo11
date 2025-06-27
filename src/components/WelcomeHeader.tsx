@@ -17,7 +17,7 @@ const WelcomeHeader: React.FC<WelcomeHeaderProps> = ({ user, xp }) => {
     if (level >= 30) return { name: "Black Belt", color: "from-charcoal-700 to-charcoal-900", emoji: "🥋" };
     if (level >= 20) return { name: "Brown Belt", color: "from-bronze-600 to-bronze-800", emoji: "🤎" };
     if (level >= 15) return { name: "Blue Belt", color: "from-teal-400 to-teal-600", emoji: "💙" };
-    if (level >= 10) return { name: "Green Belt", color: "from-sage-400 to-sage-600", emoji: "💚" };
+    if (level >= 10) return { name: "Green Belt", color: "from-primary-400 to-primary-600", emoji: "💚" };
     if (level >= 5) return { name: "Yellow Belt", color: "from-bronze-300 to-bronze-500", emoji: "💛" };
     return { name: "White Belt", color: "from-cream-300 to-cream-500", emoji: "🤍" };
   };
@@ -28,7 +28,7 @@ const WelcomeHeader: React.FC<WelcomeHeaderProps> = ({ user, xp }) => {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-teal-600 rounded-2xl p-4 text-white relative overflow-hidden mb-8 border border-teal-500 shadow-lg"
+      className="bg-primary-500 rounded-2xl p-4 text-white relative overflow-hidden mb-8 border border-primary-400 shadow-lg"
     >
       <div className="absolute top-3 right-3">
         <motion.div
@@ -51,7 +51,7 @@ const WelcomeHeader: React.FC<WelcomeHeaderProps> = ({ user, xp }) => {
         </motion.div>
       </div>
       
-      <h1 className="text-lg font-serif font-bold mb-3 text-teal-50">
+      <h1 className="text-lg font-serif font-bold mb-3 text-white">
         Welcome back, {user.user_metadata?.full_name || 'Financial Warrior'}! 🥋
       </h1>
       
