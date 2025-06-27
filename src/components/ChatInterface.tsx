@@ -16,6 +16,7 @@ import WelcomeHeader from './WelcomeHeader';
 import FinancialHealthDashboard from './FinancialHealthDashboard';
 import FinancialAnalysis from './FinancialAnalysis';
 import QuickActions from './QuickActions';
+import AILearningInsights from './AILearningInsights';
 
 interface ChatInterfaceProps {
   user: User;
@@ -102,9 +103,10 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, xp, onXPUpdate }) =
 
         {/* Left Sidebar - Quick Actions & Financial Analysis */}
         {showSidebar && (
-          <div className="w-[300px] shrink-0 hidden lg:block space-y-4">
+          <div className="w-[320px] shrink-0 hidden lg:block space-y-4">
             <QuickActions onQuickAction={handleQuickAction} />
             <FinancialAnalysis user={user} />
+            <AILearningInsights compact={true} />
           </div>
         )}
 
@@ -327,8 +329,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, xp, onXPUpdate }) =
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
                 onKeyDown={handleKeyPress}
-                placeholder="Type your message..."
-                className="flex-1 p-3 rounded-lg border border-teal-300 bg-white focus:outline-none focus:ring-2 focus:ring-brand-teal text-sm"
+                placeholder="Ask Sensei DoughJo for financial wisdom..."
+                className="flex-1 p-3 rounded-lg border border-cream-300 bg-white focus:outline-none focus:ring-2 focus:ring-brand-teal focus:border-transparent text-sm placeholder-charcoal-500"
               />
               <button
                 onClick={handleSendMessage}
@@ -343,8 +345,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ user, xp, onXPUpdate }) =
 
         {/* Right Sidebar - Financial Health Dashboard */}
         {showSidebar && (
-          <div className="w-[300px] shrink-0 hidden lg:block">
-            <FinancialHealthDashboard user={user} />
+          <div className="w-[320px] shrink-0 hidden lg:block">
+            <FinancialHealthDashboard compact={true} />
           </div>
         )}
       </div>
