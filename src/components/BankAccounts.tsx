@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 import { User } from '@supabase/supabase-js';
 import PlaidLink from './PlaidLink';
-import { supabase } from '../lib/supabase';
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
 
 interface Account {
   id: string;
@@ -62,9 +62,14 @@ const BankAccounts: React.FC<BankAccountsProps> = ({ user }) => {
       setError(null);
       console.log('Fetching accounts for user:', user.id);
       
-      // Add a timeout to prevent infinite loading
-      const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Request timeout')), 10000)
+      // Check if Supabase is properly configured
+      if (!isSupabaseConfigured) {
+        throw new Error('Supabase is not properly configured. Please check your environment variables.');
+      }
+
+      // Create a proper timeout wrapper for the Supabase query
+      const timeoutPromise = new Promise<never>((_, reject) => 
+        setTimeout(() => reject(new Error('Request timeout - please check your Supabase connection')), 10000)
       );
 
       const fetchPromise = supabase
@@ -73,18 +78,34 @@ const BankAccounts: React.FC<BankAccountsProps> = ({ user }) => {
         .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
-      const { data, error: fetchError } = await Promise.race([fetchPromise, timeoutPromise]) as any;
+      // Race the actual query promise with the timeout
+      const { data, error: fetchError } = await Promise.race([
+        fetchPromise,
+        timeoutPromise
+      ]);
 
       if (fetchError) {
         console.error('Database error:', fetchError);
-        throw new Error('Failed to load accounts from database');
+        throw new Error(`Failed to load accounts: ${fetchError.message}`);
       }
 
       console.log('Accounts fetched successfully:', data?.length || 0);
       setAccounts(data || []);
     } catch (error: any) {
       console.error('Error fetching accounts:', error);
-      setError(error.message || 'Failed to load bank accounts');
+      
+      // Provide more specific error messages
+      let errorMessage = 'Failed to load bank accounts';
+      
+      if (error.message.includes('timeout')) {
+        errorMessage = 'Connection timeout - please check your internet connection and try again';
+      } else if (error.message.includes('Supabase is not properly configured')) {
+        errorMessage = 'Database not configured - please set up your Supabase connection';
+      } else if (error.message.includes('Failed to load accounts')) {
+        errorMessage = error.message;
+      }
+      
+      setError(errorMessage);
       // Set empty accounts on error so UI doesn't stay in loading state
       setAccounts([]);
     } finally {
