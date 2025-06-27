@@ -455,33 +455,35 @@ const BankAccounts: React.FC<BankAccountsProps> = ({ user }) => {
               exit={{ scale: 0.9, opacity: 0 }}
               className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto"
             >
-              <div className="text-center mb-6">
-                <div className="w-16 h-16 bg-[#2A6F68]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <CreditCard className="h-8 w-8 text-[#2A6F68]" />
+              <>
+                <div className="text-center mb-6">
+                  <div className="w-16 h-16 bg-[#2A6F68]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <CreditCard className="h-8 w-8 text-[#2A6F68]" />
+                  </div>
+                  <h3 className="text-xl font-bold text-[#333333] mb-2">
+                    Connect Bank Accounts
+                  </h3>
+                  <p className="text-gray-600">
+                    Choose your connection method and start tracking your finances automatically
+                  </p>
                 </div>
-                <h3 className="text-xl font-bold text-[#333333] mb-2">
-                  Connect Bank Accounts
-                </h3>
-                <p className="text-gray-600">
-                  Choose your connection method and start tracking your finances automatically
-                </p>
-              </div>
 
-              <PlaidLink
-                userId={user.id}
-                onSuccess={handlePlaidSuccess}
-                onError={(error) => console.error('Plaid error:', error)}
-              />
+                <PlaidLink
+                  userId={user.id}
+                  onSuccess={handlePlaidSuccess}
+                  onError={(error) => console.error('Plaid error:', error)}
+                />
 
-              <div className="mt-6 text-center">
-                <button
-                  onClick={() => setShowPlaidLink(false)}
-                  className="text-gray-500 hover:text-[#333333] transition-colors"
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
+                <div className="mt-6 text-center">
+                  <button
+                    onClick={() => setShowPlaidLink(false)}
+                    className="text-gray-500 hover:text-[#333333] transition-colors"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
