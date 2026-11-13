@@ -105,3 +105,7 @@ Thumbs.db
 ehthumbs.db
 Desktop.ini
 $RECYCLE.BIN/
+# Env files without a leading dot
+env
+**/env
+
