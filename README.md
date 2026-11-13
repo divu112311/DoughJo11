@@ -1,233 +1,82 @@
-# DoughJo - Your AI Financial Sensei
+# DoughJo: your AI money sensei 🥋
 
-A sophisticated AI-powered personal finance application featuring your friendly martial arts mascot, DoughJo! Master the ancient art of money management with modern AI wisdom.
+**An AI personal-finance coach that connects to your real bank accounts and turns money skills into a game.** Built for the **Bolt Hackathon**.
 
-## Features
+Most people don't avoid budgeting because it's hard. They avoid it because it's boring and generic advice doesn't fit their life. DoughJo connects to your actual accounts through Plaid. An AI "Sensei" then coaches you based on your real spending and goals, and you level up from White Belt to Grand Master as you build better habits.
 
-### 🥋 AI Financial Sensei
-- **Conversational Interface**: Train with Sensei DoughJo through natural language chat
-- **Context-Aware AI**: OpenAI GPT-4 integration with full financial context and chat history
-- **Personalized Wisdom**: Ancient financial wisdom meets modern AI for personalized advice
+## What it does
 
-### 💰 Financial Mastery
-- **Goal Tracking**: Visual progress tracking for your financial quests
-- **Smart Insights**: AI-generated spending analysis and recommendations
-- **Warrior Profiles**: Comprehensive user management with XP and belt rankings
+- **🏦 Connect your bank (Plaid).** Securely link checking, savings and credit accounts with Plaid Link. Balances refresh automatically, and webhooks keep data in sync.
+- **🤖 AI Sensei chat.** A conversational coach that knows your accounts, goals and chat history. It answers questions like "Can I afford this trip?" with advice tailored to you.
+- **📊 Financial health dashboard.** Spending analysis, a financial health view and AI-generated insights on where your money goes.
+- **🎯 Goals.** Set savings goals and track progress visually.
+- **📚 AI learning path.** Personalized lessons, quizzes and daily practice generated from your situation.
+- **🎮 Gamified progress.** Earn XP, unlock badges and climb the belt ranks as you learn and hit milestones.
+- **🔐 Security first.** Supabase auth with Google sign-in, session timeouts and security warnings. Bank tokens are handled server-side, never in the browser.
 
-### 🎮 Dojo Progression System
-- **XP System**: Earn experience points for financial interactions and training
-- **Belt Rankings**: Progress from White Belt to Grand Master based on engagement
-- **Achievement Badges**: Unlock rewards for reaching financial milestones
-- **Progress Visualization**: Beautiful progress bars and achievement animations
+## How it works
 
-### 🎨 Dojo Design
-- **Martial Arts Aesthetic**: Clean, disciplined design inspired by traditional dojos
-- **Mascot Integration**: DoughJo appears throughout the app as your guide
-- **Sophisticated Typography**: Playfair Display headlines with Inter body text
-- **Micro-interactions**: Smooth animations and hover states throughout
-- **Responsive Layout**: Mobile-first design that scales beautifully
-
-## Tech Stack
-
-- **Frontend**: React 18 + TypeScript + Vite
-- **Styling**: Tailwind CSS + Framer Motion
-- **Backend**: Supabase (Database + Auth + Edge Functions)
-- **AI**: OpenAI GPT-4 API via Supabase Edge Functions
-- **Charts**: Recharts for data visualization
-- **Icons**: Lucide React + Custom DoughJo Mascot
-
-## Getting Started
-
-### Prerequisites
-- Node.js 18+ 
-- Supabase account
-- OpenAI API key
-
-### Installation
-
-1. Clone the repository:
-```bash
-git clone <repository-url>
-cd doughjo-app
+```
+React app ──► Supabase Auth (email / Google)
+    │
+    ├──► Edge function: plaid-create-link-token ──► Plaid Link (user connects bank)
+    ├──► Edge function: plaid-exchange-token     ──► stores access token server-side
+    ├──► Edge function: plaid-refresh-accounts   ──► balances & accounts
+    ├──◄ Edge function: plaid-webhook            ◄── Plaid pushes account updates
+    │
+    └──► Edge function: chat-ai ──► LLM (via OpenRouter) with the user's financial context
+                │
+                ▼
+         Supabase Postgres: profiles, goals, XP, chat history, accounts
 ```
 
-2. Install dependencies:
+All secrets (Plaid and AI keys) live in Supabase edge-function secrets. The browser only ever sees the public Supabase anon key, and data is protected by row-level security.
+
+## Tech stack
+
+| Layer | Tools |
+|---|---|
+| **Frontend** | React 18, TypeScript, Vite, Tailwind CSS, Framer Motion, Recharts |
+| **Banking** | Plaid (Link, Auth/Balance, webhooks) |
+| **AI** | LLM via OpenRouter (OpenAI-compatible), called from a Supabase edge function |
+| **Backend** | Supabase (Postgres, Auth with Google OAuth, Edge Functions in Deno) |
+
+## Running locally
+
 ```bash
 npm install
-```
-
-3. Set up environment variables:
-```bash
-# Copy the example file
-cp .env.example .env
-
-# Edit .env with your actual values:
-VITE_SUPABASE_URL=your_supabase_project_url
-VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-OPENAI_API_KEY=your_openai_api_key
-```
-
-4. Set up Supabase:
-   - Create a new Supabase project at [supabase.com](https://supabase.com)
-   - Copy your project URL and anon key from Settings > API
-   - The database migrations will run automatically
-   - Deploy the Edge Function (see below)
-   - Add your OpenAI API key to Supabase secrets
-
-5. Deploy the Edge Function:
-```bash
-# Install Supabase CLI
-npm install -g supabase
-
-# Login to Supabase
-supabase login
-
-# Link your project
-supabase link --project-ref YOUR_PROJECT_REF
-
-# Deploy the function
-supabase functions deploy chat-ai
-
-# Set the OpenAI API key as a secret
-supabase secrets set OPENAI_API_KEY=your_openai_api_key_here
-```
-
-6. Start the development server:
-```bash
+cp .env.example .env   # add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY
 npm run dev
 ```
 
-## The DoughJo Way
+Set server-side secrets for the edge functions with the Supabase CLI. Never put them in the frontend.
 
-### Belt Ranking System
-Progress through traditional martial arts belt rankings:
-- **White Belt** (Levels 1-4): Beginning your financial journey
-- **Yellow Belt** (Levels 5-9): Learning the basics
-- **Green Belt** (Levels 10-14): Building good habits
-- **Blue Belt** (Levels 15-19): Developing discipline
-- **Brown Belt** (Levels 20-29): Advanced techniques
-- **Black Belt** (Levels 30-39): Mastery of fundamentals
-- **Master** (Levels 40-49): Teaching others
-- **Grand Master** (Level 50+): True financial wisdom
-
-### DoughJo's Wisdom
-Your AI sensei provides guidance based on:
-- Ancient financial principles
-- Modern investment strategies
-- Your personal goals and progress
-- Martial arts philosophy applied to money management
-
-### Training Philosophy
-- **Discipline**: Consistent habits build wealth
-- **Balance**: Harmony between saving and enjoying life
-- **Patience**: Long-term thinking for lasting results
-- **Wisdom**: Learning from both success and failure
-- **Strength**: Building financial resilience
-
-## Architecture
-
-### Frontend Structure
-```
-src/
-├── components/
-│   ├── LoginForm.tsx          # Dojo entrance
-│   ├── ChatInterface.tsx      # Training with Sensei DoughJo
-│   ├── Dashboard.tsx          # Financial progress overview
-│   └── OnboardingFlow.tsx     # Initial assessment
-├── hooks/
-│   ├── useAuth.ts            # Authentication logic
-│   ├── useChat.ts            # Chat with AI sensei
-│   ├── useGoals.ts           # Financial quest management
-│   └── useUserProfile.ts     # User profile & XP
-├── lib/
-│   └── supabase.ts           # Supabase client configuration
-└── App.tsx                   # Main dojo application
+```bash
+supabase secrets set OPENROUTER_API_KEY=... PLAID_CLIENT_ID=... PLAID_SECRET=... PLAID_ENV=sandbox
+supabase functions deploy chat-ai
+supabase functions deploy plaid-create-link-token
+supabase functions deploy plaid-exchange-token
+supabase functions deploy plaid-refresh-accounts
+supabase functions deploy plaid-webhook
 ```
 
-### Database Schema
-- **users**: Warrior profiles and authentication
-- **goals**: Financial quests and objectives
-- **chat_logs**: Complete training conversation history
-- **xp**: Progression system (points, badges, belt ranks)
+In Plaid's **sandbox**, you can sign in to any test bank with `user_good` / `pass_good`.
 
-### Edge Functions
-- **chat-ai**: Handles OpenAI API integration with full user context
+Detailed setup notes are in the repo: [Plaid sandbox setup](PLAID_SANDBOX_SETUP.md), [edge functions](EDGE_FUNCTION_SETUP.md), [Google OAuth](GOOGLE_OAUTH_SETUP.md) and [deployment](DEPLOYMENT_GUIDE.md).
 
-## Key Features Explained
+## Repository structure
 
-### Conversational AI Sensei
-The heart of DoughJo is the conversational interface where users train with Sensei DoughJo through natural language. The AI has access to:
-- Complete user financial profile and belt rank
-- Real-time goal progress and targets
-- Full conversation history for context continuity
-- User XP level and achievement data
-- Personalized financial advice based on martial arts philosophy
+```
+src/components/          dashboard, chat, bank accounts, goals, learning center, onboarding
+src/hooks/               auth, chat, goals, profile, session security
+supabase/functions/      chat-ai and plaid-* edge functions
+supabase/migrations/     database schema
+```
 
-### Context-Aware Training
-Every AI response is generated with full context including:
-- User demographics and financial situation
-- Current belt rank and XP level
-- Progress toward financial quests
-- Previous training sessions for continuity
-- Personalized advice combining ancient wisdom with modern strategy
+## The belt system
 
-### Progression System
-Users earn XP for various training activities:
-- Completing registration: +100 XP (Welcome badge)
-- Each chat interaction: +5 XP
-- Setting up financial quests: +50 XP
-- Reaching milestones: Variable XP
+White → Yellow → Green → Blue → Brown → Black Belt → Master → Grand Master. Every lesson, goal and good money decision earns XP toward the next belt.
 
-Belt ranks increase based on total XP, with visual feedback throughout the dojo.
+---
 
-## Sensei DoughJo's Teachings
-
-### Core Principles
-1. **"The way of the warrior is to stop trouble before it starts"** - Emergency fund wisdom
-2. **"A thousand-mile journey begins with a single step"** - Starting small with investments
-3. **"The bamboo that bends is stronger than the oak that resists"** - Adapting to market changes
-4. **"Empty your cup so that it may be filled"** - Learning new financial concepts
-5. **"The best time to plant a tree was 20 years ago. The second best time is now"** - Starting to invest
-
-### Training Methods
-- **Kata Practice**: Repetitive good financial habits
-- **Sparring**: Discussing financial scenarios and solutions
-- **Meditation**: Mindful spending and reflection
-- **Forms**: Structured approaches to budgeting and investing
-- **Philosophy**: Understanding the deeper meaning of financial wellness
-
-## Troubleshooting
-
-### Common Issues
-
-**1. "Invalid URL" Error**
-- Make sure your `.env` file has valid Supabase credentials
-- Check that URLs start with `https://` and contain `.supabase.co`
-
-**2. Sensei Not Responding**
-- Verify OpenAI API key is set in Supabase secrets
-- Check Edge Function deployment status
-- Look at browser console for error messages
-
-**3. Database Connection Issues**
-- Confirm Supabase project is active
-- Check that RLS policies are properly configured
-- Verify user authentication is working
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature-name`
-3. Commit changes: `git commit -m 'Add feature'`
-4. Push to branch: `git push origin feature-name`
-5. Submit a pull request
-
-## The DoughJo Philosophy
-
-*"In the dojo of finance, every dollar is a student, every decision a lesson, and every goal a belt to earn. Train with discipline, invest with wisdom, and let compound interest be your greatest technique."*
-
-**- Sensei DoughJo** 🥋💰
-
-## License
-
-This project is licensed under the MIT License.
+Built by **Divya Mahajan** · [Website](https://divu112311.github.io) · [LinkedIn](https://www.linkedin.com/in/divyamahajan11)
